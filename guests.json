@@ -10,5 +10,11 @@
     "mairie": true,
     "houppa": true,
     "shabbat": true
+  },
+  "elie-chicha": {
+    "nom": "elie chicha",
+    "mairie": false,
+    "houppa": true,
+    "shabbat": false
   }
 }
