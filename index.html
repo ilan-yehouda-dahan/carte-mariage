@@ -9,18 +9,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&family=Frank+Ruhl+Libre:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root{
-            --ink:#1a2836;
-            --ink-soft:#3c4a5c;
-            --ivory:#f8f3e7;
-            --ivory-deep:#f0e7d2;
-            --ice:#bcd3dd;
-            --ice-soft:#dfeaee;
-            --silver:#9aa4ad;
-            --gold:#a97f38;
-            --gold-deep:#8a611f;
-            --gold-soft:#d3ba82;
-            --gold-glow: rgba(169,127,56,0.3);
-            --line: rgba(26,40,54,0.15);
+            --ink:#1f2430;
+            --ink-soft:#4d5865;
+            --ivory:#f7f2eb;
+            --ivory-deep:#efe6d8;
+            --ice:#dfeaf0;
+            --ice-soft:#edf4f7;
+            --silver:#8b939d;
+            --gold:#b89663;
+            --gold-deep:#8a693b;
+            --gold-soft:#e0c89a;
+            --gold-glow: rgba(184,150,99,0.22);
+            --line: rgba(31,36,48,0.12);
         }
         *{box-sizing:border-box;}
         html{scroll-behavior:smooth;}
@@ -226,6 +226,17 @@
             opacity:0;
         }
         .hero .date-line strong{font-weight:500;color:var(--ink);}
+        .hero .jewish-phrase{
+            margin-top:18px;
+            font-size:clamp(26px, 5vw, 46px);
+            line-height:1.08;
+            color:var(--gold-deep);
+            letter-spacing:0.04em;
+            opacity:0;
+            font-family:'Frank Ruhl Libre', serif;
+            direction:rtl;
+            text-shadow:0 6px 18px rgba(184,150,99,0.14);
+        }
 
         /* countdown */
         .countdown{
@@ -288,10 +299,30 @@
             display:block;transition:background .3s ease, transform .3s ease;
         }
         .side-nav a.active{background:var(--ink);transform:scale(1.3);}
-        @media (max-width:700px){ .side-nav{display:none;} }
+
+        .top-date-nav{
+            position:sticky;top:14px;z-index:22;
+            width:min(760px, calc(100% - 24px));
+            margin:12px auto 0;display:flex;justify-content:center;align-items:center;gap:10px;
+            flex-wrap:wrap;padding:8px 12px;border-radius:999px;
+            background:rgba(255,255,255,0.58);backdrop-filter:blur(10px);
+            border:1px solid rgba(184,150,99,0.15);box-shadow:0 18px 34px -28px rgba(31,36,48,0.3);
+        }
+        .top-date-nav a{
+            display:inline-flex;align-items:center;justify-content:center;
+            min-height:38px;padding:8px 16px;border-radius:999px;
+            color:var(--gold-deep);font-size:11.5px;letter-spacing:0.10em;text-transform:uppercase;
+            text-decoration:none;transition:background .25s ease, color .25s ease, transform .2s ease, border-color .25s ease;
+            border:1px solid transparent;
+        }
+        .top-date-nav a:hover, .top-date-nav a:active{
+            background:rgba(184,150,99,0.08);border-color:rgba(184,150,99,0.2);transform:translateY(-1px);
+            color:var(--ink);
+        }
+        @media (max-width:700px){ .side-nav{display:none;} .top-date-nav{gap:8px;padding:8px 10px;} .top-date-nav a{font-size:10.5px;letter-spacing:0.08em;padding:8px 10px;} }
 
         /* SECTIONS */
-        section{padding:72px 0;position:relative;}
+        section{padding:72px 0;position:relative;scroll-margin-top:90px;}
         .section-head{text-align:center;margin-bottom:44px;opacity:0;transform:translateY(18px);transition:opacity .8s ease, transform .8s ease;}
         .section-head.in-view{opacity:1;transform:translateY(0);}
         .section-head h2{font-size:clamp(28px,6vw,40px);}
@@ -306,12 +337,13 @@
         .event{
             position:relative;
             display:flex;gap:20px;
-            background:#fff;
+            background:rgba(255,255,255,0.78);
             border:1px solid var(--line);
-            border-radius:2px;
+            border-radius:30px;
             padding:24px;
             opacity:0;transform:translateY(24px);
             transition:opacity .8s ease, transform .8s ease;
+            box-shadow:0 18px 38px -28px rgba(31,36,48,0.22);
         }
         .event.in-view{opacity:1;transform:translateY(0);}
         .event .marker{
@@ -340,18 +372,19 @@
         }
         .actions{display:flex;flex-wrap:wrap;gap:10px;}
         .btn{
-            appearance:none;border:1px solid var(--ink);
-            background:transparent;color:var(--ink);
+            appearance:none;border:1px solid rgba(31,36,48,0.18);
+            background:rgba(255,255,255,0.35);color:var(--ink);
             font-family:'Jost',sans-serif;font-size:13.5px;letter-spacing:0.03em;
-            padding:12px 18px;border-radius:2px;cursor:pointer;
+            padding:12px 18px;border-radius:999px;cursor:pointer;
             text-decoration:none;display:inline-flex;align-items:center;gap:8px;
-            transition:background .2s ease, color .2s ease;
+            transition:background .2s ease, color .2s ease, border-color .2s ease, transform .2s ease;
             flex:1 1 auto;justify-content:center;
             min-height:44px;
+            box-shadow:0 8px 20px -14px rgba(31,36,48,0.28);
         }
-        .btn:hover{background:var(--ink);color:#fff;}
-        .btn.ghost{border-color:var(--silver);color:var(--silver);cursor:default;}
-        .btn.ghost:hover{background:transparent;color:var(--silver);}
+        .btn:hover{background:var(--ink);color:#fff;border-color:var(--ink);transform:translateY(-1px);}
+        .btn.ghost{border-color:var(--line);color:var(--ink-soft);cursor:default;background:rgba(255,255,255,0.2);}
+        .btn.ghost:hover{background:rgba(255,255,255,0.2);color:var(--ink-soft);transform:none;}
         .btn svg{width:14px;height:14px;flex:0 0 auto;}
 
         /* faire-part card */
@@ -365,6 +398,7 @@
             padding:0 0 34px;
             background:#fff;
             overflow:hidden;
+            border-radius:30px;
         }
 
         /* HOUPPA STYLE ARTISTIQUE / AQUARELLE ONIRIQUE */
@@ -447,13 +481,15 @@
 
         /* RSVP AVEC ANIMATIONS INTERACTIVES */
         .rsvp-card{
-            background:#fff;border:1px solid var(--line);
-            padding:24px 20px;
-            transition:box-shadow .4s ease, border-color .4s ease;
+            background:rgba(255,255,255,0.82);border:1px solid rgba(31,36,48,0.1);
+            padding:24px 20px;border-radius:30px;
+            transition:box-shadow .4s ease, border-color .4s ease, transform .3s ease;
+            box-shadow:0 24px 54px -34px rgba(31,36,48,0.28);
         }
         .rsvp-card:hover, .rsvp-card:focus-within{
-            box-shadow: 0 14px 36px rgba(171,124,46,0.14);
-            border-color: var(--gold-soft);
+            box-shadow: 0 18px 44px -24px rgba(184,150,99,0.24);
+            border-color: rgba(184,150,99,0.45);
+            transform:translateY(-2px);
         }
         form{display:flex;flex-direction:column;gap:24px;}
         .row2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
@@ -503,30 +539,30 @@
 
         fieldset{border:none;padding:0;margin:0;}
         .rsvp-event{
-            border:1px solid var(--line);
+            border:1px solid rgba(31,36,48,0.08);
             padding:18px;
             display:flex;flex-direction:column;gap:14px;
-            background:#fff;
-            border-radius:2px;
+            background:rgba(247,242,235,0.7);
+            border-radius:22px;
             transition:transform .3s cubic-bezier(.25,1,.5,1), border-color .3s ease, box-shadow .3s ease;
         }
         .rsvp-event:hover{
             transform:translateY(-2px);
-            border-color:var(--gold-soft);
-            box-shadow:0 6px 18px rgba(26,40,54,0.04);
+            border-color:rgba(184,150,99,0.45);
+            box-shadow:0 12px 26px -18px rgba(31,36,48,0.18);
         }
         .rsvp-event:focus-within{
             transform:translateY(-2px);
             border-color:var(--gold);
-            box-shadow:0 0 0 3px var(--gold-glow), 0 10px 26px -10px rgba(171,124,46,0.4);
+            box-shadow:0 0 0 3px var(--gold-glow), 0 12px 24px -16px rgba(184,150,99,0.38);
         }
         .rsvp-event-title{font-family:'Cormorant Garamond',serif;font-size:19px;}
         .choice-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
 
         /* Toggle animé */
         .toggle{
-            display:flex;border:1px solid var(--ink);border-radius:2px;overflow:hidden;
-            transition:border-color .3s ease, box-shadow .3s ease;
+            display:flex;border:1px solid rgba(31,36,48,0.12);border-radius:999px;overflow:hidden;
+            background:rgba(255,255,255,0.4);transition:border-color .3s ease, box-shadow .3s ease;
         }
         .toggle:focus-within{
             border-color:var(--gold);
@@ -546,9 +582,9 @@
             overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;
         }
         .toggle input:checked + label{
-            background:linear-gradient(135deg, var(--ink), var(--ink-soft));
+            background:linear-gradient(135deg, var(--gold), var(--gold-soft));
             color:#fff;
-            box-shadow:inset 0 0 10px rgba(0,0,0,0.15);
+            box-shadow:inset 0 0 10px rgba(0,0,0,0.08);
         }
         .toggle input:focus-visible + label{
             box-shadow:inset 0 0 0 2px var(--gold);
@@ -583,9 +619,9 @@
         }
         .submit-btn{
             align-self:stretch;
-            background:var(--ink);color:#fff;border:1px solid var(--ink);
+            background:linear-gradient(135deg, var(--ink), var(--ink-soft));color:#fff;border:1px solid rgba(31,36,48,0.15);
             font-family:'Jost',sans-serif;font-size:14.5px;letter-spacing:0.06em;
-            padding:16px 34px;border-radius:2px;cursor:pointer;
+            padding:16px 34px;border-radius:999px;cursor:pointer;
             min-height:48px;
             position:relative;
             overflow:hidden;
@@ -596,14 +632,14 @@
             content:"";
             position:absolute;top:0;left:-60%;
             width:45%;height:100%;
-            background:linear-gradient(115deg, transparent, rgba(217,185,114,0.55), transparent);
+            background:linear-gradient(115deg, transparent, rgba(255,255,255,0.28), transparent);
             transform:skewX(-18deg);
             transition:left .65s ease;
             pointer-events:none;
         }
         .submit-btn:hover{
-            background:var(--ink-soft);
-            box-shadow:0 10px 28px -6px var(--gold-glow), 0 6px 20px rgba(26,40,54,0.18);
+            background:linear-gradient(135deg, var(--ink-soft), var(--ink));
+            box-shadow:0 10px 28px -6px var(--gold-glow), 0 6px 20px rgba(31,36,48,0.18);
             transform:translateY(-1px);
             animation-play-state:paused;
         }
@@ -616,14 +652,15 @@
 
         .confirm-msg{
             display:none;
-            border:1px solid var(--gold);
-            background:var(--ice-soft);
+            border:1px solid rgba(184,150,99,0.45);
+            background:linear-gradient(135deg, rgba(237,244,247,0.9), rgba(239,230,216,0.8));
             color:var(--ink);
             padding:16px 18px;
             font-size:14px;
             line-height:1.7;
             margin-top:20px;
-            border-left:3px solid var(--gold);
+            border-left:4px solid var(--gold);
+            border-radius:16px;
         }
         .confirm-msg.show{
             display:block;
@@ -740,10 +777,16 @@
         <h1>Eden<span class="amp">&amp;</span>Ilan</h1>
         <p class="gate-guest" id="guest-greeting" hidden></p>
         <p class="gate-sub">C'est avec une joie immense et le cœur empli de gratitude envers Hashem que nous vous invitons à célébrer notre union.</p>
-        <div class="gate-date">Jeudi 25 février 2027</div>
         <button class="gate-btn" id="open-gate">Ouvrir l'invitation</button>
     </div>
 </div>
+
+<nav class="top-date-nav" aria-label="Navigation">
+    <a href="#mairie">Mairie</a>
+    <a href="#houppa">Houppa</a>
+    <a href="#shabbat">Chabbat Hatan</a>
+    <a href="#reponse">RSVP</a>
+</nav>
 
 <header class="hero" id="accueil">
     <div class="aurora"><span></span><span></span><span></span></div>
@@ -769,6 +812,7 @@
         <div class="bsd">בס״ד</div>
         <h1><span class="word">Eden</span><span class="amp word">&amp;</span><span class="word">Ilan</span></h1>
         <div class="date-line">Jeudi <strong>25 février 2027</strong></div>
+        <div class="jewish-phrase">כֹּל שָׂשׂוֹן וְכָל שִׂמְחָה</div>
 
         <div class="flourish"><span class="l"></span><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.5 7.5L22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5z"/></svg><span class="r"></span></div>
 
@@ -984,7 +1028,7 @@
     })();
 
     function revealHero(){
-        var els = document.querySelectorAll('.hero .bsd, .hero h1 .word, .hero .date-line, .hero .flourish, .hero .countdown, .hero .scroll-cue');
+        var els = document.querySelectorAll('.hero .bsd, .hero h1 .word, .hero .date-line, .hero .jewish-phrase, .hero .flourish, .hero .countdown, .hero .scroll-cue');
         els.forEach(function(el, i){
             setTimeout(function(){
                 el.style.transition = 'opacity .9s ease, transform .9s ease, filter .9s ease';
