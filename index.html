@@ -153,8 +153,18 @@
         .gate-guest{
             margin-top:6px;font-family:'Cormorant Garamond',serif;font-style:italic;
             font-size:19px;color:var(--gold-deep);
+            opacity:0;transition:opacity .5s ease;
         }
+        .gate-guest.in{opacity:1;}
         .gate-guest[hidden]{display:none;}
+        .gate-guest.typing::after{
+            content:"";
+            display:inline-block;width:1px;height:0.9em;
+            margin-left:2px;vertical-align:-0.1em;
+            background:var(--gold-deep);
+            animation:caretBlink .8s step-end infinite;
+        }
+        @keyframes caretBlink{ 50%{ opacity:0; } }
         .gate-date{
             margin-top:16px;font-size:15px;letter-spacing:0.03em;color:var(--ink);
         }
@@ -723,7 +733,8 @@
 
 <div id="gate">
     <div class="aurora"><span></span><span></span><span></span></div>
-    <div class="gate-inner">
+
+    <div class="gate-inner" id="gate-inner">
         <div class="seal"><span class="init">E&amp;I</span></div>
         <div class="gate-bsd">בס״ד</div>
         <h1>Eden<span class="amp">&amp;</span>Ilan</h1>
@@ -1115,20 +1126,21 @@
     var SHEET_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzrHvIXBmpMvPRLxpapbqnqaEv0wRVhQPVbLrZf0Edf0keF8_RJRTOdfMW3-N_93vf-wg/exec"; // même URL, aucun changement — déjà à jour
 
     // --- Invitation personnalisée (?id=xxx dans le lien) ---
-    // Si le lien contient ?id=..., on va chercher le nom + les événements
-    // auxquels cette personne est conviée dans l'onglet "Invités" du Google Sheet,
-    // via une requête GET (celle-ci n'a pas les soucis CORS du POST).
+    // La liste des invités vit dans guests.json, un simple fichier à côté de cette
+    // page (pas d'appel à Google à chaque ouverture : c'est instantané et fiable,
+    // contrairement à interroger Google Apps Script en direct à chaque visite).
     (function(){
         var guestId = new URLSearchParams(window.location.search).get('id');
-        if(!guestId) return; // pas de lien personnalisé -> on garde la version par défaut (tout affiché)
+        if(!guestId) return; // pas de lien personnalisé -> rien à faire, tout s'affiche normalement
 
-        fetch(SHEET_WEBAPP_URL + '?id=' + encodeURIComponent(guestId))
+        fetch('guests.json', { cache: 'no-store' })
             .then(function(res){ return res.json(); })
-            .then(function(guest){
-                if(!guest || guest.error) return; // id inconnu -> version par défaut, pas d'erreur visible
+            .then(function(guests){
+                var guest = guests[guestId];
+                if(!guest) return; // id inconnu -> version par défaut, silencieux
                 applyGuestPersonalization(guest);
             })
-            .catch(function(){ /* échec réseau silencieux -> version par défaut */ });
+            .catch(function(){ /* guests.json absent ou invalide -> version par défaut, silencieux */ });
     })();
 
     function applyGuestPersonalization(guest){
@@ -1137,8 +1149,20 @@
         if(nomPropre){
             var greet = document.getElementById('guest-greeting');
             if(greet){
-                greet.textContent = 'Cher/Chère ' + nomPropre + ',';
+                var fullText = 'Cher/Chère ' + nomPropre + ',';
+                greet.textContent = '';
                 greet.hidden = false;
+                requestAnimationFrame(function(){ greet.classList.add('in', 'typing'); });
+                var i = 0;
+                (function typeChar(){
+                    greet.textContent = fullText.slice(0, i);
+                    i++;
+                    if(i <= fullText.length){
+                        setTimeout(typeChar, 32);
+                    } else {
+                        greet.classList.remove('typing');
+                    }
+                })();
             }
             var nomInput = document.getElementById('nom');
             if(nomInput) nomInput.value = nomPropre;

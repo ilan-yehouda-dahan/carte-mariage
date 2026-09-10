@@ -1,0 +1,876 @@
+<title>Invitations Eden & Ilan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Jost:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+    :root{
+        --bg:#f8f3e7;
+        --surface:#ffffff;
+        --surface-alt:#f0e7d2;
+        --text:#1a2836;
+        --text-soft:#5c6a7a;
+        --border:rgba(26,40,54,0.14);
+        --border-strong:rgba(26,40,54,0.24);
+        --accent:#a97f38;
+        --accent-soft:#d3ba82;
+        --accent-contrast:#ffffff;
+        --good:#5c7a4f;
+        --good-bg:rgba(92,122,79,0.12);
+        --off:#8a7a63;
+        --off-bg:rgba(138,122,99,0.12);
+        --danger:#a44e42;
+        --shadow:0 10px 30px rgba(26,40,54,0.08);
+    }
+    @media (prefers-color-scheme: dark){
+        :root:not([data-theme="light"]){
+            --bg:#141f2a;
+            --surface:#1c2a38;
+            --surface-alt:#22344534;
+            --surface-alt:#233445;
+            --text:#f3ead9;
+            --text-soft:#aab6c2;
+            --border:rgba(243,234,217,0.14);
+            --border-strong:rgba(243,234,217,0.26);
+            --accent:#dcae62;
+            --accent-soft:#8a611f;
+            --accent-contrast:#1a2836;
+            --good:#8bb37c;
+            --good-bg:rgba(139,179,124,0.16);
+            --off:#b7a98d;
+            --off-bg:rgba(183,169,141,0.14);
+            --danger:#d98a7c;
+            --shadow:0 10px 30px rgba(0,0,0,0.35);
+        }
+    }
+    :root[data-theme="dark"]{
+        --bg:#141f2a;
+        --surface:#1c2a38;
+        --surface-alt:#233445;
+        --text:#f3ead9;
+        --text-soft:#aab6c2;
+        --border:rgba(243,234,217,0.14);
+        --border-strong:rgba(243,234,217,0.26);
+        --accent:#dcae62;
+        --accent-soft:#8a611f;
+        --accent-contrast:#1a2836;
+        --good:#8bb37c;
+        --good-bg:rgba(139,179,124,0.16);
+        --off:#b7a98d;
+        --off-bg:rgba(183,169,141,0.14);
+        --danger:#d98a7c;
+        --shadow:0 10px 30px rgba(0,0,0,0.35);
+    }
+
+    *{box-sizing:border-box;}
+    body{
+        margin:0;
+        background:var(--bg);
+        color:var(--text);
+        font-family:'Jost',sans-serif;
+        font-weight:300;
+        -webkit-font-smoothing:antialiased;
+    }
+    .wrap{max-width:840px;margin:0 auto;padding:40px 20px 80px;}
+
+    header.page{margin-bottom:32px;}
+    header.page h1{
+        font-family:'Cormorant Garamond',serif;
+        font-weight:600;
+        font-size:clamp(30px,5vw,42px);
+        margin:0 0 6px;
+        text-wrap:balance;
+    }
+    header.page .amp{font-style:italic;color:var(--accent);}
+    header.page p{
+        margin:0;
+        color:var(--text-soft);
+        font-size:15px;
+        line-height:1.6;
+        max-width:56ch;
+    }
+
+    .card{
+        background:var(--surface);
+        border:1px solid var(--border);
+        border-radius:6px;
+        padding:22px;
+        box-shadow:var(--shadow);
+    }
+    .card + .card{margin-top:18px;}
+
+    .json-callout{
+        border-color:var(--accent);
+        background:color-mix(in srgb, var(--accent) 7%, var(--surface));
+        display:flex;flex-direction:column;gap:14px;
+    }
+    .json-callout p{margin:0;font-size:13.5px;line-height:1.65;color:var(--text);}
+    .json-callout code{
+        font-family:'JetBrains Mono',monospace;font-size:12px;
+        background:var(--surface-alt);padding:1px 5px;border-radius:3px;
+    }
+    .json-callout .btn{align-self:flex-start;}
+
+    #gh-settings{
+        border:1px solid var(--border);border-radius:5px;
+        background:var(--surface);
+    }
+    #gh-settings summary{
+        cursor:pointer;padding:10px 12px;font-size:13px;color:var(--text);
+        display:flex;align-items:center;gap:8px;list-style:none;
+    }
+    #gh-settings summary::-webkit-details-marker{display:none;}
+    #gh-settings summary::before{
+        content:"▸";color:var(--text-soft);font-size:11px;transition:transform .15s ease;
+    }
+    #gh-settings[open] summary::before{transform:rotate(90deg);}
+    .gh-state{
+        font-size:11px;padding:2px 8px;border-radius:20px;
+        background:var(--off-bg);color:var(--off);
+    }
+    .gh-state.ready{background:var(--good-bg);color:var(--good);}
+    .gh-fields{
+        padding:4px 12px 14px;display:flex;flex-direction:column;gap:12px;
+    }
+    .gh-fields .hint{margin-top:6px;font-size:12px;color:var(--text-soft);line-height:1.5;}
+
+    .json-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+    .publish-status{font-size:12.5px;color:var(--text-soft);}
+    .publish-status.ok{color:var(--good);}
+    .publish-status.err{color:var(--danger);}
+
+    @media (max-width:600px){
+        .json-actions{flex-direction:column;align-items:stretch;}
+    }
+
+    label.field-label{
+        display:block;
+        font-size:11.5px;
+        letter-spacing:0.08em;
+        text-transform:uppercase;
+        color:var(--text-soft);
+        margin-bottom:6px;
+    }
+    input[type=text], input[type=url]{
+        width:100%;
+        font-family:'Jost',sans-serif;
+        font-size:15px;
+        color:var(--text);
+        background:var(--surface-alt);
+        border:1px solid var(--border);
+        border-radius:4px;
+        padding:11px 12px;
+        outline:none;
+        transition:border-color .2s ease, box-shadow .2s ease;
+    }
+    input[type=text]:focus, input[type=url]:focus{
+        border-color:var(--accent);
+        box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
+    }
+    input::placeholder{color:var(--text-soft);opacity:.7;}
+
+    .url-row{margin-bottom:0;}
+    .url-row .hint{
+        margin-top:8px;font-size:12.5px;color:var(--text-soft);line-height:1.5;
+    }
+    .url-row .hint code{
+        font-family:'JetBrains Mono',monospace;font-size:11.5px;
+        background:var(--surface-alt);padding:1px 5px;border-radius:3px;
+    }
+
+    .section-title{
+        font-family:'Cormorant Garamond',serif;
+        font-weight:600;
+        font-size:20px;
+        margin:0 0 16px;
+    }
+
+    form#add-form{
+        display:grid;
+        grid-template-columns:1fr auto;
+        gap:14px 16px;
+        align-items:end;
+    }
+    .toggles{
+        grid-column:1 / -1;
+        display:flex;
+        flex-wrap:wrap;
+        gap:10px;
+    }
+    .toggles legend{
+        font-size:11.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-soft);
+        margin-bottom:8px;width:100%;
+    }
+    .chip-toggle{
+        display:inline-flex;align-items:center;gap:7px;
+        border:1px solid var(--border-strong);
+        border-radius:20px;
+        padding:8px 14px 8px 10px;
+        cursor:pointer;
+        user-select:none;
+        font-size:13.5px;
+        color:var(--text-soft);
+        background:var(--surface-alt);
+        transition:background .2s ease, color .2s ease, border-color .2s ease;
+    }
+    .chip-toggle input{display:none;}
+    .chip-toggle .dot{
+        width:8px;height:8px;border-radius:50%;
+        background:var(--border-strong);
+        transition:background .2s ease;
+        flex:0 0 auto;
+    }
+    .chip-toggle:has(input:checked){
+        background:var(--good-bg);
+        color:var(--good);
+        border-color:transparent;
+    }
+    .chip-toggle:has(input:checked) .dot{background:var(--good);}
+
+    .btn{
+        appearance:none;border:none;border-radius:5px;
+        font-family:'Jost',sans-serif;font-size:13.5px;letter-spacing:0.03em;
+        padding:11px 20px;cursor:pointer;
+        display:inline-flex;align-items:center;gap:8px;justify-content:center;
+        transition:transform .15s ease, box-shadow .2s ease, background .2s ease;
+        min-height:42px;white-space:nowrap;
+    }
+    .btn:active{transform:scale(0.97);}
+    .btn-primary{background:var(--accent);color:var(--accent-contrast);}
+    .btn-primary:hover{box-shadow:0 6px 16px color-mix(in srgb, var(--accent) 35%, transparent);}
+    .btn-ghost{background:transparent;border:1px solid var(--border-strong);color:var(--text);}
+    .btn-ghost:hover{border-color:var(--accent);color:var(--accent);}
+    .btn-sm{padding:7px 12px;font-size:12.5px;min-height:32px;}
+    .btn svg{width:14px;height:14px;flex:0 0 auto;}
+
+    .toolbar{
+        display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
+        margin-bottom:16px;
+    }
+    .count{
+        font-size:13px;color:var(--text-soft);
+        font-variant-numeric:tabular-nums;
+    }
+    .count strong{color:var(--text);font-weight:500;}
+
+    .table-scroll{overflow-x:auto;border:1px solid var(--border);border-radius:6px;}
+    table{width:100%;border-collapse:collapse;min-width:680px;}
+    thead th{
+        text-align:left;
+        font-size:11px;letter-spacing:0.07em;text-transform:uppercase;
+        color:var(--text-soft);
+        padding:12px 14px;
+        background:var(--surface-alt);
+        border-bottom:1px solid var(--border);
+        white-space:nowrap;
+    }
+    tbody td{
+        padding:12px 14px;
+        border-bottom:1px solid var(--border);
+        font-size:14px;
+        vertical-align:middle;
+    }
+    tbody tr:last-child td{border-bottom:none;}
+    tbody tr:hover{background:var(--surface-alt);}
+    td.nom{font-weight:400;white-space:nowrap;}
+    td.mono{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--text-soft);}
+    td.lien{max-width:220px;}
+    td.lien .lien-text{
+        display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+        font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-soft);
+    }
+    td.actions{white-space:nowrap;text-align:right;}
+
+    .status-chip{
+        display:inline-flex;align-items:center;gap:5px;
+        font-size:12px;padding:4px 9px;border-radius:20px;
+        cursor:pointer;border:none;
+        font-family:'Jost',sans-serif;
+    }
+    .status-chip.oui{background:var(--good-bg);color:var(--good);}
+    .status-chip.non{background:var(--off-bg);color:var(--off);}
+    .status-chip .dot{width:6px;height:6px;border-radius:50%;background:currentColor;}
+
+    .sync-state{
+        display:inline-flex;align-items:center;gap:6px;
+        font-size:12px;color:var(--text-soft);white-space:nowrap;
+    }
+    .sync-state.sent{color:var(--good);}
+    .sync-state .spin{
+        width:11px;height:11px;border-radius:50%;
+        border:2px solid var(--border-strong);border-top-color:var(--accent);
+        animation:spin .7s linear infinite;
+    }
+    @keyframes spin{ to{ transform:rotate(360deg); } }
+
+    .icon-btn{
+        appearance:none;border:none;background:transparent;color:var(--text-soft);
+        cursor:pointer;padding:6px;border-radius:4px;display:inline-flex;
+    }
+    .icon-btn:hover{color:var(--accent);background:var(--surface-alt);}
+    .icon-btn.danger:hover{color:var(--danger);}
+    .icon-btn svg{width:15px;height:15px;}
+
+    .empty{
+        padding:40px 20px;text-align:center;color:var(--text-soft);font-size:14px;
+    }
+
+    .example-note{
+        display:flex;align-items:center;gap:8px;
+        font-size:12.5px;color:var(--text-soft);
+        background:var(--surface-alt);
+        border:1px solid var(--border);
+        border-radius:5px;
+        padding:10px 12px;
+        margin-bottom:16px;
+    }
+
+    .toast{
+        position:fixed;left:50%;bottom:26px;transform:translate(-50%,12px);
+        background:var(--text);color:var(--bg);
+        padding:11px 20px;border-radius:6px;font-size:13.5px;
+        box-shadow:0 12px 30px rgba(0,0,0,0.25);
+        opacity:0;pointer-events:none;
+        transition:opacity .25s ease, transform .25s ease;
+        z-index:10;
+    }
+    .toast.show{opacity:1;transform:translate(-50%,0);}
+
+    @media (max-width:600px){
+        form#add-form{grid-template-columns:1fr;}
+        #add-form .btn-primary{width:100%;}
+        .toolbar{flex-direction:column;align-items:stretch;}
+        .toolbar .btn{width:100%;}
+    }
+</style>
+
+<div class="wrap">
+    <header class="page">
+        <h1>Invitations <span class="amp">Eden &amp; Ilan</span></h1>
+        <p>Ajoute chaque invité, coche les événements auxquels il est convié — il est enregistré <strong>directement dans ton Google Sheet</strong> et son lien personnalisé est prêt, sans copier-coller.</p>
+    </header>
+
+    <div class="card url-row">
+        <label class="field-label" for="base-url">Adresse de ton site</label>
+        <input type="url" id="base-url" placeholder="https://eden-et-ilan.netlify.app/mariage.html">
+        <p class="hint">Le lien de chaque invité sera <code>ton-adresse?id=...</code>. Tu peux la laisser vide pour l'instant et la remplir plus tard — tous les liens se mettront à jour automatiquement.</p>
+    </div>
+
+    <div class="card">
+        <h2 class="section-title">Ajouter un invité</h2>
+        <form id="add-form">
+            <div>
+                <label class="field-label" for="guest-name">Nom</label>
+                <input type="text" id="guest-name" placeholder="Prénom et nom" autocomplete="off">
+            </div>
+            <button type="submit" class="btn btn-primary">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                Ajouter
+            </button>
+            <fieldset class="toggles" style="border:none;padding:0;margin:0;">
+                <legend>Convié(e) à</legend>
+                <label class="chip-toggle"><input type="checkbox" id="chk-mairie" checked><span class="dot"></span>Mairie</label>
+                <label class="chip-toggle"><input type="checkbox" id="chk-houppa" checked><span class="dot"></span>Houppa &amp; soirée</label>
+                <label class="chip-toggle"><input type="checkbox" id="chk-shabbat" checked><span class="dot"></span>Chabbat Hatan</label>
+            </fieldset>
+        </form>
+    </div>
+
+    <div class="card json-callout">
+        <p><strong>guests.json</strong> — c'est ce fichier (pas le Sheet) qui personnalise vraiment le site, instantanément. Publie-le directement sur GitHub en un clic, ou copie-le à la main si tu préfères.</p>
+
+        <details id="gh-settings">
+            <summary>Réglages GitHub <span class="gh-state" id="gh-state"></span></summary>
+            <div class="gh-fields">
+                <div>
+                    <label class="field-label" for="gh-repo">Dépôt (propriétaire/nom)</label>
+                    <input type="text" id="gh-repo" placeholder="ilan-yehouda-dahan/carte-mariage">
+                </div>
+                <div>
+                    <label class="field-label" for="gh-path">Chemin du fichier</label>
+                    <input type="text" id="gh-path" placeholder="guests.json" value="guests.json">
+                </div>
+                <div>
+                    <label class="field-label" for="gh-branch">Branche</label>
+                    <input type="text" id="gh-branch" placeholder="main" value="main">
+                </div>
+                <div>
+                    <label class="field-label" for="gh-token">Jeton d'accès personnel (GitHub)</label>
+                    <input type="password" id="gh-token" placeholder="ghp_… ou github_pat_…" autocomplete="off">
+                    <p class="hint">Créé sur GitHub → Settings → Developer settings → Personal access tokens → Fine-grained → coche seulement ce dépôt, permission "Contents: Read and write". Reste uniquement dans ton navigateur, jamais envoyé ailleurs.</p>
+                </div>
+            </div>
+        </details>
+
+        <div class="json-actions">
+            <button class="btn btn-primary" id="publish-json">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V6M5 12l7-7 7 7"/></svg>
+                Publier sur GitHub
+            </button>
+            <button class="btn btn-ghost" id="copy-json">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg>
+                Copier à la main
+            </button>
+            <span class="publish-status" id="publish-status"></span>
+        </div>
+    </div>
+
+    <div class="card" style="margin-top:18px;">
+        <div class="toolbar">
+            <span class="count"><strong id="guest-count">0</strong> invité(s) — aussi listés dans ton Sheet, pour référence</span>
+            <button class="btn btn-ghost" id="copy-all">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg>
+                Copier le tableau
+            </button>
+        </div>
+
+        <div id="example-note" class="example-note" hidden>
+            <span>👋</span>
+            <span>Deux exemples pour te montrer le format — modifie-les ou supprime-les avant d'ajouter tes vrais invités.</span>
+        </div>
+
+        <div class="table-scroll">
+            <table>
+                <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Mairie</th>
+                    <th>Houppa</th>
+                    <th>Chabbat</th>
+                    <th>ID</th>
+                    <th>Lien</th>
+                    <th>Statut</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody id="guest-rows"></tbody>
+            </table>
+        </div>
+        <div id="empty-state" class="empty" hidden>Aucun invité pour l'instant — ajoute le premier ci-dessus.</div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+    (function(){
+        var STORE_KEY = 'wedding_guests_v1';
+        var URL_KEY = 'wedding_baseurl_v1';
+        var GH_KEY = 'wedding_github_v1';
+
+        var els = {
+            baseUrl: document.getElementById('base-url'),
+            form: document.getElementById('add-form'),
+            name: document.getElementById('guest-name'),
+            chkMairie: document.getElementById('chk-mairie'),
+            chkHouppa: document.getElementById('chk-houppa'),
+            chkShabbat: document.getElementById('chk-shabbat'),
+            rows: document.getElementById('guest-rows'),
+            count: document.getElementById('guest-count'),
+            empty: document.getElementById('empty-state'),
+            exampleNote: document.getElementById('example-note'),
+            copyAll: document.getElementById('copy-all'),
+            copyJson: document.getElementById('copy-json'),
+            publishJson: document.getElementById('publish-json'),
+            publishStatus: document.getElementById('publish-status'),
+            ghRepo: document.getElementById('gh-repo'),
+            ghPath: document.getElementById('gh-path'),
+            ghBranch: document.getElementById('gh-branch'),
+            ghToken: document.getElementById('gh-token'),
+            ghState: document.getElementById('gh-state'),
+            toast: document.getElementById('toast')
+        };
+
+        function loadGuests(){
+            try{
+                var raw = localStorage.getItem(STORE_KEY);
+                if(raw) return JSON.parse(raw);
+            }catch(e){}
+            return null;
+        }
+        function saveGuests(list){
+            try{ localStorage.setItem(STORE_KEY, JSON.stringify(list)); }catch(e){}
+        }
+        function loadBaseUrl(){
+            try{ return localStorage.getItem(URL_KEY) || ''; }catch(e){ return ''; }
+        }
+        function saveBaseUrl(url){
+            try{ localStorage.setItem(URL_KEY, url); }catch(e){}
+        }
+        // Identifiant lisible basé sur le nom (ex: "jean-dupont") plutôt qu'un numéro —
+        // plus facile à reconnaître dans les liens, et sans risque de collision (on
+        // ajoute -2, -3... si le même nom existe déjà).
+        function slugify(str){
+            return (str || '')
+                .toString()
+                .normalize('NFD').replace(/[̀-ͯ]/g, '')
+                .toLowerCase()
+                .trim()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '');
+        }
+        function uniqueGuestId(nom){
+            var base = slugify(nom) || 'invite';
+            var existing = guests.map(function(g){ return g.id; });
+            var id = base;
+            var n = 2;
+            while(existing.indexOf(id) !== -1){
+                id = base + '-' + n;
+                n++;
+            }
+            return id;
+        }
+
+        // URL de ton Apps Script (la même que dans mariage.html) : l'ajout d'un invité
+        // ici l'envoie directement dans l'onglet "Invités" de ton Google Sheet.
+        var SHEET_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzrHvIXBmpMvPRLxpapbqnqaEv0wRVhQPVbLrZf0Edf0keF8_RJRTOdfMW3-N_93vf-wg/exec";
+
+        function loadGh(){
+            try{
+                var raw = localStorage.getItem(GH_KEY);
+                return raw ? JSON.parse(raw) : {};
+            }catch(e){ return {}; }
+        }
+        function saveGh(){
+            try{
+                localStorage.setItem(GH_KEY, JSON.stringify({
+                    repo: els.ghRepo.value.trim(),
+                    path: els.ghPath.value.trim() || 'guests.json',
+                    branch: els.ghBranch.value.trim() || 'main',
+                    token: els.ghToken.value.trim()
+                }));
+            }catch(e){}
+            updateGhState();
+        }
+        function updateGhState(){
+            var ready = els.ghRepo.value.trim() && els.ghToken.value.trim();
+            els.ghState.textContent = ready ? 'prêt' : 'à configurer';
+            els.ghState.classList.toggle('ready', !!ready);
+        }
+        (function initGh(){
+            var saved = loadGh();
+            els.ghRepo.value = saved.repo || '';
+            els.ghPath.value = saved.path || 'guests.json';
+            els.ghBranch.value = saved.branch || 'main';
+            els.ghToken.value = saved.token || '';
+            updateGhState();
+            [els.ghRepo, els.ghPath, els.ghBranch, els.ghToken].forEach(function(el){
+                el.addEventListener('input', saveGh);
+            });
+        })();
+
+        function utf8ToBase64(str){
+            return btoa(unescape(encodeURIComponent(str)));
+        }
+
+        function buildGuestsJson(){
+            var real = guests.filter(function(g){ return !g.example; });
+            var obj = {};
+            real.forEach(function(g){
+                obj[g.id] = { nom: g.nom, mairie: g.mairie, houppa: g.houppa, shabbat: g.shabbat };
+            });
+            return { obj: obj, hasReal: real.length > 0 };
+        }
+
+        function setPublishStatus(text, cls){
+            els.publishStatus.textContent = text;
+            els.publishStatus.className = 'publish-status' + (cls ? ' ' + cls : '');
+        }
+
+        function publishToGithub(){
+            var repo = els.ghRepo.value.trim();
+            var path = (els.ghPath.value.trim() || 'guests.json').replace(/^\/+/, '');
+            var branch = els.ghBranch.value.trim() || 'main';
+            var token = els.ghToken.value.trim();
+
+            if(!repo || !token){
+                document.getElementById('gh-settings').open = true;
+                setPublishStatus('Renseigne le dépôt et le jeton GitHub ci-dessus d\'abord.', 'err');
+                return;
+            }
+
+            var built = buildGuestsJson();
+            if(!built.hasReal){
+                setPublishStatus('Ajoute au moins un vrai invité avant de publier.', 'err');
+                return;
+            }
+
+            var content = JSON.stringify(built.obj, null, 2);
+            var apiUrl = 'https://api.github.com/repos/' + repo + '/contents/' + path;
+
+            els.publishJson.disabled = true;
+            setPublishStatus('Publication en cours…');
+
+            fetch(apiUrl + '?ref=' + encodeURIComponent(branch), {
+                headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json' }
+            })
+                .then(function(res){
+                    if(res.status === 200) return res.json().then(function(data){ return data.sha; });
+                    if(res.status === 404) return null; // le fichier n'existe pas encore, on va le créer
+                    throw new Error('Lecture du fichier impossible (code ' + res.status + ')');
+                })
+                .then(function(sha){
+                    var body = {
+                        message: 'Mise à jour des invités (' + Object.keys(built.obj).length + ')',
+                        content: utf8ToBase64(content),
+                        branch: branch
+                    };
+                    if(sha) body.sha = sha;
+                    return fetch(apiUrl, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': 'Bearer ' + token,
+                            'Accept': 'application/vnd.github+json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(body)
+                    });
+                })
+                .then(function(res){
+                    if(!res.ok){
+                        return res.json().then(function(err){
+                            throw new Error((err && err.message) || ('Échec de la publication (code ' + res.status + ')'));
+                        });
+                    }
+                    setPublishStatus('Publié sur GitHub ✓', 'ok');
+                    showToast('guests.json publié — ton site se mettra à jour dans quelques instants');
+                })
+                .catch(function(err){
+                    setPublishStatus(err.message || 'Échec de la publication.', 'err');
+                })
+                .finally(function(){
+                    els.publishJson.disabled = false;
+                });
+        }
+
+        var guests = loadGuests();
+        var isExampleData = false;
+        if(!guests){
+            isExampleData = true;
+            guests = [
+                { id:'jean-dupont', nom:'Jean Dupont', mairie:true, houppa:true, shabbat:false, example:true, synced:'skip' },
+                { id:'marie-cohen', nom:'Marie Cohen', mairie:true, houppa:true, shabbat:true, example:true, synced:'skip' }
+            ];
+        }
+
+        function sendInviteToSheet(guest){
+            guest.synced = 'pending';
+            render();
+            var payload = {
+                type: 'invite',
+                id: guest.id,
+                nom: guest.nom,
+                mairie: guest.mairie,
+                houppa: guest.houppa,
+                shabbat: guest.shabbat
+            };
+            fetch(SHEET_WEBAPP_URL, {
+                method: 'POST',
+                mode: 'no-cors', // Apps Script ne gère pas le preflight CORS
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // évite le preflight
+                body: JSON.stringify(payload)
+            }).then(function(){
+                guest.synced = 'sent';
+                saveGuests(guests);
+                render();
+            }).catch(function(){
+                guest.synced = 'error';
+                saveGuests(guests);
+                render();
+            });
+        }
+
+        els.baseUrl.value = loadBaseUrl();
+
+        function buildLink(id){
+            var base = els.baseUrl.value.trim();
+            if(!base) return '(adresse du site à renseigner)';
+            return base.replace(/\/?$/, '') + '?id=' + encodeURIComponent(id);
+        }
+
+        function render(){
+            els.rows.innerHTML = '';
+            els.count.textContent = guests.length;
+            els.empty.hidden = guests.length > 0;
+            els.exampleNote.hidden = !(isExampleData && guests.length > 0);
+
+            guests.forEach(function(g, idx){
+                var tr = document.createElement('tr');
+
+                var tdNom = document.createElement('td');
+                tdNom.className = 'nom';
+                tdNom.textContent = g.nom;
+                tr.appendChild(tdNom);
+
+                ['mairie','houppa','shabbat'].forEach(function(key){
+                    var td = document.createElement('td');
+                    var chip = document.createElement('button');
+                    chip.type = 'button';
+                    chip.className = 'status-chip ' + (g[key] ? 'oui' : 'non');
+                    chip.innerHTML = '<span class="dot"></span>' + (g[key] ? 'Oui' : 'Non');
+                    chip.addEventListener('click', function(){
+                        g[key] = !g[key];
+                        saveGuests(guests);
+                        render();
+                    });
+                    td.appendChild(chip);
+                    tr.appendChild(td);
+                });
+
+                var tdId = document.createElement('td');
+                tdId.className = 'mono';
+                tdId.textContent = g.id;
+                tr.appendChild(tdId);
+
+                var tdLien = document.createElement('td');
+                tdLien.className = 'lien';
+                var lienSpan = document.createElement('span');
+                lienSpan.className = 'lien-text';
+                lienSpan.textContent = buildLink(g.id);
+                tdLien.appendChild(lienSpan);
+                tr.appendChild(tdLien);
+
+                var tdSync = document.createElement('td');
+                var syncSpan = document.createElement('span');
+                if(g.synced === 'sent'){
+                    syncSpan.className = 'sync-state sent';
+                    syncSpan.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg> Enregistré';
+                } else if(g.synced === 'pending'){
+                    syncSpan.className = 'sync-state';
+                    syncSpan.innerHTML = '<span class="spin"></span> Envoi…';
+                } else if(g.synced === 'error'){
+                    syncSpan.className = 'sync-state';
+                    syncSpan.style.color = 'var(--danger)';
+                    syncSpan.textContent = 'Échec';
+                } else if(g.synced === 'skip'){
+                    syncSpan.className = 'sync-state';
+                    syncSpan.textContent = 'Exemple (non envoyé)';
+                } else {
+                    syncSpan.className = 'sync-state';
+                    syncSpan.textContent = '—';
+                }
+                tdSync.appendChild(syncSpan);
+                if(g.synced === 'error'){
+                    var retryBtn = document.createElement('button');
+                    retryBtn.className = 'icon-btn';
+                    retryBtn.title = 'Réessayer';
+                    retryBtn.style.marginLeft = '4px';
+                    retryBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-3-6.7M21 3v6h-6"/></svg>';
+                    retryBtn.addEventListener('click', function(){ sendInviteToSheet(g); });
+                    tdSync.appendChild(retryBtn);
+                }
+                tr.appendChild(tdSync);
+
+                var tdActions = document.createElement('td');
+                tdActions.className = 'actions';
+
+                var copyBtn = document.createElement('button');
+                copyBtn.className = 'icon-btn';
+                copyBtn.title = 'Copier ce lien';
+                copyBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg>';
+                copyBtn.addEventListener('click', function(){
+                    copyText(buildLink(g.id));
+                    showToast('Lien de ' + g.nom + ' copié');
+                });
+                tdActions.appendChild(copyBtn);
+
+                var delBtn = document.createElement('button');
+                delBtn.className = 'icon-btn danger';
+                delBtn.title = 'Supprimer';
+                delBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m2 0-1 13a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1L6 7"/></svg>';
+                delBtn.addEventListener('click', function(){
+                    guests.splice(idx, 1);
+                    isExampleData = false;
+                    saveGuests(guests);
+                    render();
+                });
+                tdActions.appendChild(delBtn);
+
+                tr.appendChild(tdActions);
+                els.rows.appendChild(tr);
+            });
+        }
+
+        function copyText(text){
+            if(navigator.clipboard && navigator.clipboard.writeText){
+                navigator.clipboard.writeText(text).catch(function(){ fallbackCopy(text); });
+            } else {
+                fallbackCopy(text);
+            }
+        }
+        function fallbackCopy(text){
+            var ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            try{ document.execCommand('copy'); }catch(e){}
+            document.body.removeChild(ta);
+        }
+
+        var toastTimer;
+        function showToast(msg){
+            els.toast.textContent = msg;
+            els.toast.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(function(){ els.toast.classList.remove('show'); }, 2200);
+        }
+
+        els.baseUrl.addEventListener('input', function(){
+            saveBaseUrl(els.baseUrl.value);
+            render();
+        });
+
+        els.form.addEventListener('submit', function(e){
+            e.preventDefault();
+            var nom = els.name.value.trim();
+            if(!nom) return;
+            var id = uniqueGuestId(nom);
+            var guest = {
+                id: id,
+                nom: nom,
+                mairie: els.chkMairie.checked,
+                houppa: els.chkHouppa.checked,
+                shabbat: els.chkShabbat.checked,
+                synced: 'pending'
+            };
+            guests.push(guest);
+            isExampleData = false;
+            saveGuests(guests);
+            els.name.value = '';
+            els.name.focus();
+            render();
+            sendInviteToSheet(guest);
+        });
+
+        els.copyAll.addEventListener('click', function(){
+            if(!guests.length) return;
+            var lines = guests.map(function(g){
+                return [
+                    g.nom,
+                    g.mairie ? 'oui' : 'non',
+                    g.houppa ? 'oui' : 'non',
+                    g.shabbat ? 'oui' : 'non',
+                    g.id,
+                    buildLink(g.id)
+                ].join('\t');
+            });
+            copyText(lines.join('\n'));
+            showToast('Tableau copié — colle-le en case A2 de l\'onglet Invités');
+        });
+
+        els.copyJson.addEventListener('click', function(){
+            var built = buildGuestsJson();
+            if(!built.hasReal){
+                showToast('Ajoute au moins un vrai invité avant de générer guests.json');
+                return;
+            }
+            copyText(JSON.stringify(built.obj, null, 2));
+            showToast('guests.json copié — colle-le dans le fichier guests.json sur GitHub');
+        });
+
+        els.publishJson.addEventListener('click', publishToGithub);
+
+        render();
+    })();
+</script>
