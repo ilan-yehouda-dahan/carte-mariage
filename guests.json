@@ -16,5 +16,11 @@
     "mairie": false,
     "houppa": true,
     "shabbat": false
+  },
+  "michael-dahan": {
+    "nom": "Michael dahan",
+    "mairie": false,
+    "houppa": false,
+    "shabbat": false
   }
 }
