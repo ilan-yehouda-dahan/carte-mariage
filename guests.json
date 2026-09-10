@@ -1,1 +1,8 @@
-
+{
+  "ilan-dahan": {
+    "nom": "ilan dahan",
+    "mairie": true,
+    "houppa": true,
+    "shabbat": false
+  }
+}
