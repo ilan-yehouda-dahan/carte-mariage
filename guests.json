@@ -4,5 +4,11 @@
     "mairie": true,
     "houppa": true,
     "shabbat": false
+  },
+  "gabriel-arzoin": {
+    "nom": "Gabriel Arzoin",
+    "mairie": true,
+    "houppa": true,
+    "shabbat": true
   }
 }
