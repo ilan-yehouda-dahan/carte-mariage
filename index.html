@@ -23,26 +23,25 @@
             --line: rgba(31,36,48,0.12);
         }
         *{box-sizing:border-box;}
-        html{scroll-behavior:smooth;}
-        body{
+        html, body{
             margin:0;
+            padding:0;
             background:var(--ivory);
             color:var(--ink);
             font-family:'Jost', sans-serif;
             font-weight:300;
             -webkit-font-smoothing:antialiased;
+            width:100%;
+            height:100vh;
+            height:100svh;
             overflow:hidden;
         }
-        body.open{overflow:auto;}
         h1,h2,h3,.serif{
             font-family:'Cormorant Garamond', serif;
             font-weight:500;
             margin:0;
         }
         a{color:inherit;}
-        .wrap{max-width:760px;margin:0 auto;padding:0 20px;}
-        .hebrew{font-family:'Frank Ruhl Libre', serif;direction:rtl;}
-
         /* aurora / mist backdrop */
         .aurora{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0;}
         .aurora span{
@@ -56,9 +55,8 @@
         .aurora span:nth-child(3){width:46vw;height:46vw;background:radial-gradient(circle, var(--ice-soft) 0%, transparent 70%);bottom:-20%;left:20%;animation-delay:-16s;}
         @keyframes drift{
             0%,100%{ transform:translate(0,0) scale(1); }
-            50%{ transform:translate(3%,-4%) scale(1.08); }
+            50%{ transform:translate3d(3%,-4%,0) scale(1.08); }
         }
-
         /* grain léger */
         #grain{
             position:fixed;inset:0;pointer-events:none;z-index:4;
@@ -66,7 +64,6 @@
             background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch"/></filter><rect width="100%25" height="100%25" filter="url(%23n)"/></svg>');
             mix-blend-mode:multiply;
         }
-
         /* étoiles hero */
         .stars{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0;}
         .stars span{
@@ -77,13 +74,6 @@
         @keyframes twinkle{
             0%,100%{ opacity:0.15; transform:scale(0.8); }
             50%{ opacity:0.85; transform:scale(1.15); }
-        }
-
-        /* guirlande hero */
-        .wreath{
-            position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);
-            width:min(640px, 140vw);height:min(640px,140vw);
-            z-index:0;pointer-events:none;opacity:0.5;
         }
         #snow{position:fixed;inset:0;pointer-events:none;z-index:5;overflow:hidden;}
         .flake{
@@ -99,947 +89,323 @@
         @keyframes fall{
             to{ transform:translateY(105vh) translateX(var(--drift,0px)); }
         }
-
-        /* flourish divider */
-        .flourish{display:flex;align-items:center;justify-content:center;gap:10px;margin:30px auto;width:180px;}
-        .flourish .l, .flourish .r{flex:1;height:1px;background:linear-gradient(90deg, transparent, var(--gold));}
-        .flourish .r{background:linear-gradient(90deg, var(--gold), transparent);}
-        .flourish svg{width:12px;height:12px;flex:0 0 auto;color:var(--gold);}
-
-        /* GATE (PORTAIL OPTIMISÉ IPHONE) */
-        #gate{
-            position:fixed;inset:0;z-index:50;
-            display:flex;flex-direction:column;align-items:center;justify-content:center;
-            text-align:center;
-            background:var(--ivory);
-            padding:24px 20px;
-            transition:opacity .8s ease, visibility .8s ease;
+        /* countdown */
+        .countdown{
+            display:flex;
+            gap:clamp(8px, 2.5vw, 12px);
+            margin:10px auto;
+            align-items:center;
+            justify-content:center;
+            width:100%;
         }
-        #gate.closed{opacity:0;visibility:hidden;pointer-events:none;}
-        .gate-inner{max-width:440px;position:relative;z-index:1;}
-        .seal{
-            width:96px;height:96px;border-radius:50%;
-            border:1px solid var(--gold);
-            display:flex;align-items:center;justify-content:center;
-            margin:0 auto 18px;
-            position:relative;
-            transition:transform .8s cubic-bezier(.4,0,.2,1), opacity .8s ease;
-        }
-        .seal::before{
-            content:"";position:absolute;inset:6px;border:1px solid var(--gold-soft);border-radius:50%;
-        }
-        .seal .init{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:28px;color:var(--gold);}
-        #gate.cracking .seal{transform:scale(1.15) rotate(4deg);opacity:0;}
-        #gate.cracking .gate-inner > *:not(.seal){transition:opacity .5s ease, transform .5s ease;opacity:0;transform:translateY(-6px);}
-        .gate-bsd{
-            font-family:'Frank Ruhl Libre', serif;
-            font-size:14px;letter-spacing:0.04em;
-            color:var(--ink-soft);
-            margin-bottom:14px;
-            direction:rtl;
-        }
-        .gate-inner .amp{
-            display:block;font-style:italic;font-weight:400;
-            font-size:0.38em;color:var(--gold);margin:3px 0;
-        }
-        .gate-inner h1{
-            font-size:clamp(38px,11vw,62px);
-            line-height:1.02;
-        }
-        .gate-sub{
-            margin-top:14px;font-size:14px;color:var(--ink-soft);
-            line-height:1.65;
-        }
-        .gate-guest{
-            margin-top:6px;font-family:'Cormorant Garamond',serif;font-style:italic;
-            font-size:19px;color:var(--gold-deep);
-            opacity:0;transition:opacity .5s ease;
-        }
-        .gate-guest.in{opacity:1;}
-        .gate-guest[hidden]{display:none;}
-        .gate-guest.typing::after{
-            content:"";
-            display:inline-block;width:1px;height:0.9em;
-            margin-left:2px;vertical-align:-0.1em;
-            background:var(--gold-deep);
-            animation:caretBlink .8s step-end infinite;
-        }
-        @keyframes caretBlink{ 50%{ opacity:0; } }
-        .gate-date{
-            margin-top:16px;font-size:15px;letter-spacing:0.03em;color:var(--ink);
-        }
-        .gate-btn{
-            margin-top:24px;
-            appearance:none;border:1px solid var(--ink);background:transparent;
-            color:var(--ink);font-family:'Jost',sans-serif;font-size:13px;
-            letter-spacing:0.14em;padding:14px 32px;border-radius:2px;cursor:pointer;
-            transition:background .25s ease, color .25s ease, transform .2s ease;
-        }
-        .gate-btn:hover{background:var(--ink);color:#fff;}
-        .gate-btn:active{transform:scale(0.97);}
-
-        /* HERO */
-        .hero{
-            position:relative;
-            min-height:100svh;
+        .countdown .cell{
             display:flex;
             flex-direction:column;
             align-items:center;
             justify-content:center;
-            text-align:center;
-            padding:70px 20px 50px;
-            overflow:hidden;
-            background-color:var(--ivory);
-            background-image:
-                    radial-gradient(at 12% 18%, rgba(255,255,255,0.7), transparent 42%),
-                    radial-gradient(at 88% 8%, rgba(255,255,255,0.5), transparent 38%),
-                    radial-gradient(at 78% 92%, rgba(188,211,221,0.3), transparent 42%),
-                    radial-gradient(at 8% 85%, rgba(169,127,56,0.09), transparent 38%),
-                    repeating-linear-gradient(122deg, rgba(26,40,54,0.045) 0px, rgba(26,40,54,0.045) 1px, transparent 1px, transparent 100px),
-                    repeating-linear-gradient(38deg, rgba(169,127,56,0.045) 0px, rgba(169,127,56,0.045) 1px, transparent 1px, transparent 140px);
+            flex: 1;
+            max-width: 68px;
+            aspect-ratio: 1 / 1;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(184, 150, 99, 0.22);
+            border-radius: 50%;
+            box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.4);
         }
-        .hero-content{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;}
-        .hero .bsd{
-            font-family:'Frank Ruhl Libre', serif;
-            font-size:14px;color:var(--ink-soft);margin-bottom:24px;direction:rtl;
-            opacity:0;
-        }
-        .hero h1{
-            font-size:clamp(46px, 12vw, 96px);
-            line-height:1.02;
-            letter-spacing:0.01em;
-        }
-        .hero h1 .word{display:inline-block;opacity:0;filter:blur(8px);transform:translateY(16px);}
-        .hero .amp{
-            display:block;
-            font-style:italic;
-            font-weight:400;
-            font-size:0.4em;
-            color:var(--gold);
-            margin:6px 0;
-        }
-        .hero .date-line{
-            margin-top:24px;
-            font-size:19px;
-            color:var(--ink-soft);
-            letter-spacing:0.03em;
-            opacity:0;
-        }
-        .hero .date-line strong{font-weight:500;color:var(--ink);}
-        .hero .jewish-phrase{
-            margin-top:18px;
-            font-size:clamp(26px, 5vw, 46px);
-            line-height:1.08;
-            color:var(--gold-deep);
-            letter-spacing:0.04em;
-            opacity:0;
-            font-family:'Frank Ruhl Libre', serif;
-            direction:rtl;
-            text-shadow:0 6px 18px rgba(184,150,99,0.14);
-        }
-
-        /* countdown */
-        .countdown{
-            display:flex;
-            gap:clamp(10px,4vw,30px);
-            margin-top:6px;
-            opacity:0;
-        }
-        .countdown .cell{display:flex;flex-direction:column;align-items:center;min-width:54px;}
         .countdown .num{
             font-family:'Cormorant Garamond', serif;
             font-weight:500;
-            font-size:clamp(30px,7.5vw,50px);
+            font-size:clamp(20px, 4.5vw, 25px);
             color:var(--ink);
             font-variant-numeric:tabular-nums;
             line-height:1;
             display:inline-block;
-            transition:transform .35s cubic-bezier(.3,1.4,.5,1), opacity .35s ease;
         }
-        .countdown .num.tick{transform:translateY(-6px);opacity:0.4;}
         .countdown .lbl{
-            margin-top:6px;
-            font-size:10.5px;
-            letter-spacing:0.1em;
+            margin-top:1px;
+            font-size:8px;
+            letter-spacing:0.08em;
+            text-transform:uppercase;
             color:var(--ink-soft);
         }
         .countdown .sep{
-            align-self:flex-start;
             font-family:'Cormorant Garamond', serif;
-            font-size:clamp(24px,6vw,40px);
-            color:var(--gold-soft);
-            padding-top:2px;
-        }
-
-        .scroll-cue{
-            position:absolute;
-            bottom:26px;left:50%;transform:translateX(-50%);
-            font-size:11.5px;letter-spacing:0.1em;color:var(--silver);
-            z-index:1;
-            opacity:0;
-        }
-        .scroll-cue::after{
-            content:"";display:block;width:1px;height:26px;background:var(--silver);
-            margin:8px auto 0;animation:scrollLine 2.2s ease-in-out infinite;
-        }
-        @keyframes scrollLine{
-            0%{ transform:scaleY(0); transform-origin:top; opacity:0; }
-            40%{ transform:scaleY(1); transform-origin:top; opacity:1; }
-            60%{ transform:scaleY(1); transform-origin:bottom; opacity:1; }
-            100%{ transform:scaleY(0); transform-origin:bottom; opacity:0; }
-        }
-
-        /* side nav */
-        .side-nav{
-            position:fixed;right:22px;top:50%;transform:translateY(-50%);
-            z-index:20;display:flex;flex-direction:column;gap:16px;
-        }
-        .side-nav a{
-            width:8px;height:8px;border-radius:50%;border:1px solid var(--ink-soft);
-            display:block;transition:background .3s ease, transform .3s ease;
-        }
-        .side-nav a.active{background:var(--ink);transform:scale(1.3);}
-
-        .top-date-nav{
-            position:sticky;top:14px;z-index:22;
-            width:min(760px, calc(100% - 24px));
-            margin:12px auto 0;display:flex;justify-content:center;align-items:center;gap:10px;
-            flex-wrap:wrap;padding:8px 12px;border-radius:999px;
-            background:rgba(255,255,255,0.58);backdrop-filter:blur(10px);
-            border:1px solid rgba(184,150,99,0.15);box-shadow:0 18px 34px -28px rgba(31,36,48,0.3);
-        }
-        .top-date-nav a{
-            display:inline-flex;align-items:center;justify-content:center;
-            min-height:38px;padding:8px 16px;border-radius:999px;
-            color:var(--gold-deep);font-size:11.5px;letter-spacing:0.10em;text-transform:uppercase;
-            text-decoration:none;transition:background .25s ease, color .25s ease, transform .2s ease, border-color .25s ease;
-            border:1px solid transparent;
-        }
-        .top-date-nav a:hover, .top-date-nav a:active{
-            background:rgba(184,150,99,0.08);border-color:rgba(184,150,99,0.2);transform:translateY(-1px);
-            color:var(--ink);
-        }
-        @media (max-width:700px){ .side-nav{display:none;} .top-date-nav{gap:8px;padding:8px 10px;} .top-date-nav a{font-size:10.5px;letter-spacing:0.08em;padding:8px 10px;} }
-
-        /* SECTIONS */
-        section{padding:72px 0;position:relative;scroll-margin-top:90px;}
-        .section-head{text-align:center;margin-bottom:44px;opacity:0;transform:translateY(18px);transition:opacity .8s ease, transform .8s ease;}
-        .section-head.in-view{opacity:1;transform:translateY(0);}
-        .section-head h2{font-size:clamp(28px,6vw,40px);}
-        .section-head p{color:var(--ink-soft);font-size:15.5px;margin-top:12px;line-height:1.7;max-width:520px;margin-left:auto;margin-right:auto;}
-
-        /* timeline */
-        .timeline{
-            position:relative;
-            display:flex;flex-direction:column;
-            gap:26px;
-        }
-        .event{
-            position:relative;
-            display:flex;gap:20px;
-            background:rgba(255,255,255,0.78);
-            border:1px solid var(--line);
-            border-radius:30px;
-            padding:24px;
-            opacity:0;transform:translateY(24px);
-            transition:opacity .8s ease, transform .8s ease;
-            box-shadow:0 18px 38px -28px rgba(31,36,48,0.22);
-        }
-        .event.in-view{opacity:1;transform:translateY(0);}
-        .event .marker{
-            flex:0 0 auto;
-            width:40px;height:40px;
-            border-radius:50%;
-            background:var(--ivory-deep);
-            border:1px solid var(--ice);
-            display:flex;align-items:center;justify-content:center;
-            font-family:'Cormorant Garamond',serif;
-            font-size:17px;color:var(--ink);
-            z-index:1;
-        }
-        .event.pending .marker{color:var(--silver);border-style:dashed;}
-        .event-body{flex:1;min-width:0;}
-        .event-kicker{font-size:11.5px;letter-spacing:0.1em;color:var(--gold);margin-bottom:6px;}
-        .event h3{font-size:24px;margin-bottom:8px;}
-        .event .when{font-size:14.5px;color:var(--ink-soft);margin-bottom:12px;line-height:1.7;}
-        .event .where{font-size:14.5px;color:var(--ink);margin-bottom:12px;line-height:1.6;}
-        .event .where .addr{color:var(--ink-soft);}
-        .event .note{
-            font-size:13.5px;
-            color:var(--ink-soft);
-            line-height:1.6;
-            margin-bottom:18px;
-        }
-        .actions{display:flex;flex-wrap:wrap;gap:10px;}
-        .btn{
-            appearance:none;border:1px solid rgba(31,36,48,0.18);
-            background:rgba(255,255,255,0.35);color:var(--ink);
-            font-family:'Jost',sans-serif;font-size:13.5px;letter-spacing:0.03em;
-            padding:12px 18px;border-radius:999px;cursor:pointer;
-            text-decoration:none;display:inline-flex;align-items:center;gap:8px;
-            transition:background .2s ease, color .2s ease, border-color .2s ease, transform .2s ease;
-            flex:1 1 auto;justify-content:center;
-            min-height:44px;
-            box-shadow:0 8px 20px -14px rgba(31,36,48,0.28);
-        }
-        .btn:hover{background:var(--ink);color:#fff;border-color:var(--ink);transform:translateY(-1px);}
-        .btn.ghost{border-color:var(--line);color:var(--ink-soft);cursor:default;background:rgba(255,255,255,0.2);}
-        .btn.ghost:hover{background:rgba(255,255,255,0.2);color:var(--ink-soft);transform:none;}
-        .btn svg{width:14px;height:14px;flex:0 0 auto;}
-
-        /* faire-part card */
-        .event.faire-part{
-            flex-direction:column;text-align:center;padding:0;
-            border:none;background:transparent;box-shadow:none;
-        }
-        .fp-frame{
-            position:relative;
-            border:1px solid var(--gold-soft);
-            padding:0 0 34px;
-            background:#fff;
-            overflow:hidden;
-            border-radius:30px;
-        }
-
-        /* HOUPPA STYLE ARTISTIQUE / AQUARELLE ONIRIQUE */
-        .fp-art-frame{
-            position:relative;
-            width:100%;
-            height:320px;
-            margin-bottom:30px;
-            border-bottom:1px solid var(--gold-soft);
-            overflow:hidden;
-            background:#f4efe6;
-        }
-        .fp-art-canvas{
-            position:absolute;
-            inset:-12px;
-            background-image:url('https://israelicenterofjudaica.com/wp-content/uploads/2021/12/GFORG_0031..jpg');
-            background-size:cover;
-            background-position:center 45%;
-            filter:contrast(1.04) brightness(1.02);
-            animation: slowCanvasBreathe 22s ease-in-out infinite alternate;
-            will-change:transform;
-        }
-        @keyframes slowCanvasBreathe{
-            0%{ transform:scale(1.02) translate3d(0, 0, 0); }
-            100%{ transform:scale(1.1) translate3d(-1%, -1.5%, 0); }
-        }
-        .fp-art-overlay{
-            position:absolute;
-            inset:0;
-            pointer-events:none;
-            background:
-                    linear-gradient(to top, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.1) 28%, transparent 60%),
-                    linear-gradient(to bottom, rgba(246,244,238,0.4) 0%, transparent 22%),
-                    radial-gradient(circle at 50% 35%, rgba(255,255,255,0.2) 0%, transparent 65%);
-        }
-        .fp-art-lights{
-            position:absolute;
-            inset:0;
-            pointer-events:none;
-        }
-        .fp-art-lights span{
-            position:absolute;
-            border-radius:50%;
-            background:radial-gradient(circle, #fff9e6 20%, #d9b972 85%);
-            box-shadow:0 0 6px #e9cd93;
-            animation:artGlow 6s ease-in-out infinite alternate;
-        }
-        .fp-art-lights span:nth-child(1){ width:3px; height:3px; top:32%; left:28%; animation-delay:0s; }
-        .fp-art-lights span:nth-child(2){ width:4px; height:4px; top:26%; left:68%; animation-delay:1.5s; }
-        .fp-art-lights span:nth-child(3){ width:2.5px; height:2.5px; top:42%; left:48%; animation-delay:3s; }
-        .fp-art-lights span:nth-child(4){ width:3px; height:3px; top:20%; left:50%; animation-delay:2s; }
-        @keyframes artGlow{
-            0%{ opacity:0.25; transform:scale(0.8); }
-            100%{ opacity:0.95; transform:scale(1.3); }
-        }
-
-        .fp-frame > .marker, .fp-frame > .event-kicker, .fp-frame > .fp-parents,
-        .fp-frame > .fp-line, .fp-frame > .fp-names, .fp-frame > .when,
-        .fp-frame > .where, .fp-frame > .actions, .fp-frame > .fp-memory{
-            padding-left:26px;padding-right:26px;
-        }
-        .fp-frame::before, .fp-frame::after,
-        .fp-frame .fp-corner-br, .fp-frame .fp-corner-bl{
-            content:"";position:absolute;width:26px;height:26px;
-            border-color:var(--gold);border-style:solid;border-width:0;
-        }
-        .fp-frame::before{top:-1px;left:-1px;border-top-width:2px;border-left-width:2px;}
-        .fp-frame::after{top:-1px;right:-1px;border-top-width:2px;border-right-width:2px;}
-        .fp-frame .fp-corner-bl{bottom:-1px;left:-1px;border-bottom-width:2px;border-left-width:2px;}
-        .fp-frame .fp-corner-br{bottom:-1px;right:-1px;border-bottom-width:2px;border-right-width:2px;}
-        .event.faire-part .marker{align-self:center;margin-top:8px;margin-bottom:14px;}
-        .event.faire-part .event-kicker{text-align:center;}
-        .fp-parents{font-size:14.5px;color:var(--ink);line-height:2.1;margin-bottom:16px;}
-        .fp-names{font-size:clamp(38px,9vw,58px);margin:14px 0 22px;}
-        .fp-names .amp{font-style:italic;font-weight:400;color:var(--gold);font-size:0.7em;padding:0 6px;}
-        .event.faire-part .when{text-align:center;font-size:15px;margin-bottom:18px;}
-        .event.faire-part .where{text-align:center;font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--ink);margin-bottom:22px;line-height:1.5;}
-        .event.faire-part .actions{justify-content:center;}
-        .fp-memory{margin-top:28px;padding-top:24px;border-top:1px solid var(--line);font-size:13.5px;color:var(--ink-soft);line-height:1.9;font-style:italic;}
-
-        /* RSVP AVEC ANIMATIONS INTERACTIVES */
-        .rsvp-card{
-            background:rgba(255,255,255,0.82);border:1px solid rgba(31,36,48,0.1);
-            padding:24px 20px;border-radius:30px;
-            transition:box-shadow .4s ease, border-color .4s ease, transform .3s ease;
-            box-shadow:0 24px 54px -34px rgba(31,36,48,0.28);
-        }
-        .rsvp-card:hover, .rsvp-card:focus-within{
-            box-shadow: 0 18px 44px -24px rgba(184,150,99,0.24);
-            border-color: rgba(184,150,99,0.45);
-            transform:translateY(-2px);
-        }
-        form{display:flex;flex-direction:column;gap:24px;}
-        .row2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
-        label{
-            font-size:12.5px;letter-spacing:0.05em;color:var(--ink-soft);
-            display:block;margin-bottom:8px;
-            transition:color .25s ease;
-        }
-        .field-wrap{position:relative;}
-        .field-wrap:focus-within label{
+            font-size:15px;
             color:var(--gold);
+            opacity:0.4;
+            margin: 0 -3px;
         }
-        .field-wrap::after{
-            content:"";
-            position:absolute;left:2px;right:2px;bottom:0;
-            height:2px;
-            background:linear-gradient(90deg, transparent, var(--gold), var(--gold-soft), var(--gold), transparent);
-            background-size:200% 100%;
-            transform:scaleX(0);
-            transform-origin:center;
-            transition:transform .5s cubic-bezier(.4,0,.2,1);
-            pointer-events:none;
-        }
-        .field-wrap:focus-within::after{
-            transform:scaleX(1);
-            animation:shimmerSweep 1.8s linear infinite;
-        }
-        @keyframes shimmerSweep{
-            0%{ background-position:200% 0; }
-            100%{ background-position:-200% 0; }
-        }
-        input[type=text], input[type=email], textarea{
-            width:100%;
-            font-family:'Jost',sans-serif;font-size:16px;color:var(--ink);
-            background:transparent;
-            border:none;border-bottom:1px solid var(--line);
-            padding:10px 2px;
-            outline:none;
-            transition:border-color .3s ease, transform .2s ease, box-shadow .3s ease;
-        }
-        input:focus, textarea:focus{
-            border-bottom-color:var(--gold);
-            box-shadow:0 12px 18px -16px var(--gold-glow);
-            transform:translateY(-1px);
-        }
-        textarea{resize:vertical;min-height:80px;font-family:'Jost',sans-serif;}
-
-        fieldset{border:none;padding:0;margin:0;}
-        .rsvp-event{
-            border:1px solid rgba(31,36,48,0.08);
-            padding:18px;
-            display:flex;flex-direction:column;gap:14px;
-            background:rgba(247,242,235,0.7);
-            border-radius:22px;
-            transition:transform .3s cubic-bezier(.25,1,.5,1), border-color .3s ease, box-shadow .3s ease;
-        }
-        .rsvp-event:hover{
-            transform:translateY(-2px);
-            border-color:rgba(184,150,99,0.45);
-            box-shadow:0 12px 26px -18px rgba(31,36,48,0.18);
-        }
-        .rsvp-event:focus-within{
-            transform:translateY(-2px);
-            border-color:var(--gold);
-            box-shadow:0 0 0 3px var(--gold-glow), 0 12px 24px -16px rgba(184,150,99,0.38);
-        }
-        .rsvp-event-title{font-family:'Cormorant Garamond',serif;font-size:19px;}
-        .choice-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-
-        /* Toggle animé */
-        .toggle{
-            display:flex;border:1px solid rgba(31,36,48,0.12);border-radius:999px;overflow:hidden;
-            background:rgba(255,255,255,0.4);transition:border-color .3s ease, box-shadow .3s ease;
-        }
-        .toggle:focus-within{
-            border-color:var(--gold);
-            box-shadow:0 0 0 3px var(--gold-glow);
-        }
-        .toggle label{
-            margin:0;padding:9px 20px;font-size:13px;letter-spacing:0.02em;
-            color:var(--ink);cursor:pointer;user-select:none;
-            min-height:44px;display:flex;align-items:center;justify-content:center;
-            transition:background .3s cubic-bezier(.25,1,.5,1), color .3s ease, transform .15s ease;
-        }
-        .toggle label:active{
-            transform:scale(0.95);
-        }
-        .toggle input{
-            position:absolute;width:1px;height:1px;padding:0;margin:-1px;
-            overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;
-        }
-        .toggle input:checked + label{
-            background:linear-gradient(135deg, var(--gold), var(--gold-soft));
-            color:#fff;
-            box-shadow:inset 0 0 10px rgba(0,0,0,0.08);
-        }
-        .toggle input:focus-visible + label{
-            box-shadow:inset 0 0 0 2px var(--gold);
-        }
-
-        .guest-count{
-            display:flex;align-items:center;gap:10px;
-            overflow:hidden;
-            max-height:44px;opacity:1;
-            transition:opacity .25s ease, max-height .25s ease, margin .25s ease;
-        }
-        .guest-count.is-hidden{
-            opacity:0;max-height:0;pointer-events:none;
-        }
-        .guest-count label{margin:0;white-space:nowrap;}
-        .guest-count select{
-            font-family:'Jost',sans-serif;font-size:14px;color:var(--ink);
-            border:1px solid var(--line);background:transparent;padding:8px 12px;
-            min-height:44px;border-radius:2px;outline:none;
-            cursor:pointer;
-            transition:border-color .3s ease, transform .2s ease, box-shadow .3s ease;
-        }
-        .guest-count select:focus, .guest-count select:hover{
-            border-color:var(--gold);
-            transform:translateY(-1px);
-            box-shadow:0 4px 12px -4px var(--gold-glow);
-        }
-
-        @keyframes goldPulse{
-            0%,100%{ box-shadow:0 0 0 0 rgba(171,124,46,0), 0 4px 14px rgba(26,40,54,0.12); }
-            50%{ box-shadow:0 0 0 7px rgba(171,124,46,0.10), 0 4px 14px rgba(26,40,54,0.12); }
-        }
-        .submit-btn{
-            align-self:stretch;
-            background:linear-gradient(135deg, var(--ink), var(--ink-soft));color:#fff;border:1px solid rgba(31,36,48,0.15);
-            font-family:'Jost',sans-serif;font-size:14.5px;letter-spacing:0.06em;
-            padding:16px 34px;border-radius:999px;cursor:pointer;
-            min-height:48px;
+        /* COUVERTURE CENTRÉE ET FLUIDE */
+        #cover{
             position:relative;
+            width:100%;
+            height:100%;
             overflow:hidden;
-            animation:goldPulse 3.2s ease-in-out infinite;
-            transition:background .3s ease, transform .2s ease, box-shadow .3s ease;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            text-align:center;
+            color:var(--ink);
+            background:
+                    radial-gradient(circle at 15% 15%, rgba(223,234,240,.75), transparent 35%),
+                    radial-gradient(circle at 86% 20%, rgba(224,200,154,.34), transparent 34%),
+                    radial-gradient(circle at 70% 90%, rgba(237,244,247,.9), transparent 42%),
+                    linear-gradient(135deg,#f9f5ee 0%,#f5efe5 48%,#edf3f5 100%);
+            isolation:isolate;
         }
-        .submit-btn::before{
+        #cover::before{
             content:"";
-            position:absolute;top:0;left:-60%;
-            width:45%;height:100%;
-            background:linear-gradient(115deg, transparent, rgba(255,255,255,0.28), transparent);
-            transform:skewX(-18deg);
-            transition:left .65s ease;
+            position:absolute;
+            inset:12px;
+            border:1px solid rgba(184,150,99,.48);
+            z-index:3;
             pointer-events:none;
         }
-        .submit-btn:hover{
-            background:linear-gradient(135deg, var(--ink-soft), var(--ink));
-            box-shadow:0 10px 28px -6px var(--gold-glow), 0 6px 20px rgba(31,36,48,0.18);
-            transform:translateY(-1px);
-            animation-play-state:paused;
+        #cover::after{
+            content:"";
+            position:absolute;
+            inset:18px;
+            border:1px solid rgba(31,36,48,.08);
+            z-index:3;
+            pointer-events:none;
         }
-        .submit-btn:hover::before{
-            left:130%;
+        .cover-aurora{
+            position:absolute;
+            inset:-20%;
+            z-index:-2;
+            filter:blur(30px);
         }
-        .submit-btn:active{
-            transform:scale(0.99);
+        .cover-aurora span{
+            position:absolute;
+            border-radius:50%;
+            animation:coverDrift 15s ease-in-out infinite alternate;
         }
+        .cover-aurora span:nth-child(1){
+            width:55vw;height:55vw;left:-8%;top:-12%;
+            background:radial-gradient(circle,rgba(184,211,221,.6),transparent 68%);
+        }
+        .cover-aurora span:nth-child(2){
+            width:48vw;height:48vw;right:-5%;top:8%;
+            background:radial-gradient(circle,rgba(224,200,154,.38),transparent 70%);
+            animation-delay:-5s;
+        }
+        .cover-aurora span:nth-child(3){
+            width:52vw;height:52vw;left:28%;bottom:-18%;
+            background:radial-gradient(circle,rgba(237,244,247,.9),transparent 70%);
+            animation-delay:-9s;
+        }
+        @keyframes coverDrift{
+            0%{transform:translate3d(-2%,-1%,0) scale(1)}
+            100%{transform:translate3d(3%,2%,0) scale(1.12)}
+        }
+        .cover-stars{position:absolute;inset:0;pointer-events:none;z-index:0}
+        .cover-stars i{
+            position:absolute;width:3px;height:3px;border-radius:50%;
+            background:var(--gold-soft);
+            box-shadow:0 0 9px rgba(184,150,99,.35);
+            animation:coverTwinkle 3.5s ease-in-out infinite;
+        }
+        .cover-stars i:nth-child(1){top:14%;left:13%;animation-delay:.2s}
+        .cover-stars i:nth-child(2){top:24%;left:81%;width:2px;height:2px;animation-delay:1s}
+        .cover-stars i:nth-child(3){top:64%;left:10%;width:2px;height:2px;animation-delay:2s}
+        .cover-stars i:nth-child(4){top:76%;left:84%;animation-delay:.8s}
+        .cover-stars i:nth-child(5){top:11%;left:51%;width:2px;height:2px;animation-delay:1.8s}
+        .cover-stars i:nth-child(6){top:47%;left:7%;width:2px;height:2px;animation-delay:2.4s}
+        .cover-stars i:nth-child(7){top:39%;left:94%;width:2px;height:2px;animation-delay:.5s}
+        .cover-stars i:nth-child(8){top:88%;left:48%;width:2px;height:2px;animation-delay:1.3s}
+        .cover-stars i:nth-child(9){top:30%;left:25%;width:2px;height:2px;animation-delay:2.8s}
+        .cover-stars i:nth-child(10){top:82%;left:25%;width:2px;height:2px;animation-delay:1.6s}
+        @keyframes coverTwinkle{
+            0%,100%{opacity:.12;transform:scale(.7)}
+            50%{opacity:.9;transform:scale(1.6)}
+        }
+        .cover-orbit{
+            position:absolute;
+            left:50%;top:50%;
+            border:1px solid rgba(184,150,99,.18);
+            border-radius:50%;
+            pointer-events:none;
+            z-index:0;
+        }
+        .orbit-a{
+            width:min(620px,120vw);height:min(620px,120vw);
+            transform:translate(-50%,-50%) rotate(18deg);
+            animation:orbitA 20s linear infinite;
+        }
+        .orbit-b{
+            width:min(520px,100vw);height:min(760px,145vw);
+            transform:translate(-50%,-50%) rotate(-28deg);
+            border-color:rgba(139,147,157,.12);
+            animation:orbitB 26s linear infinite reverse;
+        }
+        @keyframes orbitA{to{transform:translate(-50%,-50%) rotate(378deg)}}
+        @keyframes orbitB{to{transform:translate(-50%,-50%) rotate(-388deg)}}
 
-        .confirm-msg{
-            display:none;
-            border:1px solid rgba(184,150,99,0.45);
-            background:linear-gradient(135deg, rgba(237,244,247,0.9), rgba(239,230,216,0.8));
-            color:var(--ink);
-            padding:16px 18px;
-            font-size:14px;
-            line-height:1.7;
-            margin-top:20px;
-            border-left:4px solid var(--gold);
-            border-radius:16px;
-        }
-        .confirm-msg.show{
-            display:block;
-            animation:confirmPop .5s cubic-bezier(.34,1.56,.64,1);
-        }
-        @keyframes confirmPop{
-            0%{ opacity:0; transform:translateY(8px) scale(0.98); }
-            100%{ opacity:1; transform:translateY(0) scale(1); }
-        }
-
-        /* FOOTER ÉPURÉ MINIMALISTE */
-        footer{
-            text-align:center;
-            padding:60px 20px 64px;
-            color:var(--silver);
-            font-size:13.5px;
-            letter-spacing:0.06em;
+        .cover-content{
+            position:relative;
+            z-index:2;
+            width:min(92%, 420px);
             display:flex;
             flex-direction:column;
             align-items:center;
-            gap:10px;
+            justify-content:center;
+            margin: auto;
+            gap: 8px;
+            animation:coverAppear 1.5s cubic-bezier(.2,.8,.2,1) both;
         }
-        footer .foot-amp{
-            font-family:'Cormorant Garamond',serif;
-            font-size:26px;
-            color:var(--ivory);
-            font-style:italic;
-            letter-spacing:0.02em;
+        @keyframes coverAppear{
+            from{opacity:0;transform:translateY(12px) scale(.985)}
+            to{opacity:1;transform:none}
         }
-        footer .foot-date{
-            letter-spacing:0.2em;
-            font-size:12.5px;
-            color:var(--gold-soft);
-        }
-        footer .foot-bsd{
-            font-family:'Frank Ruhl Libre', serif;
-            font-size:13px;
-            color:var(--ice-soft);
-            margin-top:6px;
+        .cover-bsd{
+            font-family:'Frank Ruhl Libre',serif;
             direction:rtl;
+            color:var(--ink-soft);
+            font-size:13px;
+            margin-bottom:2px;
         }
-
-        /* textures marbre */
-        .marble{
+        .cover-monogram{
+            width:62px;height:62px;border:1px solid var(--gold);
+            border-radius:50%;
+            display:flex;align-items:center;justify-content:center;
+            gap:3px;
             position:relative;
-            background-color:var(--ivory-deep);
-            background-image:
-                    radial-gradient(at 15% 20%, rgba(255,255,255,0.75), transparent 45%),
-                    radial-gradient(at 85% 15%, rgba(255,255,255,0.5), transparent 40%),
-                    radial-gradient(at 75% 85%, rgba(188,211,221,0.35), transparent 45%),
-                    radial-gradient(at 10% 90%, rgba(169,127,56,0.09), transparent 40%),
-                    repeating-linear-gradient(128deg, rgba(26,40,54,0.05) 0px, rgba(26,40,54,0.05) 1px, transparent 1px, transparent 90px),
-                    repeating-linear-gradient(35deg, rgba(169,127,56,0.055) 0px, rgba(169,127,56,0.055) 1px, transparent 1px, transparent 130px),
-                    repeating-linear-gradient(72deg, rgba(255,255,255,0.5) 0px, rgba(255,255,255,0.5) 1px, transparent 1px, transparent 60px);
-            background-blend-mode:normal, normal, normal, normal, overlay, overlay, overlay;
+            color:var(--gold-deep);
+            font:500 20px 'Cormorant Garamond',serif;
+            background:rgba(255,255,255,.18);
+            box-shadow:0 0 0 4px rgba(184,150,99,.05),0 6px 16px rgba(31,36,48,.04);
         }
-        .marble.deep{
-            background-color:var(--ink);
-            background-image:
-                    radial-gradient(at 20% 15%, rgba(255,255,255,0.06), transparent 45%),
-                    radial-gradient(at 80% 80%, rgba(211,186,130,0.1), transparent 45%),
-                    repeating-linear-gradient(128deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 90px),
-                    repeating-linear-gradient(35deg, rgba(211,186,130,0.08) 0px, rgba(211,186,130,0.08) 1px, transparent 1px, transparent 130px);
-            color:var(--ivory);
+        .cover-monogram::before{
+            content:"";
+            position:absolute;inset:5px;border:1px solid var(--gold-soft);
+            border-radius:50%;
         }
-
-        @media (min-width:600px){
-            .wrap{padding:0 28px;}
-            section{padding:96px 0;}
-            .event{padding:30px 40px;}
-            .fp-frame{padding-bottom:44px;}
-            .fp-frame > .marker, .fp-frame > .event-kicker, .fp-frame > .fp-parents,
-            .fp-frame > .fp-line, .fp-frame > .fp-names, .fp-frame > .when,
-            .fp-frame > .where, .fp-frame > .actions, .fp-frame > .fp-memory{
-                padding-left:60px;padding-right:60px;
+        .cover-monogram b{font-weight:400;font-style:italic;color:var(--gold);font-size:15px}
+        .cover-line{
+            width:60px;height:1px;
+            background:linear-gradient(90deg,transparent,var(--gold),transparent);
+            margin:6px 0;
+        }
+        .cover-bottom-line{
+            width:50px;height:1px;
+            background:linear-gradient(90deg,transparent,var(--gold),transparent);
+            margin:6px 0;
+        }
+        .cover-kicker{
+            margin:0;
+            text-transform:uppercase;
+            letter-spacing:.24em;
+            font-size:10px;
+            color:var(--silver);
+        }
+        .cover-content h1{
+            font:500 clamp(38px, 9vw, 56px)/.85 'Cormorant Garamond',serif;
+            letter-spacing:-.035em;
+            margin:0;
+            color:var(--ink);
+        }
+        .cover-name{display:inline-block}
+        .cover-content h1 em{
+            display:inline-block;
+            color:var(--gold);
+            font-size:.38em;
+            margin:0 .06em;
+            vertical-align:middle;
+            font-style:italic;
+        }
+        .cover-hebrew{
+            font:400 clamp(17px, 3.5vw, 22px) 'Frank Ruhl Libre',serif;
+            direction:rtl;
+            color:var(--gold-deep);
+            margin:4px 0;
+            letter-spacing:.04em;
+        }
+        .cover-invite{
+            margin:0;
+            color:var(--ink-soft);
+            line-height:1.35;
+            font-size:12px;
+        }
+        .cover-enter{
+            margin-top:10px;
+            min-height:40px;
+            padding:10px 24px;
+            border:1px solid rgba(184, 150, 99, 0.4);
+            border-radius:999px;
+            color:var(--gold-deep);
+            text-decoration:none;
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            font-size:11px;
+            letter-spacing:.12em;
+            text-transform:uppercase;
+            background:rgba(255,255,255,0.3);
+            backdrop-filter:blur(8px);
+            transition:all 0.3s ease;
+        }
+        .cover-enter:hover{
+            background: linear-gradient(135deg, var(--gold), var(--gold-deep));
+            color: #fff;
+            border-color: var(--gold);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -8px var(--gold-glow);
+        }
+        @media(prefers-reduced-motion:reduce){
+            #cover *,#cover *::before,#cover *::after{
+                animation-duration:.001ms !important;
+                animation-iteration-count:1 !important;
             }
-            .fp-art-frame{height:420px;margin-bottom:40px;}
-            .rsvp-card{padding:44px 48px;}
-            .seal{width:112px;height:112px;}
-            .seal .init{font-size:32px;}
-        }
-        @media (max-width:599px){
-            .actions .btn{flex:1 1 100%;}
-            .row2{grid-template-columns:1fr;}
-            .rsvp-card{padding:22px 16px;}
-            .rsvp-event{padding:16px;}
-            .choice-row{flex-direction:column;align-items:stretch;gap:14px;}
-            .toggle{align-self:stretch;}
-            .toggle label{flex:1;padding:10px 14px;}
-            .guest-count{justify-content:space-between;}
-            .guest-count select{flex:0 0 auto;min-width:78px;}
-            .fp-art-frame{height:240px;}
-            footer{padding-bottom:calc(64px + env(safe-area-inset-bottom));}
-            .gate-btn{margin-bottom:env(safe-area-inset-bottom);}
-        }
-        @media (max-width:360px){
-            .countdown{gap:8px;}
-            .countdown .cell{min-width:46px;}
-            .hero h1{font-size:clamp(40px,13vw,60px);}
         }
     </style>
 </head>
 <body>
-
 <div id="snow"></div>
 <div id="grain"></div>
-
-<div id="gate">
-    <div class="aurora"><span></span><span></span><span></span></div>
-
-    <div class="gate-inner" id="gate-inner">
-        <div class="seal"><span class="init">E&amp;I</span></div>
-        <div class="gate-bsd">בס״ד</div>
-        <h1>Eden<span class="amp">&amp;</span>Ilan</h1>
-        <p class="gate-guest" id="guest-greeting" hidden></p>
-        <p class="gate-sub">C'est avec une joie immense et le cœur empli de gratitude envers Hashem que nous vous invitons à célébrer notre union.</p>
-        <button class="gate-btn" id="open-gate">Ouvrir l'invitation</button>
+<div id="cover">
+    <div class="cover-aurora"><span></span><span></span><span></span></div>
+    <div class="cover-stars" aria-hidden="true">
+        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
     </div>
-</div>
+    <div class="cover-orbit orbit-a"></div>
+    <div class="cover-orbit orbit-b"></div>
+    <div class="cover-content">
+        <div class="cover-bsd">בס״ד</div>
+        <div class="cover-monogram" aria-label="Eden et Ilan">
+            <span>E</span><b>&</b><span>I</span>
+        </div>
+        <div class="cover-line"></div>
+        <p class="cover-kicker">Notre mariage</p>
+        <h1>
+            <span class="cover-name">Eden</span>
+            <em>&</em>
+            <span class="cover-name">Ilan</span>
+        </h1>
+        <p class="cover-hebrew">כֹּל שָׂשׂוֹן וְכָל שִׂמְחָה</p>
 
-<nav class="top-date-nav" aria-label="Navigation">
-    <a href="#mairie">Mairie</a>
-    <a href="#houppa">Houppa</a>
-    <a href="#shabbat">Chabbat Hatan</a>
-    <a href="#reponse">RSVP</a>
-</nav>
-
-<header class="hero" id="accueil">
-    <div class="aurora"><span></span><span></span><span></span></div>
-    <div class="stars">
-        <span style="width:3px;height:3px;top:5%;left:8%;animation-delay:0s;"></span>
-        <span style="width:2px;height:2px;top:12%;left:88%;animation-delay:.6s;"></span>
-        <span style="width:4px;height:4px;top:22%;left:20%;animation-delay:1.2s;"></span>
-        <span style="width:2px;height:2px;top:8%;left:60%;animation-delay:1.8s;"></span>
-        <span style="width:3px;height:3px;top:30%;left:75%;animation-delay:.3s;"></span>
-        <span style="width:2px;height:2px;top:40%;left:5%;animation-delay:2.1s;"></span>
-        <span style="width:3px;height:3px;top:18%;left:45%;animation-delay:1.5s;"></span>
-        <span style="width:2px;height:2px;top:48%;left:92%;animation-delay:.9s;"></span>
-        <span style="width:3px;height:3px;top:60%;left:12%;animation-delay:2.4s;"></span>
-        <span style="width:2px;height:2px;top:70%;left:82%;animation-delay:1.1s;"></span>
-        <span style="width:3px;height:3px;top:78%;left:35%;animation-delay:.4s;"></span>
-        <span style="width:2px;height:2px;top:85%;left:65%;animation-delay:1.9s;"></span>
-    </div>
-    <svg class="wreath" viewBox="0 0 200 200" fill="none" stroke="var(--gold)" stroke-width="0.4">
-        <circle cx="100" cy="100" r="92"/>
-        <circle cx="100" cy="100" r="80"/>
-    </svg>
-    <div class="hero-content">
-        <div class="bsd">בס״ד</div>
-        <h1><span class="word">Eden</span><span class="amp word">&amp;</span><span class="word">Ilan</span></h1>
-        <div class="date-line">Jeudi <strong>25 février 2027</strong></div>
-        <div class="jewish-phrase">כֹּל שָׂשׂוֹן וְכָל שִׂמְחָה</div>
-
-        <div class="flourish"><span class="l"></span><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.5 7.5L22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5z"/></svg><span class="r"></span></div>
-
+        <!-- Compte à rebours avec des caractères agrandis pour une meilleure lisibilité mobile -->
         <div class="countdown" id="countdown">
             <div class="cell"><span class="num" id="cd-days">00</span><span class="lbl">jours</span></div>
             <span class="sep">·</span>
             <div class="cell"><span class="num" id="cd-hours">00</span><span class="lbl">heures</span></div>
             <span class="sep">·</span>
-            <div class="cell"><span class="num" id="cd-min">00</span><span class="lbl">minutes</span></div>
+            <div class="cell"><span class="num" id="cd-min">00</span><span class="lbl">min</span></div>
             <span class="sep">·</span>
-            <div class="cell"><span class="num" id="cd-sec">00</span><span class="lbl">secondes</span></div>
+            <div class="cell"><span class="num" id="cd-sec">00</span><span class="lbl">sec</span></div>
         </div>
+
+        <div class="cover-bottom-line"></div>
+        <p class="cover-invite">Nous avons l'immense bonheur de vous convier à partager ce moment précieux à nos côtés.</p>
+
+        <!-- Lien vers la page d'invitation principale -->
+        <a class="cover-enter" href="invitations.html">
+            <span>Découvrir l'invitation</span>
+        </a>
     </div>
-
-    <div class="scroll-cue">le programme</div>
-</header>
-
-<nav class="side-nav" id="side-nav">
-    <a href="#accueil" data-target="accueil" class="active" aria-label="Accueil"></a>
-    <a href="#programme" data-target="programme" aria-label="Programme"></a>
-    <a href="#reponse" data-target="reponse" aria-label="Votre réponse"></a>
-</nav>
-
-<section id="programme">
-    <div class="wrap">
-        <div class="section-head">
-            <h2>Le programme</h2>
-        </div>
-
-        <div class="timeline">
-
-            <div class="event" id="mairie">
-                <div class="event-body">
-                    <div class="event-kicker">Cérémonie civile</div>
-                    <h3>Mairie</h3>
-                    <div class="when">Jeudi 18 février 2027</div>
-                    <div class="where">Mairie de Levallois-Perret<br><span class="addr">1 Place de la République, 92300 Levallois-Perret</span></div>
-                    <div class="note">Nous serons unis civilement, entourés de nos proches, et poursuivrons cette belle soirée par un after — nous vous en dirons bientôt plus.</div>
-                    <div class="actions">
-                        <a class="btn" href="https://waze.com/ul?q=1%20Place%20de%20la%20R%C3%A9publique%2C%2092300%20Levallois-Perret&navigate=yes" target="_blank" rel="noopener">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="9" r="2.4"/></svg>
-                            Itinéraire Waze
-                        </a>
-                        <button class="btn" onclick="downloadIcs('Mairie — Eden &amp; Ilan','Levallois-Perret','2027-02-18')">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="16" rx="1"/><path d="M3 9h18M8 3v4M16 3v4"/></svg>
-                            Ajouter au calendrier
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="event faire-part" id="houppa">
-                <div class="fp-frame">
-                    <div class="fp-corner-bl"></div><div class="fp-corner-br"></div>
-
-                    <!-- HOUPPA STYLE PEINTURE ONIRIQUE / AQUARELLE NUMÉRIQUE -->
-                    <div class="fp-art-frame">
-                        <div class="fp-art-canvas"></div>
-                        <div class="fp-art-overlay"></div>
-                        <div class="fp-art-lights">
-                            <span></span><span></span><span></span><span></span>
-                        </div>
-                    </div>
-
-                    <div class="event-kicker">Cérémonie religieuse &amp; soirée</div>
-
-                    <div class="fp-parents">
-                        Mr et Mme Claude Dahan<br>
-                        Mr et Mme Philippe Chiche<br>
-                        Mr et Mme Michael Dahan
-                    </div>
-
-                    <h3 class="fp-names">Eden <span class="amp">&amp;</span> Ilan</h3>
-
-                    <div class="when">Jeudi 25 février 2027<br>à 17h30 précises</div>
-
-                    <div class="where">Au Complexe<br>Pavillon Royal</div>
-
-                    <div class="actions">
-                        <a class="btn" href="https://waze.com/ul?q=60%20Route%20de%20Garges%2C%2095200%20Sarcelles&navigate=yes" target="_blank" rel="noopener">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="9" r="2.4"/></svg>
-                            Itinéraire Waze
-                        </a>
-                        <button class="btn" onclick="downloadIcs('Houppa &amp; Soirée — Eden &amp; Ilan','Pavillon Royal','2027-02-25')">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="16" rx="1"/><path d="M3 9h18M8 3v4M16 3v4"/></svg>
-                            Ajouter au calendrier
-                        </button>
-                    </div>
-
-                    <div class="fp-memory">Une pensée très émue pour nos grands-parents Mamie Odette, Papi Georges, Mamie Louise, Papi Avram, qui nous manqueront tant en ce jour unique.<br>Que leurs bénédictions illuminent notre vie.</div>
-                </div>
-            </div>
-
-            <div class="event pending" id="shabbat">
-                <div class="event-body">
-                    <div class="event-kicker">Le lendemain</div>
-                    <h3>Chabbat Hatan</h3>
-                    <div class="when">Vendredi 26 février 2027</div>
-                    <div class="where">Adresse à venir</div>
-                    <div class="note">Nous serons heureux de partager ce chabbat en famille. Le lieu vous sera communiqué prochainement.</div>
-                    <div class="actions">
-                        <button class="btn ghost" disabled>Itinéraire à venir</button>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</section>
-
-<section id="reponse" class="marble">
-    <div class="wrap">
-        <div class="section-head">
-            <h2>Votre réponse</h2>
-            <p>Merci de nous confirmer votre présence pour chaque moment que vous partagerez avec nous.</p>
-        </div>
-
-        <div class="rsvp-card">
-            <form id="rsvp-form">
-                <div class="row2">
-                    <div class="field-wrap" style="grid-column:1 / -1;">
-                        <label for="nom">Nom + prénom</label>
-                        <input type="text" id="nom" name="nom" required placeholder="Votre nom complet">
-                    </div>
-                </div>
-
-                <fieldset class="rsvp-event">
-                    <div class="rsvp-event-title">Mairie — 18 février</div>
-                    <div class="choice-row">
-                        <div class="toggle" data-group="mairie">
-                            <input type="radio" name="mairie-presence" id="mairie-oui" value="oui" checked>
-                            <label for="mairie-oui">Oui</label>
-                            <input type="radio" name="mairie-presence" id="mairie-non" value="non">
-                            <label for="mairie-non">Non</label>
-                        </div>
-                        <div class="guest-count">
-                            <label for="mairie-nb">Personnes</label>
-                            <select id="mairie-nb" name="mairie-nb">
-                                <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
-                            </select>
-                        </div>
-                    </div>
-                </fieldset>
-
-                <fieldset class="rsvp-event">
-                    <div class="rsvp-event-title">Houppa &amp; soirée — 25 février</div>
-                    <div class="choice-row">
-                        <div class="toggle" data-group="houppa">
-                            <input type="radio" name="houppa-presence" id="houppa-oui" value="oui" checked>
-                            <label for="houppa-oui">Oui</label>
-                            <input type="radio" name="houppa-presence" id="houppa-non" value="non">
-                            <label for="houppa-non">Non</label>
-                        </div>
-                        <div class="guest-count">
-                            <label for="houppa-nb">Personnes</label>
-                            <select id="houppa-nb" name="houppa-nb">
-                                <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
-                            </select>
-                        </div>
-                    </div>
-                </fieldset>
-
-                <fieldset class="rsvp-event">
-                    <div class="rsvp-event-title">Chabbat Hatan — 26 février</div>
-                    <div class="choice-row">
-                        <div class="toggle" data-group="shabbat">
-                            <input type="radio" name="shabbat-presence" id="shabbat-oui" value="oui" checked>
-                            <label for="shabbat-oui">Oui</label>
-                            <input type="radio" name="shabbat-presence" id="shabbat-non" value="non">
-                            <label for="shabbat-non">Non</label>
-                        </div>
-                        <div class="guest-count">
-                            <label for="shabbat-nb">Personnes</label>
-                            <select id="shabbat-nb" name="shabbat-nb">
-                                <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
-                            </select>
-                        </div>
-                    </div>
-                </fieldset>
-
-                <div class="field-wrap">
-                    <label for="message">Un mot pour nous</label>
-                    <textarea id="message" name="message" placeholder="Laissez-nous un message (facultatif)"></textarea>
-                </div>
-
-                <button type="submit" class="submit-btn">Envoyer ma réponse</button>
-            </form>
-
-            <div class="confirm-msg" id="confirm-msg">Merci infiniment ! Votre réponse a bien été enregistrée.</div>
-        </div>
-    </div>
-</section>
-
-<footer class="marble deep">
-    <span class="foot-amp">Eden &amp; Ilan</span>
-    <span class="foot-date">25 . 02 . 2027</span>
-    <span class="foot-bsd">בס״ד</span>
-</footer>
+</div>
 
 <script>
-    // --- Portail (sceau) ---
-    (function(){
-        var gate = document.getElementById('gate');
-        var btn = document.getElementById('open-gate');
-        btn.addEventListener('click', function(){
-            gate.classList.add('cracking');
-            setTimeout(function(){
-                gate.classList.add('closed');
-                document.body.classList.add('open');
-                revealHero();
-            }, 550);
-        });
-    })();
-
-    function revealHero(){
-        var els = document.querySelectorAll('.hero .bsd, .hero h1 .word, .hero .date-line, .hero .jewish-phrase, .hero .flourish, .hero .countdown, .hero .scroll-cue');
-        els.forEach(function(el, i){
-            setTimeout(function(){
-                el.style.transition = 'opacity .9s ease, transform .9s ease, filter .9s ease';
-                el.style.opacity = '1';
-                el.style.transform = 'translateY(0)';
-                el.style.filter = 'blur(0)';
-            }, 120 + i*90);
-        });
-    }
-
-    // --- Neige délicate ---
     (function(){
         var host = document.getElementById('snow');
         var counts = window.innerWidth < 600 ? {back:10, front:8} : {back:18, front:14};
@@ -1062,12 +428,13 @@
         makeFlakes('front', counts.front, 3, 5.5);
     })();
 
-    // --- Compte à rebours ---
+    // Compte à rebours
     (function(){
         var target = new Date('2027-02-25T00:00:00');
         var prev = {d:null,h:null,m:null,s:null};
         function setNum(id, val, key){
             var el = document.getElementById(id);
+            if(!el) return;
             var str = String(val).padStart(2,'0');
             if(prev[key] !== str){
                 el.classList.add('tick');
@@ -1091,198 +458,6 @@
         tick();
         setInterval(tick, 1000);
     })();
-
-    // --- Révélation au scroll ---
-    (function(){
-        var targets = document.querySelectorAll('.event, .section-head');
-        var io = new IntersectionObserver(function(entries){
-            entries.forEach(function(entry){
-                if(entry.isIntersecting){
-                    entry.target.classList.add('in-view');
-                    io.unobserve(entry.target);
-                }
-            });
-        }, {threshold:0.15});
-        targets.forEach(function(t){ io.observe(t); });
-    })();
-
-    // --- Navigation latérale ---
-    (function(){
-        var links = document.querySelectorAll('.side-nav a');
-        var sections = Array.prototype.map.call(links, function(l){ return document.getElementById(l.dataset.target); });
-        var io = new IntersectionObserver(function(entries){
-            entries.forEach(function(entry){
-                if(entry.isIntersecting){
-                    var id = entry.target.id;
-                    links.forEach(function(l){ l.classList.toggle('active', l.dataset.target === id); });
-                }
-            });
-        }, {threshold:0.5});
-        sections.forEach(function(s){ if(s) io.observe(s); });
-    })();
-
-    // --- Export ICS ---
-    function downloadIcs(title, location, dateStr){
-        var d = dateStr.replace(/-/g,'');
-        var ics = [
-            'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Eden et Ilan//Mariage//FR',
-            'BEGIN:VEVENT',
-            'UID:'+d+'-'+Math.random().toString(36).slice(2)+'@eden-ilan',
-            'DTSTAMP:'+d+'T000000Z',
-            'DTSTART;VALUE=DATE:'+d,
-            'DTEND;VALUE=DATE:'+d,
-            'SUMMARY:'+title,
-            'LOCATION:'+location,
-            'DESCRIPTION:Horaire a confirmer.',
-            'END:VEVENT','END:VCALENDAR'
-        ].join('\r\n');
-        var blob = new Blob([ics], {type:'text/calendar'});
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement('a');
-        a.href = url;
-        a.download = title.replace(/[^a-z0-9]+/gi,'-').toLowerCase()+'.ics';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    }
-
-    // --- Masquer le nombre de personnes si "Non" ---
-    (function(){
-        document.querySelectorAll('.rsvp-event').forEach(function(fieldset){
-            var radios = fieldset.querySelectorAll('input[type="radio"]');
-            var guestCount = fieldset.querySelector('.guest-count');
-            if(!radios.length || !guestCount) return;
-            function sync(){
-                var checked = fieldset.querySelector('input[type="radio"]:checked');
-                var isNon = checked && checked.value === 'non';
-                guestCount.classList.toggle('is-hidden', isNon);
-            }
-            radios.forEach(function(r){ r.addEventListener('change', sync); });
-            sync();
-        });
-    })();
-
-    // --- RSVP vers Google Sheets ---
-    // IMPORTANT : si tu modifies un jour le script Apps Script, il faut créer une
-    // NOUVELLE VERSION du déploiement (Déployer > Gérer les déploiements > crayon >
-    // Nouvelle version > Déployer), sinon les changements ne prennent pas effet.
-    var SHEET_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzrHvIXBmpMvPRLxpapbqnqaEv0wRVhQPVbLrZf0Edf0keF8_RJRTOdfMW3-N_93vf-wg/exec"; // même URL, aucun changement — déjà à jour
-
-    // --- Invitation personnalisée (?id=xxx dans le lien) ---
-    // La liste des invités vit dans guests.json, un simple fichier à côté de cette
-    // page (pas d'appel à Google à chaque ouverture : c'est instantané et fiable,
-    // contrairement à interroger Google Apps Script en direct à chaque visite).
-    (function(){
-        var guestId = new URLSearchParams(window.location.search).get('id');
-        if(!guestId) return; // pas de lien personnalisé -> rien à faire, tout s'affiche normalement
-
-        fetch('guests.json', { cache: 'no-store' })
-            .then(function(res){ return res.json(); })
-            .then(function(guests){
-                var guest = guests[guestId];
-                if(!guest) return; // id inconnu -> version par défaut, silencieux
-                applyGuestPersonalization(guest);
-            })
-            .catch(function(){ /* guests.json absent ou invalide -> version par défaut, silencieux */ });
-    })();
-
-    function applyGuestPersonalization(guest){
-        // Salutation personnalisée + pré-remplissage du nom dans le formulaire
-        var nomPropre = (guest.nom || '').toString().trim();
-        if(nomPropre){
-            var greet = document.getElementById('guest-greeting');
-            if(greet){
-                var fullText = 'Cher/Chère ' + nomPropre + ',';
-                greet.textContent = '';
-                greet.hidden = false;
-                requestAnimationFrame(function(){ greet.classList.add('in', 'typing'); });
-                var i = 0;
-                (function typeChar(){
-                    greet.textContent = fullText.slice(0, i);
-                    i++;
-                    if(i <= fullText.length){
-                        setTimeout(typeChar, 32);
-                    } else {
-                        greet.classList.remove('typing');
-                    }
-                })();
-            }
-            var nomInput = document.getElementById('nom');
-            if(nomInput) nomInput.value = nomPropre;
-        }
-        // Masque les événements auxquels l'invité n'est pas convié
-        // (à la fois dans le programme et dans le formulaire RSVP)
-        var events = {
-            mairie: document.getElementById('mairie'),
-            houppa: document.getElementById('houppa'),
-            shabbat: document.getElementById('shabbat')
-        };
-        Object.keys(events).forEach(function(key){
-            if(guest[key] === false){
-                if(events[key]) events[key].remove();
-                var radio = document.querySelector('input[name="'+key+'-presence"]');
-                var fieldset = radio ? radio.closest('.rsvp-event') : null;
-                if(fieldset) fieldset.remove();
-            }
-        });
-    }
-
-    var rsvpForm = document.getElementById('rsvp-form');
-    var submitBtn = rsvpForm.querySelector('.submit-btn');
-    var confirmMsg = document.getElementById('confirm-msg');
-
-    rsvpForm.addEventListener('submit', function(e){
-        e.preventDefault();
-
-        var nom = document.getElementById('nom').value.trim();
-        if(!nom){
-            alert('Merci de renseigner votre nom et prénom.');
-            return;
-        }
-
-        function line(label, groupName, nbId){
-            var presence = document.querySelector('input[name="'+groupName+'"]:checked').value;
-            var nb = document.getElementById(nbId).value;
-            return label + ' : ' + (presence === 'oui' ? ('Oui, '+nb+' personne(s)') : 'Non');
-        }
-
-        var payload = {
-            nom: nom,
-            mairie: line('Mairie (18 février)', 'mairie-presence', 'mairie-nb'),
-            houppa: line('Houppa & soirée (25 février)', 'houppa-presence', 'houppa-nb'),
-            shabbat: line('Chabbat Hatan (26 février)', 'shabbat-presence', 'shabbat-nb'),
-            message: document.getElementById('message').value.trim()
-        };
-
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Envoi en cours…';
-
-        fetch(SHEET_WEBAPP_URL, {
-            method: 'POST',
-            mode: 'no-cors', // Apps Script ne répond pas aux requêtes "preflight" CORS : no-cors est obligatoire
-            headers: {
-                // text/plain (et non application/json) pour éviter le preflight OPTIONS.
-                // Apps Script lit quand même le JSON brut via e.postData.contents.
-                'Content-Type': 'text/plain;charset=utf-8'
-            },
-            body: JSON.stringify(payload)
-        }).then(function(){
-            // En mode no-cors la réponse est "opaque" (on ne peut pas lire son statut) :
-            // l'absence d'erreur réseau (pas de .catch déclenché) vaut succès.
-            confirmMsg.textContent = 'Merci ! Votre réponse a bien été enregistrée.';
-            confirmMsg.classList.add('show');
-            rsvpForm.reset();
-            document.querySelectorAll('.guest-count').forEach(function(gc){ gc.classList.remove('is-hidden'); });
-            confirmMsg.scrollIntoView({behavior:'smooth', block:'center'});
-        }).catch(function(){
-            alert("Une erreur est survenue lors de l'envoi. Merci de réessayer.");
-        }).finally(function(){
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Envoyer ma réponse';
-        });
-    });
 </script>
-
 </body>
 </html>
