@@ -1,0 +1,537 @@
+/* =============================================================================
+   Enveloppe de Mariage — Version Autonome (Standalone)
+   Liora & Joshua — Design Velours Bordeaux & Sceau de Cire
+   ========================================================================== */
+
+/* --- Polices auto-hébergées ---------------------------------------------- */
+@font-face {
+    font-family: "Cormorant Garamond";
+    font-style: normal;
+    font-weight: 300;
+    font-display: swap;
+    src: url("assets/fonts/cormorant-garamond-latin-400-normal.woff2") format("woff2");
+}
+@font-face {
+    font-family: "Cormorant Garamond";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("assets/fonts/cormorant-garamond-latin-400-normal.woff2") format("woff2");
+}
+@font-face {
+    font-family: "Marcellus";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("assets/fonts/marcellus-latin-400-normal.woff2") format("woff2");
+}
+@font-face {
+    font-family: "Pinyon Script";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("assets/fonts/pinyon-script-latin-400-normal.woff2") format("woff2");
+}
+@font-face {
+    font-family: "Frank Ruhl Libre";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("assets/fonts/frank-ruhl-libre-hebrew-400-normal.woff2") format("woff2");
+}
+
+/* --- Variables & Tokens -------------------------------------------------- */
+:root {
+    --wine-900: #240A13;
+    --wine-800: #33101C;
+    --wine-700: #471224;
+    --wine-600: #572932;
+    --wine-500: #65313D;
+
+    --cream-050: #FDFBF7;
+    --cream-100: #FAF5EE;
+    --cream-200: #F3ECE1;
+    --cream-300: #E7DCCB;
+    --olive-500: #676849;
+
+    --display: "Cormorant Garamond", "Times New Roman", serif;
+    --label: "Marcellus", "Cormorant Garamond", serif;
+    --cursive: "Pinyon Script", cursive;
+    --hebrew: "Frank Ruhl Libre", serif;
+
+    --e-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --e-soft: cubic-bezier(0.4, 0, 0.2, 1);
+
+    --cs: 1.08;
+}
+
+@media (max-width: 359px)  { :root { --cs: 1; } }
+@media (min-width: 768px)  { :root { --cs: 1.35; } }
+@media (min-width: 1200px) { :root { --cs: 1.45; } }
+
+* { box-sizing: border-box; }
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: var(--display);
+    background: var(--wine-900);
+    color: var(--cream-100);
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* --- Écran d'enveloppe --------------------------------------------------- */
+.envelope-screen {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(ellipse at 50% 38%,
+        var(--wine-700) 0%, var(--wine-800) 55%, var(--wine-900) 100%);
+    overflow: hidden;
+}
+
+.cenv-scene {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(20px, 4vh, 32px);
+    padding: 24px;
+}
+
+/* --- Titres et Textes ---------------------------------------------------- */
+.cenv-intro {
+    text-align: center;
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    z-index: 10;
+}
+
+.cenv-pre {
+    margin: 0 0 12px;
+    font-family: var(--display);
+    font-size: 13px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--cream-200);
+    opacity: 0.9;
+    padding-left: 0.32em;
+}
+
+.cenv-names {
+    margin: 0;
+    font-family: var(--cursive);
+    font-weight: 400;
+    font-size: clamp(44px, 8.5vw, 76px);
+    line-height: 1.05;
+    color: var(--cream-050);
+    text-shadow: 0 2px 24px rgba(0, 0, 0, 0.35);
+}
+
+.cenv-cta {
+    margin: 0;
+    font-family: var(--display);
+    font-size: 12px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--cream-200);
+    padding-left: 0.32em;
+    animation: cenv-pulse 2.4s ease-in-out infinite;
+    transition: opacity 0.5s ease;
+    z-index: 10;
+}
+
+@keyframes cenv-pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
+.cenv-opened .cenv-intro {
+    opacity: 0;
+    transform: translateY(-16px);
+    pointer-events: none;
+}
+
+.cenv-opened .cenv-cta {
+    animation: none;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* --- L'enveloppe --------------------------------------------------------- */
+.cenv-wrap {
+    position: relative;
+    width: 320px;
+    height: 213px;
+    max-width: calc(100vw - 40px);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transform: scale(var(--cs));
+    margin-block: calc((var(--cs) - 1) * 110px);
+    transition: transform 1s var(--e-out), opacity 1s ease;
+}
+
+.cenv-back, .cenv-front, .cenv-bottom, .cenv-flap, .cenv-seal {
+    transition: transform 1s var(--e-out), opacity 1s ease;
+}
+
+.cenv-wrap.cenv-away {
+    transition: transform 900ms cubic-bezier(0.5, 0, 0.75, 0.4), opacity 700ms ease 150ms;
+    transform: scale(var(--cs)) translateY(55vh) rotate(4deg) !important;
+    opacity: 0.15;
+}
+
+/* Dos de l'enveloppe (fond de poche) */
+.cenv-back {
+    position: absolute;
+    inset: 0;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 3px 7px rgba(18, 4, 10, .55), 0 26px 50px rgba(10, 0, 6, .42);
+    z-index: 1;
+}
+
+.cenv-back::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: url("assets/img/velvet-pocket.webp") center 22% / cover no-repeat;
+    filter: saturate(.98);
+}
+
+.cenv-back::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 6px;
+    background: linear-gradient(180deg, rgba(244,235,220,.50) 0px, rgba(244,235,220,.22) 7px, rgba(244,235,220,0) 15px);
+    box-shadow: inset 0 10px 16px -8px rgba(0,0,0,.55),
+                inset 0 0 34px rgba(0,0,0,.30),
+                inset 0 -16px 24px -16px rgba(0,0,0,.45),
+                inset 0 0 0 1px rgba(250,245,238,.10);
+}
+
+/* Carte intérieure */
+.cenv-card {
+    position: absolute;
+    left: 50%;
+    bottom: 9px;
+    width: 286px;
+    height: 186px;
+    margin-left: -143px;
+    background: var(--cream-100);
+    border-radius: 3px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 22px rgba(0, 0, 0, 0.28);
+    transform: translate(0, 0);
+    will-change: transform;
+}
+
+.cenv-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: .04;
+    pointer-events: none;
+}
+
+.cenv-card.cenv-sliding {
+    transition: transform 0.9s var(--e-out);
+    transform: translateY(-85%);
+}
+
+.cenv-card.cenv-grow {
+    z-index: 70;
+    transition: transform 0.9s var(--e-out), box-shadow 0.9s ease;
+    transform: translateY(-48%) scale(1.22);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+}
+
+@media (min-width: 768px) {
+    .cenv-card.cenv-grow {
+        transform: translateY(-42%) scale(1.36);
+    }
+}
+
+.cenv-card-inner {
+    position: absolute;
+    inset: 9px;
+    border: 1px solid var(--wine-600);
+    outline: 1px solid var(--wine-600);
+    outline-offset: 3px;
+    border-radius: 2px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    color: var(--wine-700);
+    text-align: center;
+    padding: 8px 12px;
+    overflow: hidden;
+}
+
+.cenv-std {
+    font-family: var(--display);
+    font-size: 10px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--wine-600);
+    padding-left: 0.32em;
+    white-space: nowrap;
+}
+
+.cenv-cnames {
+    font-family: var(--cursive);
+    font-size: 32px;
+    line-height: 1.1;
+    font-weight: 400;
+    color: var(--wine-700);
+    white-space: nowrap;
+}
+
+.cenv-rule {
+    width: 44px;
+    height: 1px;
+    background: var(--wine-600);
+    opacity: 0.5;
+}
+
+.cenv-date {
+    font-family: var(--display);
+    font-variant-numeric: lining-nums;
+    font-size: 14px;
+    letter-spacing: 0.24em;
+    padding-left: 0.24em;
+    color: var(--wine-600);
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.cenv-venue {
+    font-family: var(--display);
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--olive-500);
+    padding-left: 0.12em;
+    white-space: nowrap;
+}
+
+/* Face avant (rabats latéraux) */
+.cenv-front {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.cenv-front::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, rgba(255,255,255,.12) 0%, rgba(255,255,255,0) 12%,
+                rgba(0,0,0,0) 26%, rgba(0,0,0,.20) 44%, rgba(0,0,0,.38) 52%),
+                url("assets/img/velvet-pocket.webp") 18% 40% / cover no-repeat;
+    clip-path: polygon(0 0, 52% 50%, 0 100%);
+    filter: drop-shadow(2px 0 3px rgba(0,0,0,.34));
+}
+
+.cenv-front::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(255deg, rgba(255,255,255,.12) 0%, rgba(255,255,255,0) 12%,
+                rgba(0,0,0,0) 26%, rgba(0,0,0,.20) 44%, rgba(0,0,0,.38) 52%),
+                url("assets/img/velvet-pocket.webp") 82% 55% / cover no-repeat;
+    clip-path: polygon(100% 0, 48% 50%, 100% 100%);
+    filter: drop-shadow(-2px 0 3px rgba(0,0,0,.34));
+}
+
+/* Rabat bas */
+.cenv-bottom {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    pointer-events: none;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.cenv-bottom::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(255,255,255,.10) 42%, rgba(255,255,255,0) 52%,
+                rgba(0,0,0,0) 64%, rgba(0,0,0,.26) 100%),
+                url("assets/img/velvet-pocket.webp") center 78% / cover no-repeat;
+    clip-path: polygon(0 100%, 50% 42%, 100% 100%);
+    filter: brightness(.97) drop-shadow(0 -2px 3px rgba(0,0,0,.35));
+}
+
+/* Rabat supérieur 3D */
+.cenv-flap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 118px;
+    z-index: 5;
+    transform-origin: top center;
+    transform-style: preserve-3d;
+    transform: perspective(900px) rotateX(0deg);
+    transition: transform 0.7s cubic-bezier(0.65, 0, 0.35, 1);
+    will-change: transform;
+    pointer-events: none;
+}
+
+.cenv-flap.cenv-open {
+    transform: perspective(900px) rotateX(-180deg);
+}
+
+.cenv-flap.cenv-behind {
+    z-index: 1;
+}
+
+.cenv-flap-face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+
+.cenv-flap-front {
+    background: linear-gradient(180deg, #5A2030 0%, var(--wine-700) 70%, #380E1C 100%);
+    border-radius: 6px 6px 0 0;
+}
+
+.cenv-flap-front::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 6px 6px 0 0;
+    background: linear-gradient(180deg, rgba(255,255,255,.30) 0px, rgba(255,255,255,.10) 2px, rgba(255,255,255,0) 8px),
+                linear-gradient(180deg, rgba(0,0,0,0) 45%, rgba(0,0,0,.18) 78%, rgba(0,0,0,.34) 100%),
+                url("assets/img/velvet-flap.webp") center 30% / cover no-repeat;
+}
+
+.cenv-flap-back {
+    background: linear-gradient(0deg, var(--wine-800) 0%, #2E0B17 100%);
+    transform: rotateX(180deg);
+    border-radius: 0 0 6px 6px;
+    clip-path: polygon(0 100%, 100% 100%, 50% 0);
+}
+
+.cenv-flap-back::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 6px 6px 0 0;
+    background: linear-gradient(0deg, rgba(0,0,0,.32) 0%, rgba(0,0,0,.08) 55%, rgba(0,0,0,.20) 100%),
+                url("assets/img/velvet-flap.webp") center 60% / cover no-repeat;
+    filter: saturate(.9) brightness(.85);
+}
+
+/* Sceau de cire */
+.cenv-seal {
+    position: absolute;
+    left: 50%;
+    top: 118px;
+    width: 85px;
+    height: 85px;
+    margin-left: -42.5px;
+    margin-top: -46px;
+    padding: 0;
+    border: 0;
+    background: none;
+    z-index: 6;
+    filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.35));
+    transition: transform 0.12s ease;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+.cenv-seal img {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.cenv-seal::before {
+    content: "";
+    position: absolute;
+    left: 10%;
+    right: 10%;
+    top: 62%;
+    bottom: 2%;
+    background: radial-gradient(50% 50% at 50% 50%, rgba(0,0,0,.42) 0%, rgba(0,0,0,0) 70%);
+    z-index: -1;
+}
+
+.cenv-seal:focus-visible {
+    outline: 2px solid var(--cream-100);
+    outline-offset: 6px;
+    border-radius: 50%;
+}
+
+.cenv-seal.cenv-press {
+    transform: scale(0.9);
+}
+
+.cenv-seal.cenv-pop {
+    transition: transform 0.25s ease, opacity 0.25s ease;
+    transform: scale(1.25) translateY(-6px);
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Bouton Rejouer */
+.replay-btn {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    opacity: 0;
+    pointer-events: none;
+    background: rgba(250, 245, 238, 0.12);
+    border: 1px solid rgba(250, 245, 238, 0.28);
+    color: var(--cream-100);
+    font-family: var(--display);
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 10px 22px;
+    border-radius: 999px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    cursor: pointer;
+    transition: opacity 0.6s ease 1.2s, transform 0.6s ease 1.2s, background-color 0.2s ease;
+    z-index: 100;
+}
+
+.replay-btn:hover {
+    background: rgba(250, 245, 238, 0.24);
+}
+
+.cenv-opened .replay-btn {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    pointer-events: auto;
+}

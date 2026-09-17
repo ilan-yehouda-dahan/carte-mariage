@@ -1,13 +1,64 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
-    <title>Eden & Ilan — 25 février 2027</title>
+    <title>Eden &amp; Ilan — 25 février 2027</title>
+    <meta name="description" content="Invitation au mariage de Eden et Ilan — 25 février 2027.">
+    <meta name="robots" content="noindex, nofollow">
+
+    <!-- Typographies & Préchargements -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&family=Frank+Ruhl+Libre:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400;1,600&family=Jost:wght@300;400;500;600&family=Frank+Ruhl+Libre:wght@400;500&family=Marcellus&family=Pinyon+Script&display=swap" rel="stylesheet">
+    <link rel="preload" as="font" type="font/woff2" href="assets/fonts/pinyon-script-latin-400-normal.woff2" crossorigin>
+    <link rel="preload" as="font" type="font/woff2" href="assets/fonts/cormorant-garamond-latin-400-normal.woff2" crossorigin>
+    <link rel="preload" as="font" type="font/woff2" href="assets/fonts/marcellus-latin-400-normal.woff2" crossorigin>
+    <link rel="preload" as="image" href="assets/img/seal-logo.webp">
+    <link rel="preload" as="image" href="assets/img/white-velvet-pocket.webp">
+    <link rel="preload" as="image" href="assets/img/white-velvet-flap.webp">
+
+    <!-- jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
     <style>
+        /* Polices auto-hébergées Enveloppe */
+        @font-face {
+            font-family: "Cormorant Garamond";
+            font-style: normal;
+            font-weight: 300;
+            font-display: swap;
+            src: url("assets/fonts/cormorant-garamond-latin-400-normal.woff2") format("woff2");
+        }
+        @font-face {
+            font-family: "Cormorant Garamond";
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url("assets/fonts/cormorant-garamond-latin-400-normal.woff2") format("woff2");
+        }
+        @font-face {
+            font-family: "Marcellus";
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url("assets/fonts/marcellus-latin-400-normal.woff2") format("woff2");
+        }
+        @font-face {
+            font-family: "Pinyon Script";
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url("assets/fonts/pinyon-script-latin-400-normal.woff2") format("woff2");
+        }
+        @font-face {
+            font-family: "Frank Ruhl Libre";
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url("assets/fonts/frank-ruhl-libre-hebrew-400-normal.woff2") format("woff2");
+        }
+
         :root{
             --ink:#1f2430;
             --ink-soft:#4d5865;
@@ -19,372 +70,1301 @@
             --gold:#b89663;
             --gold-deep:#8a693b;
             --gold-soft:#e0c89a;
-            --gold-glow: rgba(184,150,99,0.22);
+            --gold-glow: rgba(184,150,99,0.28);
             --line: rgba(31,36,48,0.12);
+
+            /* Tokens Enveloppe Velours Bordeaux (enveloppeReu) */
+            --wine-900: #240A13;
+            --wine-800: #33101C;
+            --wine-700: #471224;
+            --wine-600: #572932;
+            --wine-500: #65313D;
+
+            --cream-050: #FDFBF7;
+            --cream-100: #FAF5EE;
+            --cream-200: #F3ECE1;
+            --cream-300: #E7DCCB;
+            --olive-500: #676849;
+
+            --cenv-display: "Cormorant Garamond", "Times New Roman", serif;
+            --cenv-label: "Marcellus", "Cormorant Garamond", serif;
+            --cenv-cursive: "Pinyon Script", cursive;
+            --cenv-hebrew: "Frank Ruhl Libre", serif;
+
+            --e-out: cubic-bezier(0.22, 1, 0.36, 1);
+            --e-soft: cubic-bezier(0.4, 0, 0.2, 1);
+
+            --cs: 1.08;
         }
+
+        @media (max-width: 359px)  { :root { --cs: 1; } }
+        @media (min-width: 768px)  { :root { --cs: 1.35; } }
+        @media (min-width: 1200px) { :root { --cs: 1.45; } }
+
         *{box-sizing:border-box;}
-        html, body{
+        html{scroll-behavior:smooth;}
+        body{
             margin:0;
-            padding:0;
-            background:var(--ivory);
+            background-color: #f7f3ec;
+            background-image:
+                radial-gradient(ellipse at 50% 35%, rgba(255, 255, 255, 0.72) 0%, rgba(255, 255, 255, 0.45) 55%, rgba(247, 243, 236, 0.70) 100%),
+                url('fond.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
             color:var(--ink);
             font-family:'Jost', sans-serif;
             font-weight:300;
             -webkit-font-smoothing:antialiased;
-            width:100%;
-            height:100vh;
-            height:100svh;
-            overflow:hidden;
+            overflow-x:hidden;
+            padding-bottom: 90px;
         }
+        body.env-locked {
+            overflow: hidden;
+            height: 100vh;
+            height: 100svh;
+            padding-bottom: 0;
+        }
+
         h1,h2,h3,.serif{
             font-family:'Cormorant Garamond', serif;
             font-weight:500;
             margin:0;
         }
-        a{color:inherit;}
-        /* aurora / mist backdrop */
+        a{color:inherit;text-decoration:none;}
+        .wrap{max-width:760px;margin:0 auto;padding:0 20px;}
+
+        /* Aurora & Grain */
         .aurora{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0;}
         .aurora span{
-            position:absolute;border-radius:50%;
-            filter:blur(60px);
-            opacity:0.3;
-            animation:drift 26s ease-in-out infinite;
+            position:absolute;border-radius:50%;filter:blur(60px);opacity:0.3;
+            animation:drift 26s ease-in-out infinite alternate;
         }
-        .aurora span:nth-child(1){width:60vw;height:60vw;background:radial-gradient(circle, var(--ice) 0%, transparent 70%);top:-20%;left:-10%;animation-delay:0s;}
+        .aurora span:nth-child(1){width:60vw;height:60vw;background:radial-gradient(circle, var(--ice) 0%, transparent 70%);top:-20%;left:-10%;}
         .aurora span:nth-child(2){width:50vw;height:50vw;background:radial-gradient(circle, var(--gold-soft) 0%, transparent 72%);top:10%;right:-15%;opacity:0.16;animation-delay:-8s;}
         .aurora span:nth-child(3){width:46vw;height:46vw;background:radial-gradient(circle, var(--ice-soft) 0%, transparent 70%);bottom:-20%;left:20%;animation-delay:-16s;}
-        @keyframes drift{
-            0%,100%{ transform:translate(0,0) scale(1); }
-            50%{ transform:translate3d(3%,-4%,0) scale(1.08); }
-        }
-        /* grain léger */
+        @keyframes drift{0%{ transform:translate(0,0) scale(1); } 100%{ transform:translate(3%,-4%) scale(1.08); }}
+
         #grain{
-            position:fixed;inset:0;pointer-events:none;z-index:4;
-            opacity:0.05;
+            position:fixed;inset:0;pointer-events:none;z-index:4;opacity:0.05;
             background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch"/></filter><rect width="100%25" height="100%25" filter="url(%23n)"/></svg>');
             mix-blend-mode:multiply;
         }
-        /* étoiles hero */
-        .stars{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0;}
-        .stars span{
-            position:absolute;border-radius:50%;
-            background:var(--gold-soft);
-            animation:twinkle 4.5s ease-in-out infinite;
-        }
-        @keyframes twinkle{
-            0%,100%{ opacity:0.15; transform:scale(0.8); }
-            50%{ opacity:0.85; transform:scale(1.15); }
-        }
+
         #snow{position:fixed;inset:0;pointer-events:none;z-index:5;overflow:hidden;}
-        .flake{
+        .petal{
+            position:absolute;top:-30px;
+            background:radial-gradient(ellipse at 30% 30%, #fef3f2 0%, #f7dedc 70%, #ebd0ce 100%);
+            border-radius:150% 0% 150% 0%;opacity:0.82;box-shadow:0 2px 5px rgba(0,0,0,0.04);
+            animation-name:fallPetal;animation-timing-function:linear;animation-iteration-count:infinite;
+        }
+        @keyframes fallPetal{
+            0%{ transform:translateY(-30px) translateX(0) rotate(0deg) scale(0.8); }
+            33%{ transform:translateY(35vh) translateX(var(--drift-mid, 40px)) rotate(120deg) scale(1.05); }
+            66%{ transform:translateY(70vh) translateX(calc(var(--drift-mid, 40px) * -0.6)) rotate(240deg) scale(0.95); }
+            100%{ transform:translateY(105vh) translateX(var(--drift-end, -25px)) rotate(360deg) scale(0.9); }
+        }
+        .gold-sparkle{
             position:absolute;top:-10px;
-            background:#ffffff;
-            border-radius:50%;
-            animation-name:fall;
-            animation-timing-function:linear;
-            animation-iteration-count:infinite;
+            background:radial-gradient(circle, #ffe8b6 0%, #b89663 70%, transparent 100%);
+            border-radius:50%;box-shadow:0 0 8px rgba(184, 150, 99, 0.6);
+            animation-name:fallSparkle;animation-timing-function:ease-in-out;animation-iteration-count:infinite;
         }
-        .flake.back{opacity:0.28;filter:blur(0.4px);}
-        .flake.front{opacity:0.6;}
-        @keyframes fall{
-            to{ transform:translateY(105vh) translateX(var(--drift,0px)); }
+        @keyframes fallSparkle{
+            0%{ transform:translateY(-10px) translateX(0) scale(0.4); opacity:0; }
+            20%,80%{ opacity:0.9; }
+            100%{ transform:translateY(105vh) translateX(var(--sparkle-drift, 30px)) scale(1.2); opacity:0; }
         }
-        /* countdown */
-        .countdown{
-            display:flex;
-            gap:clamp(8px, 2.5vw, 12px);
-            margin:10px auto;
-            align-items:center;
-            justify-content:center;
-            width:100%;
+
+        /* ==================== ENVELOPPE VELOURS BLANC & FOND MARBRE ==================== */
+        .envelope-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f7f3ec;
+            background-image:
+                radial-gradient(ellipse at 50% 45%, rgba(255, 255, 255, 0.78) 0%, rgba(255, 255, 255, 0.45) 55%, rgba(247, 243, 236, 0.72) 100%),
+                url('fond.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            overflow: hidden;
+            font-family: var(--cenv-display);
+            color: var(--ink, #1f2430);
+            user-select: none;
+            -webkit-user-select: none;
+            transition: opacity 0.9s cubic-bezier(.4, 0, .2, 1), visibility 0.9s ease;
         }
-        .countdown .cell{
-            display:flex;
-            flex-direction:column;
-            align-items:center;
-            justify-content:center;
-            flex: 1;
-            max-width: 68px;
-            aspect-ratio: 1 / 1;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(184, 150, 99, 0.22);
+
+        body.revealed .envelope-screen {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .cenv-scene {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: clamp(20px, 4vh, 32px);
+            padding: 24px;
+        }
+
+        /* --- Titres et Textes --- */
+        .cenv-intro {
+            text-align: center;
+            transition: opacity 0.6s ease, transform 0.6s ease;
+            z-index: 10;
+        }
+
+        .cenv-pre {
+            margin: 0 0 12px;
+            font-family: var(--cenv-display);
+            font-size: 13px;
+            letter-spacing: 0.32em;
+            text-transform: uppercase;
+            color: var(--gold-deep, #8a693b);
+            opacity: 0.95;
+            padding-left: 0.32em;
+        }
+
+        .cenv-names {
+            margin: 0;
+            font-family: var(--cenv-cursive);
+            font-weight: 400;
+            font-size: clamp(46px, 9vw, 80px);
+            line-height: 1.05;
+            color: var(--ink, #1f2430);
+            text-shadow: 0 2px 20px rgba(184, 150, 99, 0.25);
+        }
+
+        .cenv-cta {
+            margin: 0;
+            font-family: var(--cenv-display);
+            font-size: 12px;
+            letter-spacing: 0.32em;
+            text-transform: uppercase;
+            color: var(--gold-deep, #8a693b);
+            padding-left: 0.32em;
+            animation: cenv-pulse 2.4s ease-in-out infinite;
+            transition: opacity 0.5s ease;
+            z-index: 10;
+        }
+
+        @keyframes cenv-pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        .cenv-opened .cenv-intro {
+            opacity: 0;
+            transform: translateY(-16px);
+            pointer-events: none;
+        }
+
+        .cenv-opened .cenv-cta {
+            animation: none;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* --- L'enveloppe en velours blanc --- */
+        .cenv-wrap {
+            position: relative;
+            width: 320px;
+            height: 213px;
+            max-width: calc(100vw - 40px);
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            transform: scale(var(--cs));
+            margin-block: calc((var(--cs) - 1) * 110px);
+            transition: transform 1s var(--e-out), opacity 1s ease;
+        }
+
+        .cenv-back, .cenv-front, .cenv-bottom, .cenv-flap, .cenv-seal {
+            transition: transform 1s var(--e-out), opacity 1s ease;
+        }
+
+        .cenv-wrap.cenv-away {
+            transition: transform 900ms cubic-bezier(0.5, 0, 0.75, 0.4), opacity 700ms ease 150ms;
+            transform: scale(var(--cs)) translateY(55vh) rotate(4deg) !important;
+            opacity: 0.15;
+        }
+
+        /* Dos de l'enveloppe (fond de poche) */
+        .cenv-back {
+            position: absolute;
+            inset: 0;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 10px 28px rgba(45, 33, 20, 0.15), 0 28px 60px rgba(45, 33, 20, 0.18), 0 0 0 1px rgba(184, 150, 99, 0.35);
+            z-index: 1;
+        }
+
+        .cenv-back::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: url("assets/img/white-velvet-pocket.webp") center 22% / cover no-repeat;
+            filter: saturate(1.02);
+        }
+
+        .cenv-back::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 6px;
+            background: linear-gradient(180deg, rgba(255,255,255,.95) 0px, rgba(255,255,255,.45) 7px, rgba(255,255,255,0) 20px);
+            box-shadow: inset 0 10px 16px -8px rgba(184, 150, 99, .25),
+                        inset 0 0 30px rgba(184, 150, 99, .15),
+                        inset 0 -16px 24px -16px rgba(184, 150, 99, .2),
+                        inset 0 0 0 1px rgba(255,255,255,.8);
+        }
+
+        /* --- Carte intérieure (même fond marbre lumineux que l'enveloppe) --- */
+        .cenv-card {
+            position: absolute;
+            left: 50%;
+            bottom: 9px;
+            width: 286px;
+            height: 186px;
+            margin-left: -143px;
+            background-color: #f7f3ec;
+            background-image:
+                radial-gradient(ellipse at 50% 45%, rgba(255, 255, 255, 0.78) 0%, rgba(255, 255, 255, 0.45) 55%, rgba(247, 243, 236, 0.72) 100%),
+                url('fond.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            border-radius: 5px;
+            border: 1px solid rgba(184, 150, 99, 0.55);
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 28px rgba(60, 45, 30, 0.22);
+            transform: translate(0, 0);
+            will-change: transform;
+            cursor: pointer;
+        }
+
+        .cenv-card::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            opacity: .04;
+            pointer-events: none;
+        }
+
+        .cenv-card.cenv-sliding {
+            transition: transform 0.9s var(--e-out);
+            transform: translateY(-85%);
+        }
+
+        .cenv-card.cenv-grow {
+            z-index: 70;
+            transition: transform 0.9s var(--e-out), box-shadow 0.9s ease;
+            transform: translateY(-48%) scale(1.22);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+        }
+
+        @media (min-width: 768px) {
+            .cenv-card.cenv-grow {
+                transform: translateY(-42%) scale(1.36);
+            }
+        }
+
+        .cenv-card-inner {
+            position: absolute;
+            inset: 9px;
+            border: 1px solid rgba(184, 150, 99, 0.65);
+            outline: 1px solid rgba(184, 150, 99, 0.35);
+            outline-offset: 3px;
+            border-radius: 3px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            color: var(--ink, #1f2430);
+            text-align: center;
+            padding: 8px 12px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.28);
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
+        }
+
+        .cenv-std {
+            font-family: 'Jost', sans-serif;
+            font-size: 9px;
+            letter-spacing: 0.26em;
+            text-transform: uppercase;
+            color: var(--silver, #8b939d);
+            padding-left: 0.26em;
+            white-space: nowrap;
+        }
+
+        .cenv-cnames {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 26px;
+            line-height: 1.15;
+            font-weight: 500;
+            color: var(--ink, #1f2430);
+            letter-spacing: 0.02em;
+            white-space: nowrap;
+            margin: 2px 0;
+        }
+
+        .cenv-rule {
+            width: 38px;
+            height: 1px;
+            background: var(--gold, #b89663);
+            margin: 3px 0;
+        }
+
+        .cenv-date {
+            font-family: 'Cormorant Garamond', serif;
+            font-variant-numeric: lining-nums;
+            font-size: 14px;
+            letter-spacing: 0.2em;
+            padding-left: 0.2em;
+            color: var(--gold-deep, #8a693b);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        /* Bouton découvrir l'invitation qui apparaît sur la carte agrandie */
+        .cenv-enter-btn {
+            position: absolute;
+            bottom: -54px;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            opacity: 0;
+            pointer-events: none;
+            background: linear-gradient(135deg, var(--gold, #b89663), var(--gold-deep, #8a693b));
+            color: #fff;
+            border: 1px solid var(--gold-soft, #e0c89a);
+            font-family: 'Jost', sans-serif;
+            font-size: 11px;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            font-weight: 500;
+            padding: 9px 20px;
+            border-radius: 999px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: opacity 0.5s ease 0.4s, transform 0.5s ease 0.4s;
+            z-index: 80;
+        }
+
+        .cenv-enter-btn:hover {
+            transform: translateX(-50%) translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.45);
+        }
+
+        .cenv-card.cenv-grow .cenv-enter-btn {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Face avant (rabats latéraux en velours blanc & ombres or) */
+        .cenv-front {
+            position: absolute;
+            inset: 0;
+            z-index: 3;
+            pointer-events: none;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .cenv-front::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(105deg, rgba(255,255,255,.6) 0%, rgba(255,255,255,.1) 12%,
+                        rgba(184,150,99,.05) 26%, rgba(184,150,99,.15) 44%, rgba(184,150,99,.28) 52%),
+                        url("assets/img/white-velvet-pocket.webp") 18% 40% / cover no-repeat;
+            clip-path: polygon(0 0, 52% 50%, 0 100%);
+            filter: drop-shadow(2px 0 4px rgba(140, 115, 75, 0.28));
+        }
+
+        .cenv-front::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(255deg, rgba(255,255,255,.6) 0%, rgba(255,255,255,.1) 12%,
+                        rgba(184,150,99,.05) 26%, rgba(184,150,99,.15) 44%, rgba(184,150,99,.28) 52%),
+                        url("assets/img/white-velvet-pocket.webp") 82% 55% / cover no-repeat;
+            clip-path: polygon(100% 0, 48% 50%, 100% 100%);
+            filter: drop-shadow(-2px 0 4px rgba(140, 115, 75, 0.28));
+        }
+
+        /* Rabat bas en velours blanc */
+        .cenv-bottom {
+            position: absolute;
+            inset: 0;
+            z-index: 4;
+            pointer-events: none;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .cenv-bottom::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(255,255,255,.5) 42%, rgba(255,255,255,0) 52%,
+                        rgba(184,150,99,.08) 64%, rgba(184,150,99,.24) 100%),
+                        url("assets/img/white-velvet-pocket.webp") center 78% / cover no-repeat;
+            clip-path: polygon(0 100%, 50% 42%, 100% 100%);
+            filter: drop-shadow(0 -3px 4px rgba(140, 115, 75, 0.25));
+        }
+
+        /* Rabat supérieur 3D en velours blanc & liseré d'or */
+        .cenv-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 118px;
+            z-index: 5;
+            transform-origin: top center;
+            transform-style: preserve-3d;
+            transform: perspective(900px) rotateX(0deg);
+            transition: transform 0.7s cubic-bezier(0.65, 0, 0.35, 1);
+            will-change: transform;
+            pointer-events: none;
+        }
+
+        .cenv-flap.cenv-open {
+            transform: perspective(900px) rotateX(-180deg);
+        }
+
+        .cenv-flap.cenv-behind {
+            z-index: 1;
+        }
+
+        .cenv-flap-face {
+            position: absolute;
+            inset: 0;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            clip-path: polygon(0 0, 100% 0, 50% 100%);
+        }
+
+        .cenv-flap-front {
+            background: linear-gradient(180deg, #ffffff 0%, #faf6f0 70%, #ede4d5 100%);
+            border-radius: 6px 6px 0 0;
+            filter: drop-shadow(0 4px 6px rgba(140, 115, 75, 0.32));
+        }
+
+        .cenv-flap-front::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 6px 6px 0 0;
+            background: linear-gradient(180deg, rgba(255,255,255,.95) 0px, rgba(255,255,255,.4) 3px, rgba(255,255,255,0) 10px),
+                        linear-gradient(180deg, rgba(184,150,99,0) 50%, rgba(184,150,99,.14) 80%, rgba(184,150,99,.32) 100%),
+                        url("assets/img/white-velvet-flap.webp") center 30% / cover no-repeat;
+        }
+
+        /* Liseré d'or délicat et éclatant sur le bord du rabat triangulaire */
+        .cenv-flap-front::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            clip-path: polygon(0 0, 100% 0, 50% 100%);
+            border-bottom: 2px solid rgba(184, 150, 99, 0.7);
+            filter: drop-shadow(0 1px 3px rgba(184, 150, 99, 0.6));
+            pointer-events: none;
+        }
+
+        .cenv-flap-back {
+            background: linear-gradient(0deg, #f5efe6 0%, #ebe2d3 100%);
+            transform: rotateX(180deg);
+            border-radius: 0 0 6px 6px;
+            clip-path: polygon(0 100%, 100% 100%, 50% 0);
+        }
+
+        .cenv-flap-back::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 6px 6px 0 0;
+            background: linear-gradient(0deg, rgba(184,150,99,.18) 0%, rgba(184,150,99,.06) 55%, rgba(184,150,99,.12) 100%),
+                        url("assets/img/white-velvet-flap.webp") center 60% / cover no-repeat;
+            filter: brightness(0.97);
+        }
+
+        /* Sceau de cire monogrammé avec éclat or */
+        .cenv-seal {
+            position: absolute;
+            left: 50%;
+            top: 118px;
+            width: 85px;
+            height: 85px;
+            margin-left: -42.5px;
+            margin-top: -46px;
+            padding: 0;
+            border: 0;
+            background: none;
+            z-index: 6;
+            filter: drop-shadow(0 4px 8px rgba(140, 115, 75, 0.45)) drop-shadow(0 0 12px rgba(224, 200, 154, 0.35));
+            transition: transform 0.12s ease;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        .cenv-seal img {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .cenv-seal::before {
+            content: "";
+            position: absolute;
+            left: 10%;
+            right: 10%;
+            top: 62%;
+            bottom: 2%;
+            background: radial-gradient(50% 50% at 50% 50%, rgba(0,0,0,.42) 0%, rgba(0,0,0,0) 70%);
+            z-index: -1;
+        }
+
+        .cenv-seal:focus-visible {
+            outline: 2px solid var(--cream-100);
+            outline-offset: 6px;
             border-radius: 50%;
-            box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.4);
         }
-        .countdown .num{
-            font-family:'Cormorant Garamond', serif;
-            font-weight:500;
-            font-size:clamp(20px, 4.5vw, 25px);
-            color:var(--ink);
-            font-variant-numeric:tabular-nums;
-            line-height:1;
-            display:inline-block;
+
+        .cenv-seal.cenv-press {
+            transform: scale(0.9);
         }
-        .countdown .lbl{
-            margin-top:1px;
-            font-size:8px;
-            letter-spacing:0.08em;
-            text-transform:uppercase;
-            color:var(--ink-soft);
+
+        .cenv-seal.cenv-pop {
+            transition: transform 0.25s ease, opacity 0.25s ease;
+            transform: scale(1.25) translateY(-6px);
+            opacity: 0;
+            pointer-events: none;
         }
-        .countdown .sep{
-            font-family:'Cormorant Garamond', serif;
-            font-size:15px;
-            color:var(--gold);
-            opacity:0.4;
-            margin: 0 -3px;
+
+        /* Bouton Passer */
+        .env-skip {
+            position: absolute;
+            top: 22px;
+            right: 24px;
+            z-index: 100;
+            font-family: 'Jost', sans-serif;
+            font-size: 11px;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.88);
+            border: 1px solid rgba(184, 150, 99, 0.45);
+            border-radius: 30px;
+            color: var(--gold-deep, #8a693b);
+            padding: 8px 18px;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            transition: all 0.25s ease;
         }
-        /* COUVERTURE CENTRÉE ET FLUIDE */
+
+        .env-skip:hover {
+            background: var(--gold, #b89663);
+            border-color: var(--gold, #b89663);
+            color: #ffffff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px var(--gold-glow);
+        }
+
+        /* Bouton Rejouer */
+        .replay-btn {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            opacity: 0;
+            pointer-events: none;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(184, 150, 99, 0.45);
+            color: var(--gold-deep, #8a693b);
+            font-family: var(--cenv-display);
+            font-size: 12px;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            font-weight: 500;
+            padding: 9px 20px;
+            border-radius: 999px;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+            cursor: pointer;
+            transition: opacity 0.6s ease 1.2s, transform 0.6s ease 1.2s, background-color 0.2s ease;
+            z-index: 100;
+        }
+
+        .replay-btn:hover {
+            background: var(--gold, #b89663);
+            border-color: var(--gold, #b89663);
+            color: #ffffff;
+            box-shadow: 0 6px 20px var(--gold-glow);
+        }
+
+        .cenv-opened .replay-btn {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+            pointer-events: auto;
+        }
+
+        /* ==================== SECTION GARDE AVEC COMPTE A REBOURS ==================== */
         #cover{
-            position:relative;
-            width:100%;
-            height:100%;
-            overflow:hidden;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            text-align:center;
-            color:var(--ink);
-            background:
-                    radial-gradient(circle at 15% 15%, rgba(223,234,240,.75), transparent 35%),
-                    radial-gradient(circle at 86% 20%, rgba(224,200,154,.34), transparent 34%),
-                    radial-gradient(circle at 70% 90%, rgba(237,244,247,.9), transparent 42%),
-                    linear-gradient(135deg,#f9f5ee 0%,#f5efe5 48%,#edf3f5 100%);
+            position:relative; width:100%; min-height:100vh; min-height:100svh; overflow:hidden;
+            display:flex; align-items:center; justify-content:center; text-align:center; padding: 50px 16px;
+            background: radial-gradient(circle at 15% 15%, rgba(223,234,240,.45), transparent 35%),
+            radial-gradient(circle at 86% 20%, rgba(224,200,154,.25), transparent 34%),
+            radial-gradient(circle at 70% 90%, rgba(237,244,247,.5), transparent 42%);
             isolation:isolate;
         }
-        #cover::before{
-            content:"";
-            position:absolute;
-            inset:12px;
-            border:1px solid rgba(184,150,99,.48);
-            z-index:3;
-            pointer-events:none;
-        }
-        #cover::after{
-            content:"";
-            position:absolute;
-            inset:18px;
-            border:1px solid rgba(31,36,48,.08);
-            z-index:3;
-            pointer-events:none;
-        }
-        .cover-aurora{
-            position:absolute;
-            inset:-20%;
-            z-index:-2;
-            filter:blur(30px);
-        }
-        .cover-aurora span{
-            position:absolute;
-            border-radius:50%;
-            animation:coverDrift 15s ease-in-out infinite alternate;
-        }
-        .cover-aurora span:nth-child(1){
-            width:55vw;height:55vw;left:-8%;top:-12%;
-            background:radial-gradient(circle,rgba(184,211,221,.6),transparent 68%);
-        }
-        .cover-aurora span:nth-child(2){
-            width:48vw;height:48vw;right:-5%;top:8%;
-            background:radial-gradient(circle,rgba(224,200,154,.38),transparent 70%);
-            animation-delay:-5s;
-        }
-        .cover-aurora span:nth-child(3){
-            width:52vw;height:52vw;left:28%;bottom:-18%;
-            background:radial-gradient(circle,rgba(237,244,247,.9),transparent 70%);
-            animation-delay:-9s;
-        }
-        @keyframes coverDrift{
-            0%{transform:translate3d(-2%,-1%,0) scale(1)}
-            100%{transform:translate3d(3%,2%,0) scale(1.12)}
-        }
-        .cover-stars{position:absolute;inset:0;pointer-events:none;z-index:0}
-        .cover-stars i{
-            position:absolute;width:3px;height:3px;border-radius:50%;
-            background:var(--gold-soft);
-            box-shadow:0 0 9px rgba(184,150,99,.35);
-            animation:coverTwinkle 3.5s ease-in-out infinite;
-        }
-        .cover-stars i:nth-child(1){top:14%;left:13%;animation-delay:.2s}
-        .cover-stars i:nth-child(2){top:24%;left:81%;width:2px;height:2px;animation-delay:1s}
-        .cover-stars i:nth-child(3){top:64%;left:10%;width:2px;height:2px;animation-delay:2s}
-        .cover-stars i:nth-child(4){top:76%;left:84%;animation-delay:.8s}
-        .cover-stars i:nth-child(5){top:11%;left:51%;width:2px;height:2px;animation-delay:1.8s}
-        .cover-stars i:nth-child(6){top:47%;left:7%;width:2px;height:2px;animation-delay:2.4s}
-        .cover-stars i:nth-child(7){top:39%;left:94%;width:2px;height:2px;animation-delay:.5s}
-        .cover-stars i:nth-child(8){top:88%;left:48%;width:2px;height:2px;animation-delay:1.3s}
-        .cover-stars i:nth-child(9){top:30%;left:25%;width:2px;height:2px;animation-delay:2.8s}
-        .cover-stars i:nth-child(10){top:82%;left:25%;width:2px;height:2px;animation-delay:1.6s}
-        @keyframes coverTwinkle{
-            0%,100%{opacity:.12;transform:scale(.7)}
-            50%{opacity:.9;transform:scale(1.6)}
-        }
-        .cover-orbit{
-            position:absolute;
-            left:50%;top:50%;
-            border:1px solid rgba(184,150,99,.18);
-            border-radius:50%;
-            pointer-events:none;
-            z-index:0;
-        }
-        .orbit-a{
-            width:min(620px,120vw);height:min(620px,120vw);
-            transform:translate(-50%,-50%) rotate(18deg);
-            animation:orbitA 20s linear infinite;
-        }
-        .orbit-b{
-            width:min(520px,100vw);height:min(760px,145vw);
-            transform:translate(-50%,-50%) rotate(-28deg);
-            border-color:rgba(139,147,157,.12);
-            animation:orbitB 26s linear infinite reverse;
-        }
-        @keyframes orbitA{to{transform:translate(-50%,-50%) rotate(378deg)}}
-        @keyframes orbitB{to{transform:translate(-50%,-50%) rotate(-388deg)}}
-
+        #cover::before{ content:""; position:absolute; inset:12px; border:1px solid rgba(184,150,99,.48); z-index:3; pointer-events:none; }
+        #cover::after{ content:""; position:absolute; inset:18px; border:1px solid rgba(31,36,48,.08); z-index:3; pointer-events:none; }
         .cover-content{
-            position:relative;
-            z-index:2;
-            width:min(92%, 420px);
-            display:flex;
-            flex-direction:column;
-            align-items:center;
-            justify-content:center;
-            margin: auto;
-            gap: 8px;
-            animation:coverAppear 1.5s cubic-bezier(.2,.8,.2,1) both;
+            position:relative; z-index:2; width:min(92%, 460px); display:flex; flex-direction:column;
+            align-items:center; justify-content:center; margin: auto; gap: 10px;
         }
-        @keyframes coverAppear{
-            from{opacity:0;transform:translateY(12px) scale(.985)}
-            to{opacity:1;transform:none}
-        }
-        .cover-bsd{
-            font-family:'Frank Ruhl Libre',serif;
-            direction:rtl;
-            color:var(--ink-soft);
-            font-size:13px;
-            margin-bottom:2px;
-        }
+        .cover-bsd{ font-family:'Frank Ruhl Libre',serif; direction:rtl; color:var(--ink-soft); font-size:14px; }
         .cover-monogram{
-            width:62px;height:62px;border:1px solid var(--gold);
-            border-radius:50%;
-            display:flex;align-items:center;justify-content:center;
-            gap:3px;
-            position:relative;
-            color:var(--gold-deep);
-            font:500 20px 'Cormorant Garamond',serif;
-            background:rgba(255,255,255,.18);
-            box-shadow:0 0 0 4px rgba(184,150,99,.05),0 6px 16px rgba(31,36,48,.04);
+            width:64px; height:64px; border:1px solid var(--gold); border-radius:50%;
+            display:flex; align-items:center; justify-content:center; gap:3px; position:relative;
+            color:var(--gold-deep); font:500 20px 'Cormorant Garamond',serif; background:rgba(255,255,255,.25);
+            box-shadow:0 0 0 4px rgba(184,150,99,.05), 0 6px 16px rgba(31,36,48,.04);
         }
-        .cover-monogram::before{
-            content:"";
-            position:absolute;inset:5px;border:1px solid var(--gold-soft);
-            border-radius:50%;
-        }
-        .cover-monogram b{font-weight:400;font-style:italic;color:var(--gold);font-size:15px}
-        .cover-line{
-            width:60px;height:1px;
-            background:linear-gradient(90deg,transparent,var(--gold),transparent);
-            margin:6px 0;
-        }
-        .cover-bottom-line{
-            width:50px;height:1px;
-            background:linear-gradient(90deg,transparent,var(--gold),transparent);
-            margin:6px 0;
-        }
-        .cover-kicker{
-            margin:0;
-            text-transform:uppercase;
-            letter-spacing:.24em;
-            font-size:10px;
-            color:var(--silver);
-        }
+        .cover-monogram::before{ content:""; position:absolute; inset:4px; border:1px solid var(--gold-soft); border-radius:50%; }
+        .cover-monogram b{ font-weight:400; font-style:italic; color:var(--gold); font-size:15px; }
+        .cover-line{ width:60px; height:1px; background:linear-gradient(90deg,transparent,var(--gold),transparent); margin:4px 0; }
+        .cover-bottom-line{ width:50px; height:1px; background:linear-gradient(90deg,transparent,var(--gold),transparent); margin:4px 0; }
+        .cover-kicker{ margin:0; text-transform:uppercase; letter-spacing:.24em; font-size:10px; color:var(--silver); }
         .cover-content h1{
-            font:500 clamp(38px, 9vw, 56px)/.85 'Cormorant Garamond',serif;
-            letter-spacing:-.035em;
-            margin:0;
-            color:var(--ink);
+            font:500 clamp(40px, 9.5vw, 62px)/.85 'Cormorant Garamond',serif;
+            letter-spacing:-.035em; margin:0; color:var(--ink);
         }
-        .cover-name{display:inline-block}
-        .cover-content h1 em{
-            display:inline-block;
-            color:var(--gold);
-            font-size:.38em;
-            margin:0 .06em;
-            vertical-align:middle;
-            font-style:italic;
+        .cover-content h1 em{ display:inline-block; color:var(--gold); font-size:.42em; margin:0 .06em; vertical-align:middle; font-style:italic; }
+        .cover-hebrew{ font-family:'Frank Ruhl Libre',serif; font-weight:400; font-size:clamp(18px, 4vw, 24px); direction:rtl; color:var(--gold-deep); margin:4px 0; letter-spacing:.04em; }
+
+        .countdown{ display:flex; gap:clamp(8px, 2.5vw, 12px); margin:10px auto; align-items:center; justify-content:center; width:100%; }
+        .countdown .cell{
+            display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; max-width:68px; aspect-ratio:1/1;
+            background:rgba(255,255,255,0.28); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+            border:1px solid rgba(184,150,99,0.28); border-radius:50%; box-shadow:inset 0 1px 3px rgba(255,255,255,0.4);
         }
-        .cover-hebrew{
-            font:400 clamp(17px, 3.5vw, 22px) 'Frank Ruhl Libre',serif;
-            direction:rtl;
-            color:var(--gold-deep);
-            margin:4px 0;
-            letter-spacing:.04em;
-        }
-        .cover-invite{
-            margin:0;
-            color:var(--ink-soft);
-            line-height:1.35;
-            font-size:12px;
-        }
+        .countdown .num{ font-family:'Cormorant Garamond', serif; font-weight:500; font-size:clamp(20px, 4.5vw, 25px); color:var(--ink); font-variant-numeric:tabular-nums; line-height:1; }
+        .countdown .lbl{ margin-top:1px; font-size:8px; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-soft); }
+        .countdown .sep{ font-family:'Cormorant Garamond', serif; font-size:15px; color:var(--gold); opacity:0.4; margin:0 -3px; }
+        .cover-invite{ margin:0; color:var(--ink-soft); line-height:1.45; font-size:12.5px; max-width:380px; }
         .cover-enter{
-            margin-top:10px;
-            min-height:40px;
-            padding:10px 24px;
-            border:1px solid rgba(184, 150, 99, 0.4);
-            border-radius:999px;
-            color:var(--gold-deep);
-            text-decoration:none;
-            display:inline-flex;
-            align-items:center;
-            justify-content:center;
-            font-size:11px;
-            letter-spacing:.12em;
-            text-transform:uppercase;
-            background:rgba(255,255,255,0.3);
-            backdrop-filter:blur(8px);
-            transition:all 0.3s ease;
+            margin-top:12px; min-height:42px; padding:11px 30px; border:1px solid rgba(184, 150, 99, 0.45);
+            border-radius:999px; color:var(--gold-deep); text-decoration:none; display:inline-flex; align-items:center; justify-content:center;
+            font-size:11px; letter-spacing:.14em; text-transform:uppercase; background:rgba(255,255,255,0.4); backdrop-filter:blur(8px);
+            transition:all 0.3s ease; box-shadow:0 4px 14px var(--gold-glow);
         }
         .cover-enter:hover{
-            background: linear-gradient(135deg, var(--gold), var(--gold-deep));
-            color: #fff;
-            border-color: var(--gold);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px -8px var(--gold-glow);
+            background:linear-gradient(135deg, var(--gold), var(--gold-deep)); color:#fff; border-color:var(--gold); transform:translateY(-2px);
+            box-shadow:0 10px 25px -8px var(--gold-glow);
         }
-        @media(prefers-reduced-motion:reduce){
-            #cover *,#cover *::before,#cover *::after{
-                animation-duration:.001ms !important;
-                animation-iteration-count:1 !important;
-            }
+
+        /* ========================================================================== */
+        /* 3. DATE HORS DU PROGRAMME : ENCRE INVISIBLE APPLE (BLUR + NOISE) */
+        /* ========================================================================== */
+        .reveal-date-section {
+            padding: 55px 20px 25px;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .apple-reveal-card {
+            max-width: 520px;
+            margin: 0 auto;
+            position: relative;
+            background: rgba(255, 255, 255, 0.90);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(184, 150, 99, 0.35);
+            border-radius: 28px;
+            padding: 34px 24px;
+            box-shadow:
+                    0 20px 45px -15px rgba(31, 36, 48, 0.12),
+                    0 0 0 1px rgba(255, 255, 255, 0.6) inset;
+            overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .reveal-kicker {
+            font-size: 11px;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--gold-deep);
+            font-weight: 500;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        /* Conteneur de l'encre invisible Apple */
+        .encre-invisible-box {
+            position: relative;
+            display: inline-block;
+            margin: 6px auto 14px;
+            padding: 14px 28px;
+            border-radius: 20px;
+            cursor: pointer;
+            outline: none;
+        }
+
+        /* 1. Le flou CSS combiné au bruit fractal Perlin Noise */
+        .encre-invisible {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(28px, 6.8vw, 42px);
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            line-height: 1.15;
+            color: var(--ink);
+            /* Masquage initial : Flou CSS + Filtre Perlin Noise SVG */
+            filter: url(#apple-perlin-noise) blur(8px);
+            transition: filter 0.35s ease, transform 0.35s ease;
+            user-select: none;
+        }
+
+        .encre-invisible-sub {
+            font-family: 'Jost', sans-serif;
+            font-size: 13px;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--gold-deep);
+            margin-top: 8px;
+            font-weight: 500;
+            filter: blur(6px);
+            transition: filter 0.35s ease;
+        }
+
+        /* Révélation au survol (:hover) ou au clic / tap (.revealed) */
+        .encre-invisible-box:hover .encre-invisible,
+        .encre-invisible-box.revealed .encre-invisible {
+            filter: blur(0) !important;
+            transform: scale(1);
+        }
+
+        .encre-invisible-box:hover .encre-invisible-sub,
+        .encre-invisible-box.revealed .encre-invisible-sub {
+            filter: blur(0) !important;
+        }
+
+        .apple-hint {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 11px;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--silver);
+            margin-top: 6px;
+            transition: opacity 0.3s ease;
+        }
+
+        .apple-hint svg {
+            width: 13px;
+            height: 13px;
+            color: var(--gold);
+            animation: pulseHint 2.5s ease-in-out infinite;
+        }
+
+        @keyframes pulseHint {
+            0%, 100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.3); opacity: 1; }
+        }
+
+        .encre-invisible-box.revealed + .apple-hint {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Poussière d'étoiles sous le curseur/doigt */
+        .stardust-field {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 9999;
+            overflow: hidden;
+        }
+
+        .apple-star {
+            position: absolute;
+            pointer-events: none;
+            border-radius: 50%;
+            background: radial-gradient(circle, #ffffff 15%, #ffdf8d 60%, transparent 100%);
+            box-shadow: 0 0 10px rgba(255, 224, 143, 0.9), 0 0 16px rgba(184, 150, 99, 0.6);
+            transform: translate(-50%, -50%);
+            animation: starFade 0.85s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
+        }
+
+        @keyframes starFade {
+            0% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+            100% { transform: translate(calc(-50% + var(--vx)), calc(-50% + var(--vy))) scale(0.15) rotate(140deg); opacity: 0; }
+        }
+
+        /* ==================== NAVETTE EN BAS ==================== */
+        .bottom-nav-dock {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(120%);
+            z-index: 90;
+            display: flex;
+            align-items: center;
+            padding: 6px;
+            border-radius: 999px;
+            background: rgba(250, 245, 238, 0.78);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid rgba(184, 150, 99, 0.35);
+            box-shadow:
+                    0 16px 36px -10px rgba(31, 36, 48, 0.22),
+                    0 0 0 1px rgba(255, 255, 255, 0.6) inset,
+                    0 0 20px -3px var(--gold-glow);
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease;
+            max-width: calc(100vw - 28px);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        body.revealed .bottom-nav-dock {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .nav-pill-indicator {
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            height: calc(100% - 12px);
+            background: linear-gradient(135deg, rgba(184, 150, 99, 0.95), rgba(138, 105, 59, 0.95));
+            border-radius: 999px;
+            box-shadow: 0 4px 14px var(--gold-glow);
+            transition: transform 0.42s cubic-bezier(0.34, 1.45, 0.64, 1), width 0.38s ease;
+            pointer-events: none;
+            z-index: 1;
+            width: 0;
+        }
+
+        .nav-item {
+            position: relative;
+            z-index: 2;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 9px 16px;
+            border-radius: 999px;
+            color: var(--ink-soft);
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            white-space: nowrap;
+            transition: color 0.25s ease, transform 0.2s ease;
+            user-select: none;
+        }
+
+        .nav-item svg { width: 13px; height: 13px; transition: transform 0.25s ease; }
+        .nav-item:hover { color: var(--gold-deep); transform: translateY(-1px); }
+        .nav-item:hover svg { transform: scale(1.15); }
+        .nav-item.active { color: #ffffff; }
+        .nav-item.active svg { color: #ffffff; stroke: #ffffff; }
+
+        @media (max-width: 650px) {
+            .bottom-nav-dock { bottom: 14px; padding: 4px; gap: 2px; }
+            .nav-item { padding: 7px 11px; font-size: 9.5px; letter-spacing: 0.08em; gap: 4px; }
+            .nav-item svg { width: 11px; height: 11px; }
+        }
+
+        @media (max-width: 420px) {
+            .nav-item span { font-size: 8.5px; letter-spacing: 0.05em; }
+            .nav-item { padding: 6px 8px; }
+        }
+
+        /* ==================== SECTIONS PROGRAMME ==================== */
+        main {
+            background: transparent;
+        }
+
+        section{padding:50px 0 72px;position:relative;scroll-margin-top:40px;}
+        .section-head{text-align:center;margin-bottom:44px;opacity:0;transform:translateY(18px);transition:opacity .8s ease, transform .8s ease;}
+        .section-head.in-view{opacity:1;transform:translateY(0);}
+        .section-head h2{font-size:clamp(28px,6vw,40px);}
+
+        .timeline{position:relative;display:flex;flex-direction:column;gap:26px;}
+        .event{
+            position:relative;display:flex;gap:20px;
+            background:rgba(255,255,255,0.93);border:1px solid var(--line);
+            border-radius:30px;padding:24px;opacity:0;transform:translateY(24px);
+            transition:opacity .8s ease, transform .8s ease;
+            box-shadow:0 18px 38px -28px rgba(31,36,48,0.22);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            scroll-margin-top: 50px;
+        }
+        .event.in-view{opacity:1;transform:translateY(0);}
+        .event-body{flex:1;min-width:0;}
+        .event-kicker{font-size:11.5px;letter-spacing:0.1em;color:var(--gold);margin-bottom:6px;}
+        .event h3{font-size:24px;margin-bottom:8px;}
+        .event .when{font-size:14.5px;color:var(--ink-soft);margin-bottom:12px;line-height:1.7;}
+        .event .where{font-size:14.5px;color:var(--ink);margin-bottom:12px;line-height:1.6;}
+        .event .where .addr{color:var(--ink-soft);}
+        .event .note{font-size:13.5px;color:var(--ink-soft);line-height:1.6;margin-bottom:18px;}
+        .actions{display:flex;flex-wrap:wrap;gap:10px;}
+        .btn{
+            appearance:none;border:1px solid rgba(184,150,99,0.3);background:rgba(255,255,255,0.6);
+            color:var(--ink);font-family:'Jost',sans-serif;font-size:13.5px;letter-spacing:0.04em;
+            padding:12px 20px;border-radius:999px;cursor:pointer;text-decoration:none;
+            display:inline-flex;align-items:center;gap:8px;
+            transition:background .3s ease, color .3s ease, border-color .3s ease, transform .25s ease, box-shadow .3s ease;
+            flex:1 1 auto;justify-content:center;min-height:44px;box-shadow:0 6px 18px -12px rgba(31,36,48,0.15);
+        }
+        .btn:hover{
+            background:linear-gradient(135deg, var(--gold), var(--gold-soft));color:#fff;border-color:var(--gold);
+            transform:translateY(-2px);box-shadow:0 10px 24px -8px var(--gold-glow);
+        }
+        .btn svg{width:14px;height:14px;flex:0 0 auto;}
+
+        /* Image cadre pour la Mairie */
+        .event-photo-wrap{
+            width: 100%;
+            max-height: 260px;
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            border: 1px solid rgba(184, 150, 99, 0.35);
+            box-shadow: 0 10px 25px -8px rgba(31, 36, 48, 0.15);
+            position: relative;
+            background: #f4efe6;
+        }
+        .event-photo-wrap img{
+            width: 100%;
+            height: 100%;
+            max-height: 260px;
+            object-fit: cover;
+            object-position: center;
+            display: block;
+            transition: transform 0.6s ease;
+        }
+        .event-photo-wrap:hover img{
+            transform: scale(1.03);
+        }
+
+        /* Faire-part / Houppa */
+        .event.faire-part{flex-direction:column;text-align:center;padding:0;border:none;background:transparent;box-shadow:none;}
+        .fp-frame{
+            position:relative;border:1px solid var(--gold-soft);padding:0 0 34px;
+            background:#fff;overflow:hidden;border-radius:30px;
+        }
+        .fp-art-frame{
+            position:relative;width:100%;height:320px;margin-bottom:30px;
+            border-bottom:1px solid var(--gold-soft);overflow:hidden;background:#f4efe6;
+        }
+        .fp-art-canvas{
+            position:absolute;inset:-12px;
+            background-image:url('palaisr.jpg');
+            background-size:cover;background-position:center 45%;
+            filter:contrast(1.04) brightness(1.02);
+            animation: slowCanvasBreathe 22s ease-in-out infinite alternate;
+            will-change:transform;
+        }
+        @keyframes slowCanvasBreathe{
+            0%{ transform:scale(1.02) translate3d(0, 0, 0); }
+            100%{ transform:scale(1.1) translate3d(-1%, -1.5%, 0); }
+        }
+        .fp-art-overlay{
+            position:absolute;inset:0;pointer-events:none;
+            background:linear-gradient(to top, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.1) 28%, transparent 60%);
+        }
+        .fp-art-lights{position:absolute;inset:0;pointer-events:none;}
+        .fp-art-lights span{
+            position:absolute;border-radius:50%;
+            background:radial-gradient(circle, #fff9e6 20%, #d9b972 85%);
+            box-shadow:0 0 6px #e9cd93;animation:artGlow 6s ease-in-out infinite alternate;
+        }
+        .fp-art-lights span:nth-child(1){width:3px;height:3px;top:32%;left:28%;}
+        .fp-art-lights span:nth-child(2){width:4px;height:4px;top:26%;left:68%;animation-delay:1.5s;}
+        .fp-art-lights span:nth-child(3){width:2.5px;height:2.5px;top:42%;left:48%;animation-delay:3s;}
+        .fp-art-lights span:nth-child(4){width:3px;height:3px;top:20%;left:50%;animation-delay:2s;}
+        @keyframes artGlow{0%{ opacity:0.25; transform:scale(0.8); } 100%{ opacity:0.95; transform:scale(1.3); }}
+
+        .fp-frame > .event-kicker, .fp-frame > .fp-parents,
+        .fp-frame > .fp-names, .fp-frame > .when,
+        .fp-frame > .where, .fp-frame > .actions, .fp-frame > .fp-tsniout, .fp-frame > .fp-memory{
+            padding-left:26px;padding-right:26px;
+        }
+        .fp-frame::before, .fp-frame::after,
+        .fp-frame .fp-corner-br, .fp-frame .fp-corner-bl{
+            content:"";position:absolute;width:26px;height:26px;
+            border-color:var(--gold);border-style:solid;border-width:0;
+        }
+        .fp-frame::before{top:-1px;left:-1px;border-top-width:2px;border-left-width:2px;}
+        .fp-frame::after{top:-1px;right:-1px;border-top-width:2px;border-right-width:2px;}
+        .fp-frame .fp-corner-bl{bottom:-1px;left:-1px;border-bottom-width:2px;border-left-width:2px;}
+        .fp-frame .fp-corner-br{bottom:-1px;right:-1px;border-bottom-width:2px;border-right-width:2px;}
+        .event.faire-part .event-kicker{text-align:center;}
+        .fp-parents{font-size:14.5px;color:var(--ink);line-height:2.1;margin-bottom:16px;}
+        .fp-names{font-size:clamp(38px,9vw,58px);margin:14px 0 22px;}
+        .fp-names .amp{font-style:italic;font-weight:400;color:var(--gold);font-size:0.7em;padding:0 6px;}
+        .event.faire-part .when{text-align:center;font-size:15px;margin-bottom:18px;}
+        .event.faire-part .where{text-align:center;font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--ink);margin-bottom:22px;line-height:1.5;}
+        .event.faire-part .actions{justify-content:center;}
+
+        /* Texte fondu tenue respectueuse / Tsniout */
+        .fp-tsniout{
+            margin-top: 24px;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 15.5px;
+            font-style: italic;
+            color: var(--gold-deep);
+            line-height: 1.6;
+            max-width: 520px;
+            margin-left: auto;
+            margin-right: auto;
+            opacity: 0.9;
+            letter-spacing: 0.02em;
+        }
+
+        .fp-memory{margin-top:24px;padding-top:22px;border-top:1px solid var(--line);font-size:13.5px;color:var(--ink-soft);line-height:1.9;font-style:italic;}
+
+        /* ==================== FORMULAIRE RSVP ==================== */
+        .rsvp-card{
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px);
+            border: 1px solid rgba(184, 150, 99, 0.25); padding: 36px 32px; border-radius: 28px;
+            box-shadow: 0 30px 60px -25px rgba(31, 36, 48, 0.15);
+        }
+        form{display:flex;flex-direction:column;gap:28px;}
+        .form-group{display:flex;flex-direction:column;gap:8px;}
+        .form-group label{font-size:13px;letter-spacing:0.08em;color:var(--gold-deep);text-transform:uppercase;font-weight:500;}
+        .input-box{
+            position:relative;background: #fff; border: 1px solid rgba(31, 36, 48, 0.12);
+            border-radius: 14px;padding: 4px 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+            transition: all 0.3s ease;
+        }
+        .input-box:focus-within{border-color: var(--gold);box-shadow: 0 0 0 4px var(--gold-glow);}
+        .input-box input, .input-box textarea{
+            width:100%;font-family:'Jost',sans-serif;font-size:15px;color:var(--ink);
+            background:transparent;border:none;outline:none;padding: 10px 0;
+        }
+        .input-box textarea{resize:vertical;min-height:70px;}
+        .rsvp-events-grid{display:flex;flex-direction:column;gap:16px;}
+        .rsvp-event-item{
+            background: rgba(255, 255, 255, 0.75); border: 1px solid rgba(31, 36, 48, 0.08);
+            border-radius: 18px;padding: 20px; display: flex;flex-direction: column;gap: 16px;
+            transition: all 0.3s ease;
+        }
+        .rsvp-event-item:hover{background: rgba(247, 242, 235, 0.9);border-color: rgba(184, 150, 99, 0.3);}
+        .rsvp-event-header{display: flex;justify-content: space-between;align-items: center;flex-wrap: wrap;gap: 10px;}
+        .rsvp-event-title{font-family:'Cormorant Garamond',serif;font-size: 21px;color: var(--ink);font-weight: 500;}
+        .presence-options{display: flex;gap: 8px;background: rgba(255,255,255,0.7);padding: 4px;border-radius: 999px;border: 1px solid rgba(31,36,48,0.1);}
+        .presence-options label{
+            margin: 0;padding: 8px 22px;font-size: 13px;letter-spacing: 0.04em;
+            border-radius: 999px;cursor: pointer;color: var(--ink-soft);transition: all 0.25s ease;user-select: none;
+        }
+        .presence-options input{display: none;}
+        .presence-options input:checked + label{background: var(--gold);color: #fff;box-shadow: 0 4px 12px var(--gold-glow);font-weight: 500;}
+        .guests-counts-wrap{display: flex;flex-direction: column;gap: 10px;padding-top: 10px;border-top: 1px dashed rgba(31,36,48,0.1);max-height: 120px;overflow: hidden;transition: all 0.3s ease;}
+        .guests-counts-wrap.is-hidden{opacity: 0;max-height: 0;padding-top: 0;margin-top: 0;border-top: none;pointer-events: none;}
+        .count-row{display: flex;justify-content: space-between;align-items: center;}
+        .count-row span{font-size: 13.5px;color: var(--ink-soft);}
+        .count-row select{
+            font-family: 'Jost', sans-serif;font-size: 14px;color: var(--ink);
+            background: #fff;border: 1px solid rgba(31,36,48,0.15); padding: 6px 14px;border-radius: 10px;outline: none;cursor: pointer;min-width: 70px;
+        }
+        .submit-btn{
+            appearance: none;background: linear-gradient(135deg, var(--gold), var(--gold-deep));
+            color: #fff;border: none;font-family: 'Jost', sans-serif;font-size: 14.5px;
+            letter-spacing: 0.1em;text-transform: uppercase;padding: 18px;border-radius: 999px;
+            cursor: pointer;font-weight: 500;box-shadow: 0 10px 25px -8px var(--gold-glow);
+            transition: all 0.3s ease;
+        }
+        .submit-btn:hover{transform: translateY(-2px);box-shadow: 0 15px 35px -8px var(--gold-glow);}
+        .confirm-msg{
+            display:none;border: 1px solid rgba(184, 150, 99, 0.4); background: rgba(239, 230, 216, 0.9);
+            color: var(--ink); padding: 18px 20px;font-size: 14.5px;margin-top: 20px;border-radius: 16px;text-align: center;
+        }
+        .confirm-msg.show{display:block;animation: confirmPop 0.5s cubic-bezier(.34,1.56,.64,1);}
+        @keyframes confirmPop{0%{ opacity:0; transform:translateY(8px) scale(0.98); } 100%{ opacity:1; transform:translateY(0) scale(1); }}
+
+        /* ==================== FOOTER ==================== */
+        footer {
+            position: relative; background-color: var(--ink);
+            background-image:
+                    radial-gradient(at 50% 100%, rgba(184, 150, 99, 0.25) 0%, transparent 70%),
+                    repeating-linear-gradient(135deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 80px);
+            color: var(--ivory); text-align: center; padding: 90px 20px 100px;
+            display: flex; flex-direction: column; align-items: center; gap: 16px;
+            border-top: 1px solid rgba(184, 150, 99, 0.25); overflow: hidden;
+        }
+        footer::before {
+            content: ""; position: absolute; top: 0; left: 50%;
+            transform: translateX(-50%); width: 160px; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+        }
+        .footer-fireworks { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 1; }
+        .firework-particle {
+            position: absolute; width: 4px; height: 4px; border-radius: 50%;
+            background: var(--gold-soft); animation: explodeFirework 3.5s ease-out infinite; opacity: 0;
+        }
+        @keyframes explodeFirework {
+            0% { transform: translate(var(--start-x), 100px) scale(0.3); opacity: 1; box-shadow: 0 0 0 rgba(184,150,99,0); }
+            50% { opacity: 0.9; box-shadow: 0 0 12px var(--gold); }
+            100% { transform: translate(var(--end-x), var(--end-y)) scale(1.6); opacity: 0; }
+        }
+        .footer-content { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 16px; }
+        .footer-monogram { font-family: 'Cormorant Garamond', serif; font-size: 42px; font-style: italic; color: var(--gold-soft); letter-spacing: 0.05em; text-shadow: 0 4px 15px rgba(184, 150, 99, 0.3); }
+        .footer-date { font-family: 'Jost', sans-serif; font-size: 13.5px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--silver); }
+        .footer-flourish { display: flex; align-items: center; justify-content: center; gap: 14px; width: 140px; margin: 4px auto; opacity: 0.7; }
+        .footer-flourish .l, .footer-flourish .r { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--gold)); }
+        .footer-flourish svg { width: 12px; height: 12px; color: var(--gold); }
+        .footer-quote { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 17px; color: var(--ice-soft); max-width: 480px; line-height: 1.6; margin-top: 6px; opacity: 0.9; }
+        .footer-bsd { font-family: 'Frank Ruhl Libre', serif; font-size: 15px; color: var(--gold-soft); opacity: 0.9; direction: rtl; margin-top: 8px; letter-spacing: 0.05em; }
+
+        .marble{
+            position:relative;
+            /* J'ai rendu cette couleur légèrement transparente pour laisser apparaître l'image de fond derrière */
+            background-color:rgba(239, 230, 216, 0.6);
+            background-image:
+                    radial-gradient(at 15% 20%, rgba(255,255,255,0.75), transparent 45%),
+                    radial-gradient(at 85% 15%, rgba(255,255,255,0.5), transparent 40%),
+                    radial-gradient(at 75% 85%, rgba(188,211,221,0.35), transparent 45%),
+                    radial-gradient(at 10% 90%, rgba(169,127,56,0.09), transparent 40%),
+                    repeating-linear-gradient(128deg, rgba(26,40,54,0.05) 0px, rgba(26,40,54,0.05) 1px, transparent 1px, transparent 90px);
+        }
+
+        @media (min-width:600px){
+            .wrap{padding:0 28px;}
+            section{padding:70px 0 96px;}
+            .event{padding:30px 40px;}
+            .fp-frame{padding-bottom:44px;}
+            .fp-art-frame{height:420px;margin-bottom:40px;}
+            .rsvp-card{padding:44px 48px;}
+        }
+        @media (max-width:599px){
+            .actions .btn{flex:1 1 100%;}
+            .rsvp-card{padding:26px 18px;}
+            .rsvp-event-header{flex-direction:column;align-items:flex-start;}
+            .presence-options{width:100%;justify-content:center;}
+            .presence-options label{flex:1;text-align:center;}
+            .fp-art-frame{height:240px;}
         }
     </style>
 </head>
-<body>
+<body class="env-locked">
+
+<!-- FILTRE SVG PERLIN NOISE POUR LES PIXELS SCINTILLANTS (APPLE STYLE) -->
+<svg style="display:none;" aria-hidden="true">
+    <filter id="apple-perlin-noise">
+        <feTurbulence id="perlin-turbulence" type="fractalNoise" baseFrequency="0.06 0.08" numOctaves="3" result="noise" />
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="12" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+</svg>
+
 <div id="snow"></div>
 <div id="grain"></div>
-<div id="cover">
-    <div class="cover-aurora"><span></span><span></span><span></span></div>
-    <div class="cover-stars" aria-hidden="true">
-        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+<div class="stardust-field" id="stardust-field"></div>
+
+<!-- ========================= 1. ENVELOPPE VELOURS BORDEAUX (enveloppeReu) ========================= -->
+<div class="envelope-screen" id="envelope-screen">
+    <button class="env-skip" id="btn_skip" type="button">Passer</button>
+
+    <div class="cenv-scene">
+        <!-- En-tête au-dessus de l'enveloppe -->
+        <div class="cenv-intro" id="cenv-intro">
+            <p class="cenv-pre">Vous avez reçu une invitation de</p>
+            <p class="cenv-names">Eden &amp; Ilan</p>
+        </div>
+
+        <!-- L'enveloppe compacte en velours bordeaux -->
+        <div class="cenv-wrap" id="cenv-wrap" role="button" tabindex="0" aria-label="Ouvrir l’invitation">
+            <!-- Fond intérieur de la pochette -->
+            <div class="cenv-back" aria-hidden="true"></div>
+
+            <!-- Carte intérieure (Save the Date avec fond.jpg et textes Eden & Ilan) -->
+            <div class="cenv-card" id="cenv-card">
+                <div class="cenv-card-inner">
+                    <div class="cenv-std">Save the Date</div>
+                    <div class="cenv-cnames">Eden &amp; Ilan</div>
+                    <div class="cenv-rule" aria-hidden="true"></div>
+                    <div class="cenv-date">25&nbsp;·&nbsp;02&nbsp;·&nbsp;2027</div>
+                </div>
+                <button class="cenv-enter-btn" id="btn-enter" type="button">Découvrir l'invitation &darr;</button>
+            </div>
+
+            <!-- Face avant (rabats gauche, droite et bas) -->
+            <div class="cenv-front" aria-hidden="true"></div>
+            <div class="cenv-bottom" aria-hidden="true"></div>
+
+            <!-- Rabat supérieur articulé en 3D -->
+            <div class="cenv-flap" id="cenv-flap" aria-hidden="true">
+                <div class="cenv-flap-face cenv-flap-front"></div>
+                <div class="cenv-flap-face cenv-flap-back"></div>
+            </div>
+
+            <!-- Sceau de cire avec monogramme -->
+            <button class="cenv-seal" id="env-seal" type="button" aria-label="Ouvrir l’invitation">
+                <img src="assets/img/seal-logo.webp" alt="Sceau" width="440" height="439" decoding="async">
+            </button>
+        </div>
+
+        <!-- Indication de clic animée -->
+        <p class="cenv-cta" id="cenv-cta">Cliquer pour ouvrir</p>
     </div>
-    <div class="cover-orbit orbit-a"></div>
-    <div class="cover-orbit orbit-b"></div>
+
+    <!-- Bouton pour rejouer l'ouverture à volonté -->
+    <button class="replay-btn" id="btn-replay" type="button">&#8635; Revoir l'ouverture</button>
+</div>
+
+<!-- ========================= 2. PAGE DE GARDE / ACCUEIL ========================= -->
+<header id="cover">
+    <div class="aurora"><span></span><span></span><span></span></div>
+
     <div class="cover-content">
         <div class="cover-bsd">בס״ד</div>
         <div class="cover-monogram" aria-label="Eden et Ilan">
-            <span>E</span><b>&</b><span>I</span>
+            <span>E</span><b>&amp;</b><span>I</span>
         </div>
         <div class="cover-line"></div>
         <p class="cover-kicker">Notre mariage</p>
         <h1>
-            <span class="cover-name">Eden</span>
-            <em>&</em>
-            <span class="cover-name">Ilan</span>
+            <span>Eden</span>
+            <em>&amp;</em>
+            <span>Ilan</span>
         </h1>
         <p class="cover-hebrew">כֹּל שָׂשׂוֹן וְכָל שִׂמְחָה</p>
 
-        <!-- Compte à rebours avec des caractères agrandis pour une meilleure lisibilité mobile -->
+        <!-- Compte à rebours dynamique -->
         <div class="countdown" id="countdown">
             <div class="cell"><span class="num" id="cd-days">00</span><span class="lbl">jours</span></div>
             <span class="sep">·</span>
@@ -398,66 +1378,728 @@
         <div class="cover-bottom-line"></div>
         <p class="cover-invite">Nous avons l'immense bonheur de vous convier à partager ce moment précieux à nos côtés.</p>
 
-        <!-- Lien vers la page d'invitation principale -->
-        <a class="cover-enter" href="invitations.html">
-            <span>Découvrir l'invitation</span>
+        <!-- Lien direct vers la révélation de date -->
+        <a class="cover-enter" href="#revelation-date">
+            <span>Découvrir la date</span>
         </a>
     </div>
-</div>
+</header>
+
+<!-- ========================================================================== -->
+<!-- 3. DATE EN DEHORS DE L'ONGLET : EFFET ENCRE INVISIBLE APPLE -->
+<!-- ========================================================================== -->
+
+<!-- ========================================================================== -->
+<!-- 4. NAVETTE DYNAMIQUE FLOTTANTE EN BAS (ACCUEIL, MAIRIE, HOUPPA...) -->
+<!-- ========================================================================== -->
+<nav class="bottom-nav-dock" id="bottom-dock" aria-label="Navigation rapide">
+    <div class="nav-pill-indicator" id="nav-pill"></div>
+
+    <a href="#cover" class="nav-item active" data-target="cover">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+        <span>Accueil</span>
+    </a>
+
+    <a href="#mairie" class="nav-item" data-target="mairie">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        <span>Mairie</span>
+    </a>
+
+    <a href="#houppa" class="nav-item" data-target="houppa">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
+        <span>Houppa</span>
+    </a>
+
+    <a href="#shabbat" class="nav-item" data-target="shabbat">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/>
+            <line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/>
+            <line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>
+        <span>Chabbat Hatan</span>
+    </a>
+</nav>
+
+<!-- ========================= 5. PROGRAMME DÉTAILLÉ ========================= -->
+<main>
+    <section id="programme">
+        <div class="wrap">
+            <div class="section-head in-view">
+                <h2>Le programme</h2>
+            </div>
+            <div class="timeline">
+
+                <!-- 1. MAIRIE AVEC mairie.jpg -->
+                <div class="event" id="mairie">
+                    <div class="event-body">
+                        <div class="event-photo-wrap">
+                            <img src="mairie.jpg" alt="Mairie de Levallois-Perret" loading="lazy">
+                        </div>
+                        <div class="event-kicker">Cérémonie civile</div>
+                        <h3>Mairie</h3>
+                        <div class="when">Jeudi 18 février 2027</div>
+                        <div class="where">Mairie de Levallois-Perret<br><span class="addr">1 Place de la République, 92300 Levallois-Perret</span></div>
+                        <div class="note">Nous serons unis civilement, entourés de nos proches, et poursuivrons cette belle soirée par un after.</div>
+                        <div class="actions">
+                            <a class="btn" href="https://waze.com/ul?q=1%20Place%20de%20la%20R%C3%A9publique%2C%2092300%20Levallois-Perret&navigate=yes" target="_blank" rel="noopener">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="9" r="2.4"/></svg>
+                                Itinéraire Waze
+                            </a>
+                            <button class="btn" onclick="downloadIcs('Mairie — Eden & Ilan','Levallois-Perret','2027-02-18')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="16" rx="1"/><path d="M3 9h18M8 3v4M16 3v4"/></svg>
+                                Ajouter au calendrier
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. HOUPPA AVEC palaisr.jpg -->
+                <div class="event faire-part" id="houppa">
+                    <div class="fp-frame">
+                        <div class="fp-corner-bl"></div><div class="fp-corner-br"></div>
+                        <div class="fp-art-frame">
+                            <div class="fp-art-canvas"></div>
+                            <div class="fp-art-overlay"></div>
+                            <div class="fp-art-lights"><span></span><span></span><span></span><span></span></div>
+                        </div>
+                        <div class="event-kicker">Cérémonie religieuse & soirée</div>
+                        <div class="fp-parents">
+                            Mr et Mme Claude Dahan<br>
+                            Mr et Mme Philippe Chiche<br>
+                            Mr et Mme Michael Dahan
+                        </div>
+                        <h3 class="fp-names">Eden <span class="amp">&</span> Ilan</h3>
+                        <div class="when">Jeudi 25 février 2027<br>à 17h30 précises</div>
+                        <div class="where">Au Complexe<br>Pavillon Royal</div>
+                        <div class="actions">
+                            <a class="btn" href="https://waze.com/ul?q=60%20Route%20de%20Garges%2C%2095200%20Sarcelles&navigate=yes" target="_blank" rel="noopener">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="9" r="2.4"/></svg>
+                                Itinéraire Waze
+                            </a>
+                            <button class="btn" onclick="downloadIcs('Houppa & Soirée — Eden & Ilan','Pavillon Royal','2027-02-25')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="16" rx="1"/><path d="M3 9h18M8 3v4M16 3v4"/></svg>
+                                Ajouter au calendrier
+                            </button>
+                        </div>
+
+                        <!-- Mention tenue respectueuse / Tsniout fondue avec finesse -->
+                        <div class="fp-tsniout">
+                            Afin d’honorer la sainteté de notre Houppa, nous vous remercions de privilégier une tenue pudique et raffinée. Que cette harmonie attire d’infinies bénédictions sur nos foyers réunis.
+                        </div>
+
+                        <div class="fp-memory">Une pensée très émue pour nos grands-parents Mamie Odette, Papi Georges, Mamie Louise, Papi Avram, qui nous manqueront tant en ce jour unique.<br>Que leurs bénédictions illuminent notre vie.</div>
+                    </div>
+                </div>
+
+                <!-- 3. CHABBAT HATAN -->
+                <div class="event pending" id="shabbat">
+                    <div class="event-body">
+                        <div class="event-kicker">Le lendemain</div>
+                        <h3>Chabbat Hatan</h3>
+                        <div class="when">Vendredi 26 février 2027</div>
+                        <div class="where">Adresse à venir</div>
+                        <div class="note">Nous serons heureux de partager ce chabbat en famille. Le lieu vous sera communiqué prochainement.</div>
+                        <div class="actions">
+                            <button class="btn ghost" disabled>Itinéraire à venir</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================= 6. RSVP ========================= -->
+    <section id="reponse" class="marble">
+        <div class="wrap">
+            <div class="section-head">
+                <h2>Votre présence</h2>
+                <p>Merci de nous confirmer votre venue pour partager ces moments précieux.</p>
+            </div>
+            <div class="rsvp-card">
+                <form id="rsvp-form">
+                    <div class="form-group">
+                        <label for="nom">Nom & Prénom</label>
+                        <div class="input-box">
+                            <input type="text" id="nom" name="nom" required placeholder="Votre nom complet">
+                        </div>
+                    </div>
+                    <div class="rsvp-events-grid">
+                        <div class="rsvp-event-item" id="rsvp-mairie">
+                            <div class="rsvp-event-header">
+                                <span class="rsvp-event-title">Mairie — 18 février</span>
+                                <div class="presence-options" data-group="mairie">
+                                    <input type="radio" name="mairie-presence" id="mairie-oui" value="oui" checked>
+                                    <label for="mairie-oui">Présent(e)</label>
+                                    <input type="radio" name="mairie-presence" id="mairie-non" value="non">
+                                    <label for="mairie-non">Absent(e)</label>
+                                </div>
+                            </div>
+                            <div class="guests-counts-wrap" id="mairie-counts-wrap">
+                                <div class="count-row">
+                                    <span>Adultes :</span>
+                                    <select id="mairie-adultes" name="mairie-adultes">
+                                        <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option>
+                                    </select>
+                                </div>
+                                <div class="count-row">
+                                    <span>Enfants :</span>
+                                    <select id="mairie-enfants" name="mairie-enfants">
+                                        <option value="0">0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="rsvp-event-item" id="rsvp-houppa">
+                            <div class="rsvp-event-header">
+                                <span class="rsvp-event-title">Houppa & Soirée — 25 février</span>
+                                <div class="presence-options" data-group="houppa">
+                                    <input type="radio" name="houppa-presence" id="houppa-oui" value="oui" checked>
+                                    <label for="houppa-oui">Présent(e)</label>
+                                    <input type="radio" name="houppa-presence" id="houppa-non" value="non">
+                                    <label for="houppa-non">Absent(e)</label>
+                                </div>
+                            </div>
+                            <div class="guests-counts-wrap" id="houppa-counts-wrap">
+                                <div class="count-row">
+                                    <span>Adultes :</span>
+                                    <select id="houppa-adultes" name="houppa-adultes">
+                                        <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option>
+                                    </select>
+                                </div>
+                                <div class="count-row">
+                                    <span>Enfants :</span>
+                                    <select id="houppa-enfants" name="houppa-enfants">
+                                        <option value="0">0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="rsvp-event-item" id="rsvp-shabbat">
+                            <div class="rsvp-event-header">
+                                <span class="rsvp-event-title">Chabbat Hatan — 26 février</span>
+                                <div class="presence-options" data-group="shabbat">
+                                    <input type="radio" name="shabbat-presence" id="shabbat-oui" value="oui" checked>
+                                    <label for="shabbat-oui">Présent(e)</label>
+                                    <input type="radio" name="shabbat-presence" id="shabbat-non" value="non">
+                                    <label for="shabbat-non">Absent(e)</label>
+                                </div>
+                            </div>
+                            <div class="guests-counts-wrap" id="shabbat-counts-wrap">
+                                <div class="count-row">
+                                    <span>Adultes :</span>
+                                    <select id="shabbat-adultes" name="shabbat-adultes">
+                                        <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option>
+                                    </select>
+                                </div>
+                                <div class="count-row">
+                                    <span>Enfants :</span>
+                                    <select id="shabbat-enfants" name="shabbat-enfants">
+                                        <option value="0">0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Un mot pour nous</label>
+                        <div class="input-box">
+                            <textarea id="message" name="message" placeholder="Laissez-nous un message (facultatif)"></textarea>
+                        </div>
+                    </div>
+                    <button type="submit" class="submit-btn">Confirmer ma présence</button>
+                </form>
+                <div class="confirm-msg" id="confirm-msg">Merci infiniment ! Votre réponse a bien été enregistrée.</div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- ========================= 7. FOOTER ========================= -->
+<footer>
+    <div class="footer-fireworks" id="footer-fireworks"></div>
+    <div class="footer-content">
+        <div class="footer-monogram">Eden & Ilan</div>
+        <div class="footer-date">25 · 02 · 2027</div>
+        <div class="footer-flourish">
+            <span class="l"></span>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.5 7.5L22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5z"/></svg>
+            <span class="r"></span>
+        </div>
+        <div class="footer-quote">« Dans la joie et l'allégresse, que notre amour illumine ce nouveau chemin. »</div>
+        <div class="footer-bsd">בס״ד</div>
+    </div>
+</footer>
 
 <script>
-    (function(){
-        var host = document.getElementById('snow');
-        var counts = window.innerWidth < 600 ? {back:10, front:8} : {back:18, front:14};
-        function makeFlakes(cls, count, minSize, maxSize){
-            for(var i=0;i<count;i++){
-                var f = document.createElement('div');
-                f.className = 'flake '+cls;
-                var size = minSize + Math.random()*(maxSize-minSize);
-                f.style.width = size+'px';
-                f.style.height = size+'px';
-                f.style.left = Math.random()*100+'vw';
-                f.style.setProperty('--drift', (Math.random()*70-35)+'px');
-                var dur = 14 + Math.random()*16;
-                f.style.animationDuration = dur+'s';
-                f.style.animationDelay = (-Math.random()*dur)+'s';
-                host.appendChild(f);
+    // 1. Gestion de l'ouverture de l'enveloppe (enveloppeReu)
+    (function() {
+        var screen = document.getElementById('envelope-screen');
+        var wrap   = document.getElementById('cenv-wrap');
+        var seal   = document.getElementById('env-seal');
+        var flap   = document.getElementById('cenv-flap');
+        var card   = document.getElementById('cenv-card');
+        var replay = document.getElementById('btn-replay');
+        var skip   = document.getElementById('btn_skip');
+        var enter  = document.getElementById('btn-enter');
+
+        var sequenceStarted = false;
+        var timers = [];
+        var autoRevealTimer = null;
+
+        function clearAllTimers() {
+            timers.forEach(clearTimeout);
+            timers = [];
+            if (autoRevealTimer) {
+                clearTimeout(autoRevealTimer);
+                autoRevealTimer = null;
             }
         }
-        makeFlakes('back', counts.back, 2, 4);
-        makeFlakes('front', counts.front, 3, 5.5);
+
+        function revealSite() {
+            clearAllTimers();
+            document.body.classList.add('revealed');
+            document.body.classList.remove('env-locked');
+            setTimeout(function() {
+                if (typeof initDockPosition === 'function') {
+                    initDockPosition();
+                }
+            }, 300);
+        }
+
+        function openEnvelope() {
+            if (sequenceStarted) return;
+            sequenceStarted = true;
+
+            screen.classList.add('cenv-opened');
+
+            // 1. Le sceau s'enfonce brièvement puis saute (pop)
+            seal.classList.add('cenv-press');
+            timers.push(setTimeout(function() {
+                seal.classList.remove('cenv-press');
+                seal.classList.add('cenv-pop');
+            }, 120));
+
+            // 2. Le rabat supérieur pivote en 3D (départ 250ms, durée 700ms)
+            timers.push(setTimeout(function() {
+                flap.classList.add('cenv-open');
+                // À mi-course de la rotation, il passe derrière la carte
+                timers.push(setTimeout(function() { flap.classList.add('cenv-behind'); }, 340));
+            }, 250));
+
+            // 3. La carte-invitation glisse hors de la pochette
+            timers.push(setTimeout(function() {
+                card.classList.add('cenv-sliding');
+            }, 650));
+
+            // 4. La carte grandit, s'installe au centre et devient bien lisible
+            timers.push(setTimeout(function() {
+                card.classList.add('cenv-grow');
+            }, 1050));
+
+            // 5. L'enveloppe vide s'incline et s'efface délicatement vers le bas
+            timers.push(setTimeout(function() {
+                wrap.classList.add('cenv-away');
+            }, 1350));
+
+            // 6. Révélation automatique du site après lecture de la carte (~3.8s)
+            autoRevealTimer = setTimeout(function() {
+                revealSite();
+            }, 3800);
+        }
+
+        function replayEnvelope() {
+            clearAllTimers();
+            sequenceStarted = false;
+
+            document.body.classList.remove('revealed');
+            document.body.classList.add('env-locked');
+
+            // Réinitialise toutes les classes d'animation
+            screen.classList.remove('cenv-opened');
+            wrap.classList.remove('cenv-away');
+            card.classList.remove('cenv-sliding', 'cenv-grow');
+            flap.classList.remove('cenv-open', 'cenv-behind');
+            seal.classList.remove('cenv-press', 'cenv-pop');
+        }
+
+        // Clic sur le sceau ou l'enveloppe pour ouvrir
+        if (seal) {
+            seal.addEventListener('click', function(e) {
+                e.stopPropagation();
+                openEnvelope();
+            });
+        }
+        if (wrap) {
+            wrap.addEventListener('click', function() {
+                if (!sequenceStarted) openEnvelope();
+            });
+            wrap.addEventListener('keydown', function(e) {
+                if ((e.key === 'Enter' || e.key === ' ') && !sequenceStarted) {
+                    e.preventDefault();
+                    openEnvelope();
+                }
+            });
+        }
+
+        // Clic sur la carte agrandie ou sur le bouton "Découvrir l'invitation" pour entrer directement
+        if (card) {
+            card.addEventListener('click', function(e) {
+                if (card.classList.contains('cenv-grow')) {
+                    revealSite();
+                }
+            });
+        }
+        if (enter) {
+            enter.addEventListener('click', function(e) {
+                e.stopPropagation();
+                revealSite();
+            });
+        }
+
+        // Bouton Passer
+        if (skip) {
+            skip.addEventListener('click', function(e) {
+                e.stopPropagation();
+                revealSite();
+            });
+        }
+
+        // Bouton Rejouer
+        if (replay) {
+            replay.addEventListener('click', function(e) {
+                e.stopPropagation();
+                replayEnvelope();
+            });
+        }
+
+        // Touche Échap pour rejouer l'animation
+        window.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && sequenceStarted) {
+                replayEnvelope();
+            }
+        });
     })();
 
-    // Compte à rebours
-    (function(){
-        var target = new Date('2027-02-25T00:00:00');
-        var prev = {d:null,h:null,m:null,s:null};
-        function setNum(id, val, key){
-            var el = document.getElementById(id);
-            if(!el) return;
-            var str = String(val).padStart(2,'0');
-            if(prev[key] !== str){
-                el.classList.add('tick');
-                setTimeout(function(){ el.classList.remove('tick'); }, 350);
-                prev[key] = str;
+    // 2. NAVETTE DYNAMIQUE EN BAS AVEC DÉTECTION AU CENTRE DE L'ÉCRAN
+    var navPill = document.getElementById('nav-pill');
+    var navItems = document.querySelectorAll('.bottom-nav-dock .nav-item');
+    var isManualScrolling = false;
+    var manualScrollTimeout = null;
+
+    function moveIndicator(el) {
+        if(!el || !navPill) return;
+        navItems.forEach(function(item){ item.classList.remove('active'); });
+        el.classList.add('active');
+        navPill.style.width = el.offsetWidth + 'px';
+        navPill.style.transform = 'translateX(' + (el.offsetLeft - 6) + 'px)';
+    }
+
+    function initDockPosition() {
+        var currentActive = document.querySelector('.bottom-nav-dock .nav-item.active') || navItems[0];
+        if(currentActive) moveIndicator(currentActive);
+    }
+
+    // Gestion du clic avec verrouillage temporaire du ScrollSpy
+    navItems.forEach(function(item) {
+        item.addEventListener('click', function() {
+            moveIndicator(this);
+            isManualScrolling = true;
+            clearTimeout(manualScrollTimeout);
+            manualScrollTimeout = setTimeout(function() {
+                isManualScrolling = false;
+            }, 800);
+        });
+    });
+
+    // ScrollSpy précis : bascule quand le titre / la zone clé franchit le centre de l'écran
+    window.addEventListener('scroll', function() {
+        if (isManualScrolling) return;
+
+        var centerScreen = window.innerHeight / 2;
+        var targets = [
+            { id: 'cover', el: document.getElementById('cover') },
+            { id: 'mairie', el: document.getElementById('mairie') },
+            { id: 'houppa', el: document.getElementById('houppa') },
+            { id: 'shabbat', el: document.getElementById('shabbat') }
+        ];
+
+        var activeId = 'cover';
+
+        for (var i = 0; i < targets.length; i++) {
+            var item = targets[i];
+            if (item.el) {
+                var title = item.el.querySelector('h1, h2, h3') || item.el;
+                var rect = title.getBoundingClientRect();
+
+                if (rect.top <= centerScreen + 50) {
+                    activeId = item.id;
+                }
             }
-            el.textContent = str;
         }
-        function tick(){
+
+// Si on arrive tout en bas de page
+        if ((window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 60)) {
+            activeId = 'shabbat';
+        }
+
+        var matchBtn = document.querySelector('.bottom-nav-dock .nav-item[data-target="' + activeId + '"]');
+        if (matchBtn && !matchBtn.classList.contains('active')) {
+            moveIndicator(matchBtn);
+        }
+    }, { passive: true });
+
+    window.addEventListener('resize', function(){
+        var active = document.querySelector('.bottom-nav-dock .nav-item.active');
+        if (active) moveIndicator(active);
+    });
+
+    // 3. EFFET APPLE ENCRE INVISIBLE : ANIMATION PERLIN NOISE & PARTICULES
+    var perlinTurbulence = document.getElementById('perlin-turbulence');
+    var stardustContainer = document.getElementById('stardust-field');
+    var invisibleBox = document.getElementById('invisible-box');
+    var seed = 0;
+
+    function animatePerlin() {
+        if (perlinTurbulence) {
+            seed += 0.004;
+            var freqX = 0.055 + Math.sin(seed) * 0.015;
+            var freqY = 0.075 + Math.cos(seed) * 0.015;
+            perlinTurbulence.setAttribute('baseFrequency', freqX + ' ' + freqY);
+        }
+        requestAnimationFrame(animatePerlin);
+    }
+    requestAnimationFrame(animatePerlin);
+
+    function spawnAppleStar(x, y, count) {
+        if (!stardustContainer) return;
+        var c = count || 3;
+        for (var i = 0; i < c; i++) {
+            var star = document.createElement('div');
+            star.className = 'apple-star';
+            var sz = 3 + Math.random() * 6;
+            star.style.width = sz + 'px';
+            star.style.height = sz + 'px';
+            star.style.left = x + 'px';
+            star.style.top = y + 'px';
+
+            var angle = Math.random() * Math.PI * 2;
+            var dist = 18 + Math.random() * 45;
+            star.style.setProperty('--vx', Math.cos(angle) * dist + 'px');
+            star.style.setProperty('--vy', Math.sin(angle) * dist + 'px');
+
+            stardustContainer.appendChild(star);
+            setTimeout((function(el){
+                return function(){ if(el.parentNode) el.parentNode.removeChild(el); };
+            })(star), 850);
+        }
+    }
+
+    if (invisibleBox) {
+        invisibleBox.addEventListener('mouseenter', function(e) {
+            spawnAppleStar(e.clientX, e.clientY, 4);
+        });
+
+        invisibleBox.addEventListener('click', function(e) {
+            this.classList.toggle('revealed');
+            spawnAppleStar(e.clientX, e.clientY, 8);
+        });
+
+        invisibleBox.addEventListener('touchmove', function(e) {
+            if (e.touches && e.touches[0]) {
+                spawnAppleStar(e.touches[0].clientX, e.touches[0].clientY, 2);
+            }
+        }, { passive: true });
+    }
+
+    // 4. Compte à rebours dynamique
+    (function(){
+        var target = new Date('2027-02-25T17:30:00');
+        function setVal(id, val){
+            var el = document.getElementById(id);
+            if(el) el.textContent = String(val).padStart(2, '0');
+        }
+        function updateCountdown(){
             var now = new Date();
             var diff = Math.max(0, target - now);
-            var d = Math.floor(diff / 86400000);
-            var h = Math.floor(diff / 3600000) % 24;
-            var m = Math.floor(diff / 60000) % 60;
-            var s = Math.floor(diff / 1000) % 60;
-            setNum('cd-days', d, 'd');
-            setNum('cd-hours', h, 'h');
-            setNum('cd-min', m, 'm');
-            setNum('cd-sec', s, 's');
+            setVal('cd-days', Math.floor(diff / 86400000));
+            setVal('cd-hours', Math.floor(diff / 3600000) % 24);
+            setVal('cd-min', Math.floor(diff / 60000) % 60);
+            setVal('cd-sec', Math.floor(diff / 1000) % 60);
         }
-        tick();
-        setInterval(tick, 1000);
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
     })();
+
+    // 5. Pétales et étincelles dorées
+    (function(){
+        var host = document.getElementById('snow');
+        var petalCount = window.innerWidth < 600 ? 12 : 20;
+        var sparkleCount = window.innerWidth < 600 ? 10 : 18;
+        for(var i=0; i<petalCount; i++){
+            var p = document.createElement('div');
+            p.className = 'petal';
+            var size = 12 + Math.random()*12;
+            p.style.width = size+'px';
+            p.style.height = (size * 1.3)+'px';
+            p.style.left = Math.random()*100+'vw';
+            p.style.setProperty('--drift-mid', (Math.random()*80-40)+'px');
+            p.style.setProperty('--drift-end', (Math.random()*80-40)+'px');
+            var dur = 10 + Math.random()*9;
+            p.style.animationDuration = dur+'s';
+            p.style.animationDelay = (-Math.random()*dur)+'s';
+            host.appendChild(p);
+        }
+        for(var j=0; j<sparkleCount; j++){
+            var s = document.createElement('div');
+            s.className = 'gold-sparkle';
+            var sSize = 3 + Math.random()*4;
+            s.style.width = sSize+'px';
+            s.style.height = sSize+'px';
+            s.style.left = Math.random()*100+'vw';
+            s.style.setProperty('--sparkle-drift', (Math.random()*60-30)+'px');
+            var sDur = 6 + Math.random()*6;
+            s.style.animationDuration = sDur+'s';
+            s.style.animationDelay = (-Math.random()*sDur)+'s';
+            host.appendChild(s);
+        }
+    })();
+
+    // 6. Feux d'artifice dans le footer
+    (function(){
+        var fwContainer = document.getElementById('footer-fireworks');
+        if(!fwContainer) return;
+        for(var k=0; k<12; k++){
+            var f = document.createElement('div');
+            f.className = 'firework-particle';
+            f.style.left = (15 + Math.random() * 70) + '%';
+            f.style.setProperty('--start-x', (Math.random() * 40 - 20) + 'px');
+            f.style.setProperty('--end-x', (Math.random() * 120 - 60) + 'px');
+            f.style.setProperty('--end-y', (-60 - Math.random() * 80) + 'px');
+            var fDur = 2.5 + Math.random() * 2;
+            f.style.animationDuration = fDur + 's';
+            f.style.animationDelay = (-Math.random() * fDur) + 's';
+            fwContainer.appendChild(f);
+        }
+    })();
+
+    // 7. Animations au scroll
+    (function(){
+        var targets = document.querySelectorAll('.event, .section-head');
+        var io = new IntersectionObserver(function(entries){
+            entries.forEach(function(entry){
+                if(entry.isIntersecting){
+                    entry.target.classList.add('in-view');
+                    io.unobserve(entry.target);
+                }
+            });
+        }, {threshold:0.15});
+        targets.forEach(function(t){ io.observe(t); });
+    })();
+
+    // 8. Fichier ICS Téléchargeable
+    function downloadIcs(title, location, dateStr){
+        var d = dateStr.replace(/-/g,'');
+        var ics = [
+            'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Eden et Ilan//Mariage//FR',
+            'BEGIN:VEVENT',
+            'UID:'+d+'-'+Math.random().toString(36).slice(2)+'@eden-ilan',
+            'DTSTAMP:'+d+'T000000Z',
+            'DTSTART;VALUE=DATE:'+d,
+            'DTEND;VALUE=DATE:'+d,
+            'SUMMARY:'+title,
+            'LOCATION:'+location,
+            'DESCRIPTION:Mariage Eden & Ilan',
+            'END:VEVENT','END:VCALENDAR'
+        ].join('\r\n');
+        var blob = new Blob([ics], {type:'text/calendar'});
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = title.replace(/[^a-z0-9]+/gi,'-').toLowerCase()+'.ics';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    // 9. Formulaire RSVP
+    (function(){
+        var mapping = [
+            { group: 'mairie-presence', wrap: 'mairie-counts-wrap' },
+            { group: 'houppa-presence', wrap: 'houppa-counts-wrap' },
+            { group: 'shabbat-presence', wrap: 'shabbat-counts-wrap' }
+        ];
+        mapping.forEach(function(item){
+            var radios = document.querySelectorAll('input[name="'+item.group+'"]');
+            var wrap = document.getElementById(item.wrap);
+            if(!radios.length || !wrap) return;
+            function sync(){
+                var checked = document.querySelector('input[name="'+item.group+'"]:checked');
+                wrap.classList.toggle('is-hidden', checked && checked.value === 'non');
+            }
+            radios.forEach(function(r){ r.addEventListener('change', sync); });
+            sync();
+        });
+    })();
+
+    var SHEET_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzrHvIXBmpMvPRLxpapbqnqaEv0wRVhQPVbLrZf0Edf0keF8_RJRTOdfMW3-N_93vf-wg/exec";
+    var rsvpForm = document.getElementById('rsvp-form');
+    var submitBtn = rsvpForm.querySelector('.submit-btn');
+    var confirmMsg = document.getElementById('confirm-msg');
+
+    rsvpForm.addEventListener('submit', function(e){
+        e.preventDefault();
+        var nom = document.getElementById('nom').value.trim();
+        if(!nom){ alert('Merci de renseigner votre nom et prénom.'); return; }
+        function line(label, groupName, adultId, childId){
+            var radioChecked = document.querySelector('input[name="'+groupName+'"]:checked');
+            if(!radioChecked) return null;
+            if(radioChecked.value === 'non') return label + ' : Non';
+            return label + ' : Oui (' + document.getElementById(adultId).value + ' adulte(s), ' + document.getElementById(childId).value + ' enfant(s))';
+        }
+        var payload = {
+            nom: nom,
+            mairie: line('Mairie', 'mairie-presence', 'mairie-adultes', 'mairie-enfants') || 'Masqué',
+            houppa: line('Houppa', 'houppa-presence', 'houppa-adultes', 'houppa-enfants') || 'Masqué',
+            shabbat: line('Chabbat', 'shabbat-presence', 'shabbat-adultes', 'shabbat-enfants') || 'Masqué',
+            message: document.getElementById('message').value.trim()
+        };
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Envoi en cours…';
+        fetch(SHEET_WEBAPP_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {'Content-Type': 'text/plain;charset=utf-8'},
+            body: JSON.stringify(payload)
+        }).then(function(){
+            confirmMsg.textContent = 'Merci ! Votre réponse a bien été enregistrée.';
+            confirmMsg.classList.add('show');
+            rsvpForm.reset();
+            document.querySelectorAll('.guests-counts-wrap').forEach(function(gc){ gc.classList.remove('is-hidden'); });
+            confirmMsg.scrollIntoView({behavior:'smooth', block:'center'});
+        }).catch(function(){
+            alert("Une erreur est survenue lors de l'envoi. Merci de réessayer.");
+        }).finally(function(){
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Confirmer ma présence';
+        });
+    });
 </script>
 </body>
 </html>

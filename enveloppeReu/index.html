@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Enveloppe — Liora &amp; Joshua</title>
+
+    <!-- Préchargement des polices et visuels clés -->
+    <link rel="preload" as="font" type="font/woff2" href="assets/fonts/pinyon-script-latin-400-normal.woff2" crossorigin>
+    <link rel="preload" as="font" type="font/woff2" href="assets/fonts/cormorant-garamond-latin-400-normal.woff2" crossorigin>
+    <link rel="preload" as="font" type="font/woff2" href="assets/fonts/marcellus-latin-400-normal.woff2" crossorigin>
+    <link rel="preload" as="image" href="assets/img/seal-logo.webp">
+    <link rel="preload" as="image" href="assets/img/velvet-pocket.webp">
+    <link rel="preload" as="image" href="assets/img/velvet-flap.webp">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="envelope-screen" id="envelope">
+    <div class="cenv-scene">
+
+        <!-- En-tête au-dessus de l'enveloppe -->
+        <div class="cenv-intro" id="cenv-intro">
+            <p class="cenv-pre">Vous avez reçu une lettre de</p>
+            <p class="cenv-names">Liora &amp; Joshua</p>
+        </div>
+
+        <!-- L'enveloppe compacte en velours bordeaux -->
+        <div class="cenv-wrap" id="cenv-wrap" role="button" tabindex="0" aria-label="Ouvrir l’invitation">
+            <!-- Fond intérieur de la pochette -->
+            <div class="cenv-back" aria-hidden="true"></div>
+
+            <!-- Carte intérieure (Save the Date) -->
+            <div class="cenv-card" id="cenv-card">
+                <div class="cenv-card-inner">
+                    <div class="cenv-std">Save the Date</div>
+                    <div class="cenv-cnames">Liora &amp; Joshua</div>
+                    <div class="cenv-rule" aria-hidden="true"></div>
+                    <div class="cenv-date">11&nbsp;·&nbsp;11&nbsp;·&nbsp;2026</div>
+                    <div class="cenv-venue">Grande Synagogue de la Victoire, Paris</div>
+                </div>
+            </div>
+
+            <!-- Face avant (rabats gauche, droite et bas) -->
+            <div class="cenv-front" aria-hidden="true"></div>
+            <div class="cenv-bottom" aria-hidden="true"></div>
+
+            <!-- Rabat supérieur articulé en 3D -->
+            <div class="cenv-flap" id="cenv-flap" aria-hidden="true">
+                <div class="cenv-flap-face cenv-flap-front"></div>
+                <div class="cenv-flap-face cenv-flap-back"></div>
+            </div>
+
+            <!-- Sceau de cire avec monogramme -->
+            <button class="cenv-seal" id="env-seal" type="button" aria-label="Ouvrir l’invitation">
+                <img src="assets/img/seal-logo.webp" alt="Sceau" width="440" height="439" decoding="async">
+            </button>
+        </div>
+
+        <!-- Indication de clic animée -->
+        <p class="cenv-cta" id="cenv-cta">Cliquer pour ouvrir</p>
+
+    </div>
+
+    <!-- Bouton pour rejouer l'ouverture à volonté -->
+    <button class="replay-btn" id="btn-replay" type="button">↻ Revoir l'ouverture</button>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
