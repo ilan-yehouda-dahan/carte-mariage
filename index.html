@@ -117,11 +117,16 @@
             font-family:'Jost', sans-serif;
             font-weight:300;
             -webkit-font-smoothing:antialiased;
-            overflow-x:hidden;
-            padding-bottom: 90px;
+            overflow-x: clip;
+            padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px));
+        }
+        @media (max-width: 768px) {
+            body {
+                background-attachment: scroll; /* Évite les saccades et le lag de repaint sur mobile */
+            }
         }
         body.env-locked {
-            overflow: hidden;
+            overflow: hidden !important;
             height: 100vh;
             height: 100svh;
             padding-bottom: 0;
@@ -197,13 +202,13 @@
             color: var(--ink, #1f2430);
             user-select: none;
             -webkit-user-select: none;
-            transition: opacity 0.9s cubic-bezier(.4, 0, .2, 1), visibility 0.9s ease;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
         }
 
         body.revealed .envelope-screen {
             opacity: 0;
             visibility: hidden;
-            pointer-events: none;
+            pointer-events: none !important;
         }
 
         .cenv-scene {
@@ -294,9 +299,10 @@
         }
 
         .cenv-wrap.cenv-away {
-            transition: transform 900ms cubic-bezier(0.5, 0, 0.75, 0.4), opacity 700ms ease 150ms;
-            transform: scale(var(--cs)) translateY(55vh) rotate(4deg) !important;
-            opacity: 0.15;
+            transition: transform 700ms cubic-bezier(0.4, 0, 0.2, 1), opacity 500ms ease;
+            transform: scale(var(--cs)) translateY(120vh) rotate(6deg) !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
         }
 
         /* Dos de l'enveloppe (fond de poche) */
@@ -934,30 +940,33 @@
         /* ==================== NAVETTE EN BAS ==================== */
         .bottom-nav-dock {
             position: fixed;
-            bottom: 20px;
+            bottom: calc(14px + env(safe-area-inset-bottom, 0px));
             left: 50%;
-            transform: translateX(-50%) translateY(120%);
-            z-index: 90;
+            transform: translateX(-50%) translateY(140%);
+            -webkit-transform: translateX(-50%) translateY(140%);
+            z-index: 9999; /* Toujours au premier plan au-dessus de toutes les sections */
             display: flex;
             align-items: center;
             padding: 6px;
             border-radius: 999px;
-            background: rgba(250, 245, 238, 0.78);
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
-            border: 1px solid rgba(184, 150, 99, 0.35);
+            background: rgba(250, 245, 238, 0.88);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(184, 150, 99, 0.4);
             box-shadow:
-                    0 16px 36px -10px rgba(31, 36, 48, 0.22),
-                    0 0 0 1px rgba(255, 255, 255, 0.6) inset,
+                    0 12px 32px -8px rgba(31, 36, 48, 0.28),
+                    0 0 0 1px rgba(255, 255, 255, 0.75) inset,
                     0 0 20px -3px var(--gold-glow);
-            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease;
-            max-width: calc(100vw - 28px);
+            transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+            max-width: calc(100vw - 20px);
             opacity: 0;
             pointer-events: none;
+            will-change: transform, opacity;
         }
 
         body.revealed .bottom-nav-dock {
             transform: translateX(-50%) translateY(0);
+            -webkit-transform: translateX(-50%) translateY(0);
             opacity: 1;
             pointer-events: auto;
         }
@@ -970,7 +979,7 @@
             background: linear-gradient(135deg, rgba(184, 150, 99, 0.95), rgba(138, 105, 59, 0.95));
             border-radius: 999px;
             box-shadow: 0 4px 14px var(--gold-glow);
-            transition: transform 0.42s cubic-bezier(0.34, 1.45, 0.64, 1), width 0.38s ease;
+            transition: transform 0.35s cubic-bezier(0.34, 1.3, 0.64, 1), width 0.3s ease;
             pointer-events: none;
             z-index: 1;
             width: 0;
@@ -993,23 +1002,36 @@
             white-space: nowrap;
             transition: color 0.25s ease, transform 0.2s ease;
             user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        .nav-item svg { width: 13px; height: 13px; transition: transform 0.25s ease; }
+        .nav-item svg { width: 13px; height: 13px; transition: transform 0.25s ease; flex-shrink: 0; }
         .nav-item:hover { color: var(--gold-deep); transform: translateY(-1px); }
         .nav-item:hover svg { transform: scale(1.15); }
         .nav-item.active { color: #ffffff; }
         .nav-item.active svg { color: #ffffff; stroke: #ffffff; }
 
         @media (max-width: 650px) {
-            .bottom-nav-dock { bottom: 14px; padding: 4px; gap: 2px; }
-            .nav-item { padding: 7px 11px; font-size: 9.5px; letter-spacing: 0.08em; gap: 4px; }
+            .bottom-nav-dock {
+                bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+                padding: 4px;
+                gap: 2px;
+                max-width: calc(100vw - 16px);
+            }
+            .nav-pill-indicator { top: 4px; height: calc(100% - 8px); }
+            .nav-item { padding: 8px 11px; font-size: 9.5px; letter-spacing: 0.06em; gap: 4px; }
             .nav-item svg { width: 11px; height: 11px; }
         }
 
-        @media (max-width: 420px) {
-            .nav-item span { font-size: 8.5px; letter-spacing: 0.05em; }
-            .nav-item { padding: 6px 8px; }
+        @media (max-width: 380px) {
+            .bottom-nav-dock {
+                bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+                padding: 3px;
+                gap: 1px;
+                max-width: calc(100vw - 10px);
+            }
+            .nav-item { padding: 7px 7px; font-size: 8.5px; letter-spacing: 0.03em; gap: 3px; }
+            .nav-item svg { width: 10px; height: 10px; }
         }
 
         /* ==================== SECTIONS PROGRAMME ==================== */
@@ -1671,15 +1693,23 @@
             }
         }
 
-        function revealSite() {
+        function revealSite(fast) {
             clearAllTimers();
+            if (screen) {
+                if (fast) {
+                    screen.style.transition = 'opacity 0.2s ease, visibility 0.2s ease';
+                } else {
+                    screen.style.transition = 'opacity 0.38s ease, visibility 0.38s ease';
+                }
+                screen.style.pointerEvents = 'none';
+            }
             document.body.classList.add('revealed');
             document.body.classList.remove('env-locked');
             setTimeout(function() {
                 if (typeof initDockPosition === 'function') {
                     initDockPosition();
                 }
-            }, 300);
+            }, 60);
         }
 
         function openEnvelope() {
@@ -1688,44 +1718,48 @@
 
             screen.classList.add('cenv-opened');
 
-            // 1. Le sceau s'enfonce brièvement puis saute (pop)
+            // 1. Le sceau saute rapidement
             seal.classList.add('cenv-press');
             timers.push(setTimeout(function() {
                 seal.classList.remove('cenv-press');
                 seal.classList.add('cenv-pop');
-            }, 120));
+            }, 90));
 
-            // 2. Le rabat supérieur pivote en 3D (départ 250ms, durée 700ms)
+            // 2. Le rabat supérieur pivote en 3D
             timers.push(setTimeout(function() {
                 flap.classList.add('cenv-open');
-                // À mi-course de la rotation, il passe derrière la carte
-                timers.push(setTimeout(function() { flap.classList.add('cenv-behind'); }, 340));
-            }, 250));
+                timers.push(setTimeout(function() { flap.classList.add('cenv-behind'); }, 220));
+            }, 160));
 
-            // 3. La carte-invitation glisse hors de la pochette
+            // 3. La carte glisse hors de la pochette
             timers.push(setTimeout(function() {
                 card.classList.add('cenv-sliding');
-            }, 650));
+            }, 420));
 
-            // 4. La carte grandit, s'installe au centre et devient bien lisible
+            // 4. La carte grandit au centre
             timers.push(setTimeout(function() {
                 card.classList.add('cenv-grow');
-            }, 1050));
+            }, 720));
 
-            // 5. L'enveloppe vide s'incline et s'efface délicatement vers le bas
+            // 5. L'enveloppe descend et disparaît complètement sans bloquer en bas
             timers.push(setTimeout(function() {
                 wrap.classList.add('cenv-away');
-            }, 1350));
+            }, 900));
 
-            // 6. Révélation automatique du site après lecture de la carte (~3.8s)
+            // 6. Révélation automatique rapide du site (~2.1s au lieu de 3.8s)
             autoRevealTimer = setTimeout(function() {
-                revealSite();
-            }, 3800);
+                revealSite(false);
+            }, 2100);
         }
 
         function replayEnvelope() {
             clearAllTimers();
             sequenceStarted = false;
+
+            if (screen) {
+                screen.style.transition = '';
+                screen.style.pointerEvents = '';
+            }
 
             document.body.classList.remove('revealed');
             document.body.classList.add('env-locked');
@@ -1757,26 +1791,34 @@
             });
         }
 
-        // Clic sur la carte agrandie ou sur le bouton "Découvrir l'invitation" pour entrer directement
+        // Clic sur la carte ou le bouton entrer : passage immédiat sans attente
         if (card) {
             card.addEventListener('click', function(e) {
-                if (card.classList.contains('cenv-grow')) {
-                    revealSite();
-                }
+                e.stopPropagation();
+                revealSite(false);
             });
         }
         if (enter) {
             enter.addEventListener('click', function(e) {
                 e.stopPropagation();
-                revealSite();
+                revealSite(false);
             });
         }
 
-        // Bouton Passer
+        // Clic sur l'écran pendant l'ouverture : passe directement au site
+        if (screen) {
+            screen.addEventListener('click', function(e) {
+                if (sequenceStarted) {
+                    revealSite(false);
+                }
+            });
+        }
+
+        // Bouton Passer : passage instantané zéro latence
         if (skip) {
             skip.addEventListener('click', function(e) {
                 e.stopPropagation();
-                revealSite();
+                revealSite(true);
             });
         }
 
@@ -1806,14 +1848,17 @@
         if(!el || !navPill) return;
         navItems.forEach(function(item){ item.classList.remove('active'); });
         el.classList.add('active');
+        var offset = window.innerWidth <= 650 ? 4 : 6;
         navPill.style.width = el.offsetWidth + 'px';
-        navPill.style.transform = 'translateX(' + (el.offsetLeft - 6) + 'px)';
+        navPill.style.transform = 'translateX(' + (el.offsetLeft - offset) + 'px)';
     }
 
     function initDockPosition() {
         var currentActive = document.querySelector('.bottom-nav-dock .nav-item.active') || navItems[0];
         if(currentActive) moveIndicator(currentActive);
     }
+    document.addEventListener('DOMContentLoaded', initDockPosition);
+    window.addEventListener('load', initDockPosition);
 
     // Gestion du clic avec verrouillage temporaire du ScrollSpy
     navItems.forEach(function(item) {
@@ -1853,7 +1898,7 @@
             }
         }
 
-// Si on arrive tout en bas de page
+        // Si on arrive tout en bas de page
         if ((window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 60)) {
             activeId = 'shabbat';
         }
@@ -1874,17 +1919,20 @@
     var stardustContainer = document.getElementById('stardust-field');
     var invisibleBox = document.getElementById('invisible-box');
     var seed = 0;
+    var isMobile = ('ontouchstart' in window) || (window.innerWidth < 768);
 
     function animatePerlin() {
-        if (perlinTurbulence) {
+        if (!isMobile && perlinTurbulence) {
             seed += 0.004;
             var freqX = 0.055 + Math.sin(seed) * 0.015;
             var freqY = 0.075 + Math.cos(seed) * 0.015;
             perlinTurbulence.setAttribute('baseFrequency', freqX + ' ' + freqY);
+            requestAnimationFrame(animatePerlin);
         }
+    }
+    if (!isMobile) {
         requestAnimationFrame(animatePerlin);
     }
-    requestAnimationFrame(animatePerlin);
 
     function spawnAppleStar(x, y, count) {
         if (!stardustContainer) return;
