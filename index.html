@@ -106,24 +106,28 @@
         body{
             margin:0;
             background-color: #f7f3ec;
-            background-image:
-                radial-gradient(ellipse at 50% 35%, rgba(255, 255, 255, 0.72) 0%, rgba(255, 255, 255, 0.45) 55%, rgba(247, 243, 236, 0.70) 100%),
-                url('fond.jpg');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            background-repeat: no-repeat;
             color:var(--ink);
             font-family:'Jost', sans-serif;
             font-weight:300;
             -webkit-font-smoothing:antialiased;
             overflow-x: clip;
             padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px));
+            position: relative;
         }
-        @media (max-width: 768px) {
-            body {
-                background-attachment: scroll; /* Évite les saccades et le lag de repaint sur mobile */
-            }
+        /* Fond en marbre toujours net et visible sur mobile (pas d'étirement sur 5000px) */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            background-color: #f7f3ec;
+            background-image:
+                radial-gradient(ellipse at 50% 35%, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.30) 55%, rgba(247, 243, 236, 0.55) 100%),
+                url('fond.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            pointer-events: none;
         }
         body.env-locked {
             overflow: hidden !important;
@@ -299,8 +303,8 @@
         }
 
         .cenv-wrap.cenv-away {
-            transition: transform 700ms cubic-bezier(0.4, 0, 0.2, 1), opacity 500ms ease;
-            transform: scale(var(--cs)) translateY(120vh) rotate(6deg) !important;
+            transition: transform 1.25s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: scale(var(--cs)) translateY(125vh) rotate(5deg) !important;
             opacity: 0 !important;
             pointer-events: none !important;
         }
@@ -808,10 +812,15 @@
             max-width: 520px;
             margin: 0 auto;
             position: relative;
-            background: rgba(255, 255, 255, 0.90);
+            background-color: #fbf7f1;
+            background-image:
+                radial-gradient(ellipse at 50% 30%, rgba(255, 255, 255, 0.88) 0%, rgba(255, 255, 255, 0.65) 60%, rgba(247, 243, 236, 0.82) 100%),
+                url('fond.jpg');
+            background-size: cover;
+            background-position: center;
             backdrop-filter: blur(14px);
             -webkit-backdrop-filter: blur(14px);
-            border: 1px solid rgba(184, 150, 99, 0.35);
+            border: 1px solid rgba(184, 150, 99, 0.40);
             border-radius: 28px;
             padding: 34px 24px;
             box-shadow:
@@ -1047,10 +1056,16 @@
         .timeline{position:relative;display:flex;flex-direction:column;gap:26px;}
         .event{
             position:relative;display:flex;gap:20px;
-            background:rgba(255,255,255,0.93);border:1px solid var(--line);
+            background-color: #fbf7f1;
+            background-image:
+                radial-gradient(ellipse at 50% 30%, rgba(255, 255, 255, 0.90) 0%, rgba(255, 255, 255, 0.70) 65%, rgba(247, 243, 236, 0.85) 100%),
+                url('fond.jpg');
+            background-size: cover;
+            background-position: center;
+            border:1px solid rgba(184, 150, 99, 0.35);
             border-radius:30px;padding:24px;opacity:0;transform:translateY(24px);
             transition:opacity .8s ease, transform .8s ease;
-            box-shadow:0 18px 38px -28px rgba(31,36,48,0.22);
+            box-shadow:0 18px 38px -20px rgba(31,36,48,0.18);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             scroll-margin-top: 50px;
@@ -1107,7 +1122,14 @@
         .event.faire-part{flex-direction:column;text-align:center;padding:0;border:none;background:transparent;box-shadow:none;}
         .fp-frame{
             position:relative;border:1px solid var(--gold-soft);padding:0 0 34px;
-            background:#fff;overflow:hidden;border-radius:30px;
+            background-color: #fbf7f1;
+            background-image:
+                radial-gradient(ellipse at 50% 30%, rgba(255, 255, 255, 0.88) 0%, rgba(255, 255, 255, 0.65) 60%, rgba(247, 243, 236, 0.82) 100%),
+                url('fond.jpg');
+            background-size: cover;
+            background-position: center;
+            overflow:hidden;border-radius:30px;
+            box-shadow: 0 16px 40px -15px rgba(31,36,48,0.14);
         }
         .fp-art-frame{
             position:relative;width:100%;height:320px;margin-bottom:30px;
@@ -1182,8 +1204,15 @@
 
         /* ==================== FORMULAIRE RSVP ==================== */
         .rsvp-card{
-            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px);
-            border: 1px solid rgba(184, 150, 99, 0.25); padding: 36px 32px; border-radius: 28px;
+            background-color: #fbf7f1;
+            background-image:
+                radial-gradient(ellipse at 50% 30%, rgba(255, 255, 255, 0.88) 0%, rgba(255, 255, 255, 0.65) 60%, rgba(247, 243, 236, 0.82) 100%),
+                url('fond.jpg');
+            background-size: cover;
+            background-position: center;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(184, 150, 99, 0.35); padding: 36px 32px; border-radius: 28px;
             box-shadow: 0 30px 60px -25px rgba(31, 36, 48, 0.15);
         }
         form{display:flex;flex-direction:column;gap:28px;}
@@ -1696,11 +1725,7 @@
         function revealSite(fast) {
             clearAllTimers();
             if (screen) {
-                if (fast) {
-                    screen.style.transition = 'opacity 0.2s ease, visibility 0.2s ease';
-                } else {
-                    screen.style.transition = 'opacity 0.38s ease, visibility 0.38s ease';
-                }
+                screen.style.transition = fast ? 'opacity 0.18s ease, visibility 0.18s ease' : 'opacity 0.32s ease, visibility 0.32s ease';
                 screen.style.pointerEvents = 'none';
             }
             document.body.classList.add('revealed');
@@ -1709,7 +1734,7 @@
                 if (typeof initDockPosition === 'function') {
                     initDockPosition();
                 }
-            }, 60);
+            }, 50);
         }
 
         function openEnvelope() {
@@ -1718,38 +1743,38 @@
 
             screen.classList.add('cenv-opened');
 
-            // 1. Le sceau saute rapidement
+            // 1. Le sceau saute
             seal.classList.add('cenv-press');
             timers.push(setTimeout(function() {
                 seal.classList.remove('cenv-press');
                 seal.classList.add('cenv-pop');
-            }, 90));
+            }, 100));
 
             // 2. Le rabat supérieur pivote en 3D
             timers.push(setTimeout(function() {
                 flap.classList.add('cenv-open');
-                timers.push(setTimeout(function() { flap.classList.add('cenv-behind'); }, 220));
-            }, 160));
+                timers.push(setTimeout(function() { flap.classList.add('cenv-behind'); }, 260));
+            }, 180));
 
             // 3. La carte glisse hors de la pochette
             timers.push(setTimeout(function() {
                 card.classList.add('cenv-sliding');
-            }, 420));
+            }, 480));
 
-            // 4. La carte grandit au centre
+            // 4. La carte grandit au centre et s'installe
             timers.push(setTimeout(function() {
                 card.classList.add('cenv-grow');
-            }, 720));
+            }, 820));
 
-            // 5. L'enveloppe descend et disparaît complètement sans bloquer en bas
+            // 5. L'enveloppe descend lentement et gracieusement vers le bas (durée 1.25s)
             timers.push(setTimeout(function() {
                 wrap.classList.add('cenv-away');
-            }, 900));
+            }, 1100));
 
-            // 6. Révélation automatique rapide du site (~2.1s au lieu de 3.8s)
+            // 6. Révélation rapide de la suite dès que l'enveloppe descend (~2.25s)
             autoRevealTimer = setTimeout(function() {
                 revealSite(false);
-            }, 2100);
+            }, 2250);
         }
 
         function replayEnvelope() {
