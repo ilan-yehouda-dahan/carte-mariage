@@ -1,0 +1,10 @@
+{
+  "name": "carte-mariage",
+  "private": true,
+  "scripts": {
+    "test": "node --test tests/backend.test.cjs && playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.0"
+  }
+}

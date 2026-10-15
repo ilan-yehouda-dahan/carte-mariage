@@ -3,24 +3,32 @@
     "nom": "ilan dahan",
     "mairie": true,
     "houppa": true,
-    "shabbat": false
+    "shabbat": false,
+    "maxAdultes": 2,
+    "maxEnfants": 0
   },
   "gabriel-arzoin": {
     "nom": "Gabriel Arzoin",
     "mairie": true,
     "houppa": true,
-    "shabbat": true
+    "shabbat": true,
+    "maxAdultes": 2,
+    "maxEnfants": 2
   },
   "elie-chicha": {
     "nom": "elie chicha",
     "mairie": false,
     "houppa": true,
-    "shabbat": false
+    "shabbat": false,
+    "maxAdultes": 3,
+    "maxEnfants": 0
   },
   "michael-dahan": {
     "nom": "Michael dahan",
     "mairie": false,
     "houppa": false,
-    "shabbat": false
+    "shabbat": false,
+    "maxAdultes": 2,
+    "maxEnfants": 0
   }
 }
