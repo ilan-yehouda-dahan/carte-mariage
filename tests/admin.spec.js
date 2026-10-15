@@ -81,6 +81,7 @@ test('live separation, creation, WhatsApp, RSVP, latest counts and CSV end to en
     await expect(page.locator('#guest-list')).toContainText('Sarah et David Cohen');
     const link = await page.locator('#invite-url').inputValue();
     const id = new URL(link).searchParams.get('invite');
+    expect(new URL(link).searchParams.get('nom')).toBe('Sarah et David Cohen');
     expect(link).not.toContain('dahan');
     expect(link).not.toContain('acces');
     expect(link).not.toContain('a'.repeat(40));

@@ -13,6 +13,7 @@
     function invitationUrl(guest) {
         var url = new URL(window.localPreview ? '/' : 'https://mariage-eden-ilan.com/', location.href);
         url.searchParams.set('invite', guest.id);
+        url.searchParams.set('nom', guest.nom);
         if (window.localPreview) url.searchParams.set('preview', '1');
         return url.href;
     }

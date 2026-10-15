@@ -177,3 +177,25 @@ test('personal welcome appears on envelope, card and cover without capacity anno
     await expect(page.locator('#houppa-personnes option')).toHaveText(['1','2']);
     await expect(page.locator('#houppa-enfants')).toHaveCount(0);
 });
+
+
+test('link name appears before Google responds and cannot change capacity or identity', async ({ page }) => {
+    let release;
+    const waiting = new Promise(resolve => { release = resolve; });
+    await page.route(apiPattern, async route => {
+        await waiting;
+        return respond(route, guests['elie-chicha']);
+    });
+    await page.goto('/?invite=elie-chicha&nom=' + encodeURIComponent('<b>David Cohen</b>') + '&maxPersonnes=99', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('#envelope-addressee')).toBeVisible();
+    await expect(page.locator('#envelope-recipient')).toHaveText('<b>David Cohen</b>');
+    await expect(page.locator('#envelope-recipient b')).toHaveCount(0);
+    expect(await page.evaluate(() => window.currentInvitation)).toBeFalsy();
+    release();
+    await expect(page.locator('body')).toHaveClass(/invitation-ready/);
+    await expect(page.locator('#envelope-recipient')).toHaveText(guests['elie-chicha'].nom);
+    await expect(page.locator('#nom')).toHaveValue(guests['elie-chicha'].nom);
+    const cap = guests['elie-chicha'].maxAdultes + guests['elie-chicha'].maxEnfants;
+    await expect(page.locator('#houppa-personnes option')).toHaveCount(cap);
+    expect(await page.locator('#houppa-personnes option').last().getAttribute('value')).toBe(String(cap));
+});

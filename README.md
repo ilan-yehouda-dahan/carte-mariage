@@ -79,6 +79,11 @@ L'absence est toujours possible.
 Le fichier `guests.json` contient uniquement des exemples pour les aperçus et tests.
 Le site réel ne l'utilise pas.
 
+Les liens générés incluent aussi `nom` pour afficher immédiatement le destinataire
+sur l’enveloppe. Ce nom est visible dans le lien et ne donne aucun droit : après
+chargement, Google Sheets fournit le nom de référence, les événements et les places.
+Les anciens liens sans nom restent compatibles.
+
 ## Données privées et réponses
 
 Les lectures et créations administratives nécessitent la bonne clé et passent

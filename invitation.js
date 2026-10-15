@@ -6,7 +6,15 @@
     var params = new URLSearchParams(window.location.search);
     var inviteId = (params.get('invite') || params.get('id') || '').trim().toLowerCase();
 
+    // Le nom dans le lien sert uniquement à l’affichage, jamais aux autorisations.
+    var displayName = (params.get('nom') || '').trim().slice(0, 200);
+    if (inviteId && displayName) {
+        document.getElementById('envelope-recipient').textContent = displayName;
+        document.getElementById('envelope-addressee').hidden = false;
+    }
+
     function unavailable(message) {
+        document.getElementById('envelope-addressee').hidden = true;
         window.currentInvitation = null;
         document.body.classList.remove('invitation-ready');
         status.hidden = false;
