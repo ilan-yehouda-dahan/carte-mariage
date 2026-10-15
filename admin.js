@@ -36,15 +36,15 @@
         var totals = document.getElementById('totals'); totals.replaceChildren();
         Object.keys(labels).forEach(function (name) {
             var total = data.totals[name]; var row = document.createElement('tr');
-            [labels[name], total.invitedAdults, total.invitedChildren, total.adults, total.children, total.pending, total.declined].forEach(function (text) { td(row, text); }); totals.appendChild(row);
+            [labels[name], total.invited, total.people, total.pending, total.declined].forEach(function (text) { td(row, text); }); totals.appendChild(row);
         });
         var list = document.getElementById('guest-list'); list.replaceChildren();
         data.guests.forEach(function (guest) {
             var row = document.createElement('tr');
-            td(row, guest.nom); td(row, guest.maxAdultes); td(row, guest.maxEnfants);
+            td(row, guest.nom); td(row, guest.maxPersonnes);
             var replies = Object.keys(labels).filter(function (name) { return guest[name]; }).map(function (name) {
                 var answer = guest.answers && guest.answers[name];
-                return labels[name] + ' : ' + (!answer ? 'en attente' : answer.presence === 'non' ? 'absent' : answer.adultes + ' adulte(s), ' + answer.enfants + ' enfant(s)');
+                return labels[name] + ' : ' + (!answer ? 'en attente' : answer.presence === 'non' ? 'absent' : answer.personnes + ' personne(s)');
             });
             td(row, replies.join(' · '));
             var action = document.createElement('button'); action.type = 'button'; action.className = 'share-button'; action.textContent = 'Lien / WhatsApp';
@@ -110,20 +110,20 @@
         finally { this.disabled = false; button.disabled = false; document.getElementById('export').disabled = false; }
     });
     function values() {
-        return { nom: document.getElementById('guest-name').value.trim(), mairie: document.getElementById('mairie').checked, houppa: document.getElementById('houppa').checked, shabbat: document.getElementById('shabbat').checked, maxAdultes: Number(document.getElementById('max-adults').value), maxEnfants: Number(document.getElementById('max-children').value) };
+        return { nom: document.getElementById('guest-name').value.trim(), mairie: document.getElementById('mairie').checked, houppa: document.getElementById('houppa').checked, shabbat: document.getElementById('shabbat').checked, maxPersonnes: Number(document.getElementById('max-people').value) };
     }
     form.addEventListener('input', function () {
         var data = values();
         document.getElementById('summary-name').textContent = data.nom || 'Votre famille invitée';
         document.getElementById('summary-events').textContent = Object.keys(labels).filter(function (name) { return data[name]; }).map(function (name) { return labels[name]; }).join(' · ') || 'Aucun événement sélectionné';
-        document.getElementById('summary-capacity').textContent = 'Jusqu’à ' + data.maxAdultes + ' adulte(s) · ' + (data.maxEnfants ? data.maxEnfants + ' enfant(s)' : 'sans enfants');
+        document.getElementById('summary-capacity').textContent = data.maxPersonnes + ' personne(s) maximum';
         document.getElementById('result').hidden = true; feedback.textContent = '';
     });
     form.addEventListener('submit', async function (event) {
         event.preventDefault(); if (button.disabled) return;
         var data = values();
         if (!data.nom || !Object.keys(labels).some(function (name) { return data[name]; })) { feedback.textContent = 'Renseignez un nom et choisissez au moins un événement.'; return; }
-        if (!Number.isInteger(data.maxAdultes) || data.maxAdultes < 1 || data.maxAdultes > 50 || !Number.isInteger(data.maxEnfants) || data.maxEnfants < 0 || data.maxEnfants > 50) return;
+        if (!Number.isInteger(data.maxPersonnes) || data.maxPersonnes < 1 || data.maxPersonnes > 100) return;
         var fingerprint = JSON.stringify(data);
         if (!pending || pending.fingerprint !== fingerprint) pending = { fingerprint: fingerprint, id: crypto.randomUUID() };
         var payload = Object.assign({ action: 'create', family: family, id: pending.id, adminKey: key }, data);
@@ -145,8 +145,8 @@
     });
     document.getElementById('export').addEventListener('click', function () {
         if (!snapshot) { document.getElementById('dashboard-status').textContent = 'Actualisez les données avant de les exporter.'; return; }
-        var rows = [['Événement', 'Adultes invités', 'Enfants invités', 'Adultes confirmés', 'Enfants confirmés', 'Foyers sans réponse', 'Foyers absents']];
-        Object.keys(labels).forEach(function (name) { var t = snapshot.totals[name]; rows.push([labels[name], t.invitedAdults, t.invitedChildren, t.adults, t.children, t.pending, t.declined]); });
+        var rows = [['Événement', 'Personnes invitées', 'Personnes confirmées', 'Foyers sans réponse', 'Foyers absents']];
+        Object.keys(labels).forEach(function (name) { var t = snapshot.totals[name]; rows.push([labels[name], t.invited, t.people, t.pending, t.declined]); });
         var csv = '\uFEFF' + rows.map(function (row) { return row.map(function (value) { return '"' + String(value).replace(/"/g, '""') + '"'; }).join(';'); }).join('\r\n');
         var url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' })); var link = document.createElement('a'); link.href = url; link.download = 'effectifs-' + family + '.csv'; link.click(); setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
     });

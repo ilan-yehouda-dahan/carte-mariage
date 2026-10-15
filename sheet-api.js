@@ -29,7 +29,8 @@
     }
     function publicGuest(guest) {
         var result = {};
-        ['id', 'nom', 'mairie', 'houppa', 'shabbat', 'maxAdultes', 'maxEnfants'].forEach(function (key) { result[key] = guest[key]; });
+        ['id', 'nom', 'mairie', 'houppa', 'shabbat', 'maxPersonnes'].forEach(function (key) { result[key] = guest[key]; });
+        if (result.maxPersonnes === undefined) result.maxPersonnes = guest.maxAdultes + guest.maxEnfants;
         return result;
     }
     function adminRequest(payload) {
@@ -74,18 +75,16 @@
             localStorage.setItem('wedding-preview-guests', JSON.stringify(saved));
             return { ok: true, guest: publicGuest(guest) };
         }
-        var guests = Object.values(saved).filter(function (guest) { return guest.family === payload.family; });
+        var guests = Object.values(saved).filter(function (guest) { return guest.family === payload.family; }).map(function (guest) { return Object.assign(publicGuest(guest), { answers: guest.answers || {} }); });
         var totals = {};
         ['mairie', 'houppa', 'shabbat'].forEach(function (name) {
-            totals[name] = { invitedAdults: 0, invitedChildren: 0, adults: 0, children: 0, pending: 0, declined: 0 };
+            totals[name] = { invited: 0, people: 0, pending: 0, declined: 0 };
             guests.forEach(function (guest) {
                 if (!guest[name]) return;
-                totals[name].invitedAdults += guest.maxAdultes;
-                totals[name].invitedChildren += guest.maxEnfants;
+                totals[name].invited += guest.maxPersonnes;
                 var answer = guest.answers && guest.answers[name];
                 if (!answer) { totals[name].pending++; return; }
-                totals[name].adults += answer.adultes;
-                totals[name].children += answer.enfants;
+                totals[name].people += answer.personnes === undefined ? answer.adultes + answer.enfants : answer.personnes;
                 if (answer.presence === 'non') totals[name].declined++;
             });
         });
