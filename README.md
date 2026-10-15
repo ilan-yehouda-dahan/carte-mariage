@@ -11,8 +11,9 @@ Après publication de cette branche sur le domaine actuel :
 - **Dahan** : https://mariage-eden-ilan.com/admindahan/
 - **Chiche** : https://mariage-eden-ilan.com/adminchiche/
 
-Chaque famille utilise sa propre clé de gestion. La clé Dahan est refusée dans
-l'espace Chiche et inversement. La page `/admin.html` est seulement une orientation
+Chaque famille ouvre son propre long lien privé, sans mot de passe à saisir.
+Le secret Dahan est refusé dans l’espace Chiche et inversement.
+Les adresses ci-dessus, sans leur partie secrète `#acces=…`, n’ouvrent aucune donnée. La page `/admin.html` est seulement une orientation
 vers les deux adresses ; elle ne contient aucun tableau commun.
 
 Dans chaque espace : création d'invitations, maximum d'adultes et d'enfants,
@@ -35,19 +36,20 @@ https://docs.google.com/spreadsheets/d/1rpb6pRC_cQ3_3dYrnFl5WKfFRMgX2KYeFcqdhgQY
 
 1. Ouvrir ce tableau → **Extensions → Apps Script**.
 2. Remplacer `Code.gs` par **apps-script/Code.gs de cette version**, puis enregistrer.
-3. Dans **Paramètres du projet → Propriétés du script**, définir deux secrets
-   **différents**, aléatoires, de 32 caractères minimum :
-   - `ADMIN_KEY_DAHAN`
-   - `ADMIN_KEY_CHICHE`
-   Conserver les valeurs dans un gestionnaire de mots de passe, et remettre à chaque
-   famille sa seule clé par un canal privé. Ne pas inscrire les clés dans le dépôt,
-   dans le Google Sheets ou dans les liens. L'ancienne `ADMIN_KEY` n'est plus utilisée.
+3. Revenir au Google Sheets et **actualiser sa page**. Un menu **Invitations**
+   apparaît. Choisir **Invitations → Afficher mes liens privés** et terminer
+   l'autorisation Google si elle est demandée. Une fenêtre affiche les deux liens
+   complets, Dahan et Chiche : les copier et les conserver. Aucune clé à inventer
+   ni à saisir ; le script crée automatiquement deux secrets longs et différents
+   dans ses propriétés privées. À défaut de menu, choisir `afficherLiensPrives`
+   dans l'éditeur Apps Script puis Exécuter, et revenir au tableau ouvert.
+   Ne jamais exécuter `doGet` ou `doPost` manuellement.
 4. **Déployer → Gérer les déploiements → Modifier → Nouvelle version → Déployer**
    sur le service existant, pour garder son URL `/exec`. Exécuter en tant que
    propriétaire, avec accès des invités sans connexion Google ; le tableau lui-même
    peut rester privé. Terminer les autorisations Google dans le compte du propriétaire.
 5. Si l'URL `/exec` change, remplacer `endpoint` dans `sheet-api.js`.
-6. Publier aussi la branche du site via GitHub Pages. Les deux déploiements sont requis.
+6. Publier aussi la branche du site via GitHub Pages. Les deux déploiements sont requis pour que les liens privés fonctionnent.
 
 Aucune modification du déploiement Google n'a été faite par cette branche.
 Ne pas cliquer sur Exécuter pour tester `doPost` : cette fonction attend une requête HTTP.
@@ -82,9 +84,13 @@ Les lectures et créations administratives nécessitent la bonne clé et passent
 uniquement par POST. Le script filtre les données avant de les renvoyer.
 Les réponses privées sont rendues dans une iframe HtmlService et transmises par
 `postMessage` au domaine explicitement autorisé. Le navigateur vérifie l'origine
-Google du message et un identifiant aléatoire de requête. Les clés ne sont pas
-insérées dans les URL, les liens WhatsApp, le stockage local ou la réponse du serveur.
-Elles restent en mémoire jusqu'à « Fermer l'espace » ou fermeture de la page.
+Google du message et un identifiant aléatoire de requête. Le secret de gestion est intégré uniquement au fragment `#acces=…` du lien privé :
+ce fragment n'est pas envoyé dans l'URL des requêtes HTTP. Le site l'utilise pour
+s'authentifier dans le corps des POST. Il n'est jamais ajouté aux liens des invités,
+aux messages WhatsApp, au stockage local ou aux réponses administratives du serveur.
+Le lien reste dans la barre d'adresse pour permettre l'actualisation et sa sauvegarde
+en favori. « Fermer l'espace » efface les données affichées et retire le fragment ;
+rouvrir le lien complet conservé pour se reconnecter.
 
 Les lectures publiques sont limitées à l'invitation identifiée par un ID aléatoire
 et au reçu d'un envoi. Les liens d'invitation restent partageables : leur possession
@@ -136,8 +142,27 @@ Les tests utilisent le vrai code du script avec les services Google simulés.
 Ils n'envoient aucun message WhatsApp ni aucune réponse au vrai Google Sheets.
 
 Après déploiement dans le compte Google :
-1. Se connecter à chaque espace avec sa clé, vérifier le refus de l'autre clé.
+1. Ouvrir chaque long lien privé sans saisir de mot de passe ; vérifier que le secret
+   d’une famille ne permet pas d’accéder à l’autre.
 2. Créer un foyer de test identifié et vérifier sa ligne avec la bonne famille.
 3. Vérifier son lien, le maximum de places et le texte WhatsApp avant tout envoi réel.
 4. Répondre pour ce foyer, puis vérifier **Réponses** et les effectifs de sa seule famille.
 5. Faire une réponse corrigée et vérifier que seule la plus récente compte dans le CSV.
+
+## Un seul fichier Google Sheets
+
+Les deux espaces utilisent le même `SPREADSHEET_ID`, déjà configuré dans le code.
+Il n'y a pas deux fichiers à créer : **Invités** rassemble les foyers avec une
+colonne `Famille` qui sert au filtrage côté serveur ; **Réponses** rassemble leurs
+réponses. Les pages affichent ensuite le récapitulatif simple de leur seule famille.
+
+`afficherLiensPrives` ajoute seulement les en-têtes manquants et crée les secrets
+si nécessaire. Il ne supprime aucune ancienne ligne et ne change pas les liens déjà
+créés quand on le relance. Les anciens foyers doivent être affectés une fois à leur
+famille avec leurs limites de places s'ils ne l'ont pas encore été.
+
+La fenêtre des liens privés repose sur l'interface Google Sheets du projet lié :
+https://developers.google.com/apps-script/reference/base/ui#showModalDialog(HtmlOutput,String)
+Les liens de gestion donnent accès aux données à toute personne qui les possède ;
+les conserver entre les organisateurs et envoyer seulement les liens personnels
+aux invités. Ne pas publier les liens de gestion dans GitHub ni dans les cellules.

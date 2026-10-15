@@ -270,3 +270,47 @@ function dashboard_(payload) {
   });
   return { ok: true, family: family, guests: guests, totals: totals, legacyResponses: legacy };
 }
+
+// À lancer une fois depuis le menu du Google Sheets : les liens sont créés pour
+// le propriétaire, jamais publiés par doGet/doPost et jamais inscrits dans les cellules.
+function onOpen() {
+  SpreadsheetApp.getUi().createMenu('Invitations').addItem('Afficher mes liens privés', 'afficherLiensPrives').addToUi();
+}
+
+function afficherLiensPrives() {
+  var lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  var links = {};
+  try {
+    var properties = PropertiesService.getScriptProperties();
+    ['dahan', 'chiche'].forEach(function (family) {
+      var name = 'ADMIN_KEY_' + family.toUpperCase();
+      var token = properties.getProperty(name);
+      if (!token || token.length < 32 || token.length > 512 || (family === 'chiche' && token === properties.getProperty('ADMIN_KEY_DAHAN'))) {
+        token = (Utilities.getUuid() + Utilities.getUuid()).replace(/-/g, '');
+        properties.setProperty(name, token);
+      }
+      links[family] = 'https://mariage-eden-ilan.com/admin' + family + '/#acces=' + encodeURIComponent(token);
+    });
+    // Ajouter seulement les en-têtes manquants, sans affecter ni supprimer les anciens invités.
+    var book = spreadsheet_();
+    var sheet = book.getSheetByName('Invités') || book.insertSheet('Invités');
+    var required = ['ID', 'Nom', 'Mairie', 'Houppa', 'Shabbat', 'Max adultes', 'Max enfants', 'Famille'];
+    if (!sheet.getLastRow()) sheet.appendRow(required);
+    else {
+      var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+      required.forEach(function (name) {
+        if (headers.map(normalize_).indexOf(normalize_(name)) < 0) {
+          headers.push(name);
+          sheet.getRange(1, headers.length, 1, 1).setValues([[name]]);
+        }
+      });
+    }
+  } finally { lock.releaseLock(); }
+  var html = '<!doctype html><html lang="fr"><body style="font:15px/1.6 system-ui;padding:15px;color:#343029">' +
+    '<p>Un seul Google Sheets pour les deux familles. Conservez ces liens privés et donnez à chaque famille uniquement le sien.</p>' +
+    '<label for="dahan"><strong>Famille Dahan</strong></label><textarea id="dahan" readonly style="width:100%;height:70px;margin:8px 0 18px">' + links.dahan + '</textarea>' +
+    '<label for="chiche"><strong>Famille Chiche</strong></label><textarea id="chiche" readonly style="width:100%;height:70px;margin:8px 0">' + links.chiche + '</textarea>' +
+    '<p>Copiez chaque lien en entier. Les invités reçoivent uniquement leur lien d’invitation, jamais ces accès de gestion.</p></body></html>';
+  SpreadsheetApp.getUi().showModalDialog(HtmlService.createHtmlOutput(html).setWidth(650).setHeight(440), 'Vos deux liens privés');
+}

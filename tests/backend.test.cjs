@@ -182,3 +182,23 @@ test('sorted response rows still use the latest timestamp', () => {
     assert.equal(api.post(auth('dahan')).totals.houppa.adults,0);
     assert.equal(api.post(auth('dahan')).totals.houppa.declined,1);
 });
+
+test('setup creates two long private links automatically and preserves them on rerun', () => {
+    const api=backend({properties:{}});
+    const html=api.showLinks();
+    const dahan=api.properties.ADMIN_KEY_DAHAN,chiche=api.properties.ADMIN_KEY_CHICHE;
+    assert.match(dahan,/^[a-f0-9]{64}$/);assert.match(chiche,/^[a-f0-9]{64}$/);assert.notEqual(dahan,chiche);
+    assert.ok(html.includes('/admindahan/#acces='+dahan));assert.ok(html.includes('/adminchiche/#acces='+chiche));
+    assert.equal(JSON.stringify(api.tables).includes(dahan),false);assert.equal(JSON.stringify(api.tables).includes(chiche),false);
+    assert.equal(api.showLinks(),html);assert.equal(api.locks(),0);
+    assert.equal(api.post({action:'dashboard',family:'dahan',adminKey:dahan}).ok,true);
+    assert.equal(api.post({action:'dashboard',family:'chiche',adminKey:dahan}).error,'unauthorized');
+});
+test('setup adds missing columns without replacing existing guests or guessing their side', () => {
+    const api=backend({properties:{}});
+    api.tables['Invités'].forEach(row=>row.splice(5));
+    const before=api.tables['Invités'][1].slice();api.showLinks();
+    assert.deepEqual(api.tables['Invités'][1],before);
+    assert.equal(api.tables['Invités'][0][7],'Famille');
+    assert.equal(api.post({action:'dashboard',family:'dahan',adminKey:api.properties.ADMIN_KEY_DAHAN}).guests.length,0);
+});

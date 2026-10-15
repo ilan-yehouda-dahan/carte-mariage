@@ -64,7 +64,9 @@
     }
     function close() {
         session++; key = ''; snapshot = null; pending = null;
-        document.getElementById('admin-key').value = '';
+        history.replaceState(null, '', location.pathname + location.search);
+        document.getElementById('login-feedback').textContent = 'Espace fermé. Rouvrez votre lien privé pour retrouver votre gestion.';
+        document.getElementById('retry-access').hidden = true;
         document.getElementById('private-space').hidden = true;
         document.getElementById('login-panel').hidden = false;
         document.getElementById('totals').replaceChildren(); document.getElementById('guest-list').replaceChildren();
@@ -73,18 +75,33 @@
         document.getElementById('whatsapp-link').removeAttribute('href'); document.getElementById('view-link').removeAttribute('href');
         feedback.textContent = ''; form.reset();
     }
-    document.getElementById('login-form').addEventListener('submit', async function (event) {
-        event.preventDefault();
-        var login = document.getElementById('login-button'); if (login.disabled) return;
+    async function openPrivateLink() {
+        var token = new URLSearchParams(location.hash.slice(1)).get('acces') || '';
+        if (token.length < 32 || token.length > 512) return;
         session++;
-        key = document.getElementById('admin-key').value;
-        login.disabled = true; document.getElementById('login-feedback').textContent = 'Vérification de votre accès…';
+        var accessSession = session;
+        key = token;
+        var retry = document.getElementById('retry-access'); retry.disabled = true;
+        document.getElementById('login-feedback').textContent = 'Ouverture de votre espace privé…';
         try {
-            await refresh(); document.getElementById('admin-key').value = '';
-            document.getElementById('login-panel').hidden = true; document.getElementById('private-space').hidden = false;
+            await refresh();
+            document.getElementById('login-panel').hidden = true;
+            document.getElementById('private-space').hidden = false;
             document.getElementById('login-feedback').textContent = '';
-        } catch (_) { key = ''; document.getElementById('login-feedback').textContent = 'Accès refusé ou service indisponible. Vérifiez votre clé et le déploiement Google.'; }
-        finally { login.disabled = false; }
+        } catch (_) {
+            if (accessSession !== session) return;
+            key = '';
+            document.getElementById('login-feedback').textContent = 'Ce lien ne permet pas d’ouvrir votre espace, ou le service est indisponible. Vérifiez que vous utilisez le bon lien privé.';
+            retry.hidden = false;
+        } finally { if (accessSession === session) retry.disabled = false; }
+    }
+    document.getElementById('retry-access').addEventListener('click', openPrivateLink);
+    window.addEventListener('hashchange', function () {
+        if (window.localPreview) return;
+        var hash = location.hash;
+        close();
+        history.replaceState(null, '', location.pathname + location.search + hash);
+        openPrivateLink();
     });
     document.getElementById('logout').addEventListener('click', close);
     document.getElementById('refresh').addEventListener('click', async function () {
@@ -139,5 +156,7 @@
         document.getElementById('login-panel').hidden = true;
         document.getElementById('private-space').hidden = false;
         refresh().catch(function () { document.getElementById('dashboard-status').textContent = 'Impossible de charger les exemples locaux.'; });
+    } else {
+        openPrivateLink();
     }
 })();

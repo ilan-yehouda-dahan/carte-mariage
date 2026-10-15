@@ -8,6 +8,9 @@ function backend(options = {}) {
     ] };
     if (options.existing) tables['Réponses'] = [['Date', 'Nom', 'Mairie', 'Houppa', 'Shabbat', 'Message'], ['ancienne date', 'Ancien', 'Non', 'Oui', 'Non', 'ancien message']];
     let locks = 0;
+    let uiHtml = '';
+    let generated = 0;
+    const properties = options.properties || { ADMIN_KEY_DAHAN: 'a'.repeat(40), ADMIN_KEY_CHICHE: 'b'.repeat(40) };
     function sheet(name) {
         return {
             getDataRange: () => ({ getValues: () => tables[name] }),
@@ -25,14 +28,16 @@ function backend(options = {}) {
         insertSheet: name => { tables[name] = []; return sheet(name); }
     };
     const context = vm.createContext({
-        PropertiesService: { getScriptProperties: () => ({ getProperty: name => name === 'ADMIN_KEY_DAHAN' ? 'a'.repeat(40) : name === 'ADMIN_KEY_CHICHE' ? 'b'.repeat(40) : null }) },
-        SpreadsheetApp: { openById: () => book, flush: () => {} },
-        HtmlService: { XFrameOptionsMode: { ALLOWALL: 'all' }, createHtmlOutput: text => ({ text, setXFrameOptionsMode() { return this; } }) },
+        PropertiesService: { getScriptProperties: () => ({ getProperty: name => properties[name] || null, setProperty: (name,value) => { properties[name]=value; } }) },
+        Utilities: { getUuid: () => '00000000-0000-4000-8000-' + String(++generated).padStart(12,'0') },
+        SpreadsheetApp: { openById: () => book, flush: () => {}, getUi: () => ({ showModalDialog: output => { uiHtml=output.text; } }) },
+        HtmlService: { XFrameOptionsMode: { ALLOWALL: 'all' }, createHtmlOutput: text => ({ text, setXFrameOptionsMode() { return this; }, setWidth() { return this; }, setHeight() { return this; } }) },
         ContentService: { MimeType: { JSON: 'json', JAVASCRIPT: 'js' }, createTextOutput: text => ({ text, setMimeType() { return this; } }) },
         LockService: { getScriptLock: () => ({ waitLock: () => { locks++; }, releaseLock: () => { locks--; } }) }
     });
     vm.runInContext(fs.readFileSync('apps-script/Code.gs', 'utf8'), context);
     return {
+        showLinks: () => { context.afficherLiensPrives(); return uiHtml; }, properties,
         tables, locks: () => locks,
         rawPostForm: payload => context.doPost({ parameter: { payload: JSON.stringify(payload) } }).text,
         post: payload => JSON.parse(context.doPost({ postData: { contents: JSON.stringify(payload) } }).text),
