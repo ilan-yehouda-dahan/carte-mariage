@@ -1,64 +1,100 @@
 # Carte de mariage Eden & Ilan
 
-Site statique, hébergé sur GitHub Pages. Branche de corrections : `correction-ilan`.
-La houppa a lieu le 18 février 2027 à 16 h, heure de Paris, à Factory 58,
-12 rue Gutenberg, 93000 Bobigny.
+Branche : `correction-ilan`. Houppa le 18 février 2027 à **16 h, heure de Paris**,
+à **Factory 58, 12 rue Gutenberg, 93000 Bobigny**. Compteur, Waze et calendrier alignés.
 
-## Invitations personnelles
+## Source des invités
 
-Envoyer un lien par foyer avec le paramètre `invite`, correspondant exactement à
-une clé de `guests.json` :
+L'onglet **Invités** du Google Sheets est désormais la source utilisée par le site :
+https://docs.google.com/spreadsheets/d/1rpb6pRC_cQ3_3dYrnFl5WKfFRMgX2KYeFcqdhgQYJxE/edit
 
-- Ilan : https://mariage-eden-ilan.com/?invite=ilan-dahan
-- Gabriel : https://mariage-eden-ilan.com/?invite=gabriel-arzoin
-- Élie : https://mariage-eden-ilan.com/?invite=elie-chicha
-- Michael : https://mariage-eden-ilan.com/?invite=michael-dahan
+Première ligne : `ID | Nom | Mairie | Houppa | Shabbat`.
+Une ligne par foyer. Chaque ID doit être unique. Autorisations : `oui` / `non`
+(les cases à cocher booléennes fonctionnent aussi ; une cellule vide vaut non).
+Exemple à adapter dans le tableau, sans remplacer les invités existants :
 
-Ces liens ne refléteront les corrections qu'après leur déploiement.
-Michael a actuellement les trois événements à `false` : son lien affichera un
-message sans programme ni formulaire. Modifier ses autorisations si nécessaire.
+| ID | Nom | Mairie | Houppa | Shabbat |
+| --- | --- | --- | --- | --- |
+| famille-exemple | Famille Exemple | non | oui | non |
 
-Pour ajouter un invité, ajouter une entrée JSON de cette forme (clé unique,
-sans espaces, conserver les virgules entre les entrées) :
+Lien : `https://mariage-eden-ilan.com/?invite=famille-exemple`.
+Les anciens liens `?id=famille-exemple` fonctionnent aussi. Utiliser les ID réels
+du tableau : `ilan-dahan` a renvoyé `not found` lors du test de lecture de l'ancien service.
+Le fichier `guests.json` reste uniquement un jeu d'exemples pour les tests ; il
+n'est plus lu par le site. Aucun repli automatique sur ce fichier.
 
-```json
-"famille-exemple": {
-  "nom": "Famille Exemple",
-  "mairie": true,
-  "houppa": true,
-  "shabbat": false
-}
-```
+Nom prérempli ; événements, navigation et réponses non autorisés masqués.
+Sans lien, ID inconnu, mauvaise configuration ou serveur inaccessible : programme
+et formulaire restent fermés. Si tous les événements sont non, afficher un message
+sans formulaire.
 
-`true` affiche l'événement, son bouton de navigation et sa réponse RSVP.
-`false` les masque et désactive les champs correspondants. Les réponses exclues
-sont envoyées avec la valeur `Masqué`, pour conserver le format du formulaire.
-Le nom est prérempli et l'identifiant est ajouté au champ `invite` du POST.
-Un lien absent, inconnu ou un échec de chargement n'ouvre pas le programme.
+## Installer le serveur corrigé
 
-Cette personnalisation n'est pas une authentification : le dépôt et le fichier
-JSON sont publics, les liens sont partageables et le navigateur peut être modifié.
-Pour des invitations confidentielles ou une validation stricte des réponses,
-conserver les invités côté serveur et y vérifier leurs droits.
+1. Dans le Google Sheets, ouvrir **Extensions → Apps Script**.
+2. Remplacer le contenu de `Code.gs` par **apps-script/Code.gs** de cette branche,
+   puis enregistrer. Le bon ID de Google Sheets est déjà renseigné.
+3. Vérifier les en-têtes de l'onglet **Invités** ci-dessus. Ne pas rendre le tableau public.
+4. **Déployer → Gérer les déploiements → Modifier** (crayon), choisir
+   **Nouvelle version**, puis **Déployer** sur le déploiement existant.
+   Garder l'URL `/exec` déjà utilisée dans `sheet-api.js`.
+   Le service doit s'exécuter en tant que propriétaire et être accessible aux invités
+   sans connexion Google. Si Google demande une autorisation du propriétaire,
+   terminer cette étape dans son compte.
+5. Si un nouveau déploiement est créé et que son URL change, remplacer la valeur
+   `endpoint` dans `sheet-api.js` par cette nouvelle URL `/exec`.
+6. Déployer ensuite la branche du site via le circuit GitHub Pages habituel.
+   Les nouvelles fonctionnalités nécessitent **les deux** déploiements.
 
-## Réponses Google Sheets
+Ne pas lancer `doPost` avec le bouton Exécuter : il nécessite une requête du site.
+Éviter de laisser les anciennes versions actives longtemps après migration : elles
+n'ont pas les nouvelles validations. Cette branche n'a modifié aucun déploiement Google
+et n'a envoyé aucune réponse réelle.
 
-Le serveur Google Apps Script n'est pas présent dans ce dépôt. L'envoi actuel
-utilise `no-cors` : le navigateur ne peut pas lire sa réponse ni certifier
-l'enregistrement. Le message affiche donc « envoyée », sans promettre une
-sauvegarde vérifiée, et les champs sont conservés.
+## Enregistrement et confirmation
 
-Pour confirmer l'enregistrement de bout en bout, il faut le code et l'accès au
-déploiement Apps Script : vérifier les droits de l'invité côté serveur, enregistrer
-la réponse et fournir un accusé de réception lisible par le site (via un endpoint
-avec CORS adapté ou un relais). Aucun RSVP réel n'est envoyé par les tests.
+Le serveur relit les droits depuis **Invités**, impose le nom du tableau et vérifie
+les présences et effectifs. Les événements exclus sont enregistrés `Masqué`, même
+si le navigateur tente de les ajouter. Les messages sont limités à 2000 caractères
+et les textes commençant comme une formule sont enregistrés comme texte.
 
-## Vérification locale
+Les six colonnes historiques de **Réponses** restent dans le même ordre :
+`Date | Nom | Mairie | Houppa | Shabbat | Message`.
+Deux colonnes sont ajoutées : **G : ID invité**, **H : ID envoi**.
+G et H doivent être libres ou déjà porter ces noms ; sinon le script refuse d'écrire.
+Les anciennes lignes sont conservées. Les nouveaux envois modifiés créent de
+nouvelles lignes, comme auparavant ; réessayer exactement la même réponse dans
+la même page réutilise son ID et ne duplique pas la ligne.
 
-Servir le dossier via HTTP, par exemple `python3 -m http.server 8000`, puis ouvrir
-`http://localhost:8000/?invite=ilan-dahan`. Ne pas ouvrir directement le HTML en
-`file://`, car le chargement JSON nécessite HTTP.
+Le POST reste `no-cors`. La confirmation dépend ensuite d'une lecture du reçu
+`action=status` : succès uniquement si l'ID d'envoi a été retrouvé pour cet invité.
+Sans preuve, le site conserve les champs et annonce que l'enregistrement reste
+incertain. Les GET ne font aucune écriture et ne renvoient jamais les messages RSVP.
 
-Les tests Playwright couvrent les quatre invités, les liens invalides, les erreurs
-de chargement, les réponses masquées, les calendriers et l'ouverture de l'enveloppe
-sur mobile et ordinateur. Lancer `npm install`, puis `npm test` (Google Chrome doit être installé).
+Les lectures utilisent le JSONP documenté par Google pour ce type de service :
+https://developers.google.com/apps-script/guides/content#serving_jsonp_in_web_pages
+Les callbacks sont restreints à un format contrôlé et les lectures ont un délai
+limité. Le statut n'expose qu'un booléen et un identifiant d'envoi.
+
+Les liens restent partageables : utiliser des ID longs, aléatoires et difficiles à
+deviner pour limiter l'accès par devinette. Ce système ne vérifie pas l'identité de
+la personne qui possède le lien et ne doit pas servir à héberger des données sensibles.
+
+## Vérifier après déploiement
+
+- Ouvrir un lien avec un **ID existant** : vérifier le nom et les événements.
+- Ouvrir le même lien sur téléphone, puis un ID inconnu : aucun événement dans ce dernier cas.
+- Répondre avec un foyer de test clairement identifié, puis vérifier dans **Réponses**
+  le nom, les événements, l'ID invité et l'ID envoi. Ne conclure à la validation réelle
+  qu'après cette vérification sur Google Sheets.
+- Cliquer de nouveau sans changer les champs : une seule nouvelle ligne doit exister.
+- Vérifier Factory 58, le départ Waze et l'heure 16 h.
+
+## Tests locaux
+
+`npm install` puis `npm test` (Google Chrome installé).
+Tests serveur avec doubles de SpreadsheetApp/LockService et tests navigateur avec
+réponses Apps Script simulées : aucun accès en écriture au vrai Google Sheets.
+
+Pour une prévisualisation avec le service Google réellement déployé :
+`python3 -m http.server 8000`, puis ouvrir
+`http://localhost:8000/?invite=UN-ID-EXISTANT`.

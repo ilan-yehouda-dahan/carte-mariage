@@ -1,10 +1,10 @@
-/* Personnalisation d'affichage : les liens peuvent être partagés.
-   La validation des réponses doit aussi être effectuée côté Google Apps Script. */
+/* Les autorisations proviennent de l’onglet Invités et sont revérifiées au POST. */
 (function () {
     'use strict';
     var eventNames = ['mairie', 'houppa', 'shabbat'];
     var status = document.getElementById('invitation-status');
-    var inviteId = new URLSearchParams(window.location.search).get('invite');
+    var params = new URLSearchParams(window.location.search);
+    var inviteId = (params.get('invite') || params.get('id') || '').trim().toLowerCase();
 
     function unavailable(message) {
         window.currentInvitation = null;
@@ -18,17 +18,8 @@
         return;
     }
 
-    fetch('guests.json', { cache: 'no-store' })
-        .then(function (response) {
-            if (!response.ok) throw new Error('Impossible de charger les invités');
-            return response.json();
-        })
-        .then(function (guests) {
-            if (!Object.prototype.hasOwnProperty.call(guests, inviteId)) {
-                unavailable('Ce lien d’invitation est inconnu. Contactez Eden ou Ilan pour recevoir votre lien personnel.');
-                return;
-            }
-            var guest = guests[inviteId];
+    window.sheetApi.guest(inviteId)
+        .then(function (guest) {
             if (!guest || typeof guest.nom !== 'string' || !guest.nom.trim() ||
                 !eventNames.every(function (name) { return typeof guest[name] === 'boolean'; })) {
                 throw new Error('Invitation mal configurée');
@@ -58,7 +49,11 @@
             document.body.classList.add('invitation-ready');
             if (typeof window.initDockPosition === 'function') window.initDockPosition();
         })
-        .catch(function () {
+        .catch(function (error) {
+            if (error.message === 'not_found') {
+                unavailable('Ce lien d’invitation est inconnu. Contactez Eden ou Ilan pour recevoir votre lien personnel.');
+                return;
+            }
             unavailable('Votre invitation ne peut pas être chargée. Actualisez la page ou contactez Eden ou Ilan si le problème persiste.');
         });
 })();

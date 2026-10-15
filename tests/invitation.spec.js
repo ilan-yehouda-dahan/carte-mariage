@@ -1,6 +1,20 @@
 const { test, expect } = require('@playwright/test');
 const guests = require('../guests.json');
 
+const apiPattern = 'https://script.google.com/**';
+async function respond(route, data) {
+    const url = new URL(route.request().url());
+    const callback = url.searchParams.get('callback');
+    await route.fulfill({ contentType: 'application/javascript', body: callback + '(' + JSON.stringify(data) + ');' });
+}
+test.beforeEach(async ({ page }) => {
+    await page.route(apiPattern, async route => {
+        if (route.request().method() === 'POST') throw new Error('Unexpected real submission');
+        const id = new URL(route.request().url()).searchParams.get('id');
+        return respond(route, Object.hasOwn(guests, id) ? guests[id] : { error: 'not_found' });
+    });
+});
+
 for (const width of [390, 1280]) {
     for (const [id, guest] of Object.entries(guests)) {
         test(`${id} at ${width}px only sees invited events`, async ({ page }) => {
@@ -40,28 +54,61 @@ for (const query of ['', '?invite=inconnu', '?invite=__proto__', '?invite=toStri
 }
 
 test('guest loading failure stays closed', async ({ page }) => {
-    await page.route('**/guests.json', route => route.fulfill({ status: 503, body: 'Unavailable' }));
+    await page.route(apiPattern, route => route.abort());
     await page.goto('/?invite=ilan-dahan');
     await expect(page.locator('#invitation-status')).toContainText('ne peut pas être chargée');
     await expect(page.locator('#reponse')).toBeHidden();
 });
 
-test('RSVP excludes uninvited events and preserves answers', async ({ page }) => {
+test('RSVP only confirms a saved receipt and excludes uninvited events', async ({ page }) => {
     let payload;
-    await page.route('https://script.google.com/**', route => {
-        payload = route.request().postDataJSON();
-        return route.fulfill({ status: 200, body: 'OK' });
+    await page.route(apiPattern, route => {
+        if (route.request().method() === 'POST') {
+            payload = route.request().postDataJSON();
+            return route.fulfill({ status: 200, body: 'OK' });
+        }
+        const url = new URL(route.request().url());
+        if (url.searchParams.get('action') === 'status') return respond(route, { ok: true, saved: true, requestId: payload.requestId });
+        return route.fallback();
     });
     await page.goto('/?invite=elie-chicha');
     await expect(page.locator('body')).toHaveClass(/invitation-ready/);
     await page.locator('#btn_skip').click();
     await page.locator('#houppa-adultes').selectOption('3');
     await page.locator('.submit-btn').click();
-    await expect(page.locator('#confirm-msg')).toContainText('envoyée');
-    expect(payload).toMatchObject({ invite: 'elie-chicha', nom: guests['elie-chicha'].nom, mairie: 'Masqué', shabbat: 'Masqué' });
-    expect(payload.houppa).toContain('3 adulte(s)');
+    await expect(page.locator('#confirm-msg')).toContainText('bien été enregistrée');
+    expect(payload.invite).toBe('elie-chicha');
+    expect(payload.events).toEqual({ houppa: { presence: 'oui', adultes: 3, enfants: 0 } });
     await expect(page.locator('#houppa-adultes')).toHaveValue('3');
-    await expect(page.locator('#nom')).toHaveValue(guests['elie-chicha'].nom);
+});
+
+test('unconfirmed POST does not show success, retry keeps request ID', async ({ page }) => {
+    const ids = [];
+    await page.route(apiPattern, route => {
+        if (route.request().method() === 'POST') {
+            ids.push(route.request().postDataJSON().requestId);
+            return route.fulfill({ status: 200, body: 'OK' });
+        }
+        if (new URL(route.request().url()).searchParams.get('action') === 'status') {
+            return respond(route, { ok: true, saved: ids.length > 1, requestId: ids.at(-1) });
+        }
+        return route.fallback();
+    });
+    await page.goto('/?invite=elie-chicha');
+    await expect(page.locator('body')).toHaveClass(/invitation-ready/);
+    await page.locator('#btn_skip').click();
+    await page.locator('.submit-btn').click();
+    await expect(page.locator('#confirm-msg')).toContainText('ne pouvons pas confirmer');
+    await page.locator('.submit-btn').click();
+    await expect(page.locator('#confirm-msg')).toContainText('bien été enregistrée');
+    expect(ids).toHaveLength(2);
+    expect(ids[0]).toBe(ids[1]);
+});
+
+test('legacy id links load the guest', async ({ page }) => {
+    await page.goto('/?id=ilan-dahan');
+    await expect(page.locator('body')).toHaveClass(/invitation-ready/);
+    await expect(page.locator('#nom')).toHaveValue(guests['ilan-dahan'].nom);
 });
 
 test('envelope opens and countdown uses Paris time', async ({ page }) => {

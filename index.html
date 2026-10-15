@@ -1356,7 +1356,7 @@
                     <div class="form-group">
                         <label for="message">Un mot pour nous</label>
                         <div class="input-box">
-                            <textarea id="message" name="message" placeholder="Laissez-nous un message (facultatif)"></textarea>
+                            <textarea id="message" name="message" maxlength="2000" placeholder="Laissez-nous un message (facultatif)"></textarea>
                         </div>
                     </div>
                     <button type="submit" class="submit-btn">Confirmer ma présence</button>
@@ -1381,6 +1381,7 @@
         <div class="footer-bsd">בס״ד</div>
     </div>
 </footer>
+<script src="sheet-api.js"></script>
 <script src="invitation.js"></script>
 <script>
     // 1. Enveloppe
@@ -1723,54 +1724,7 @@
         });
     })();
 
-    var SHEET_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzrHvIXBmpMvPRLxpapbqnqaEv0wRVhQPVbLrZf0Edf0keF8_RJRTOdfMW3-N_93vf-wg/exec";
-    var rsvpForm = document.getElementById('rsvp-form');
-    var submitBtn = rsvpForm.querySelector('.submit-btn');
-    var confirmMsg = document.getElementById('confirm-msg');
-    rsvpForm.addEventListener('submit', function(e){
-        e.preventDefault();
-        confirmMsg.classList.remove('show');
-        var invitation = window.currentInvitation;
-        if (!invitation || !Object.values(invitation.events).some(Boolean)) {
-            alert('Merci d’utiliser votre lien personnel pour répondre.');
-            return;
-        }
-        var nom = document.getElementById('nom').value.trim();
-        if(!nom){ alert('Merci de renseigner votre nom et prénom.'); return; }
-        function line(label, groupName, adultId, childId){
-            if (!invitation.events[groupName.replace('-presence', '')]) return null;
-            var radioChecked = document.querySelector('input[name="'+groupName+'"]:checked');
-            if(!radioChecked) return null;
-            if(radioChecked.value === 'non') return label + ' : Non';
-            return label + ' : Oui (' + document.getElementById(adultId).value + ' adulte(s), ' + document.getElementById(childId).value + ' enfant(s))';
-        }
-        var payload = {
-            invite: invitation.id,
-            nom: nom,
-            mairie: line('Mairie', 'mairie-presence', 'mairie-adultes', 'mairie-enfants') || 'Masqué',
-            houppa: line('Houppa & Soirée', 'houppa-presence', 'houppa-adultes', 'houppa-enfants') || 'Masqué',
-            shabbat: line('Chabbat', 'shabbat-presence', 'shabbat-adultes', 'shabbat-enfants') || 'Masqué',
-            message: document.getElementById('message').value.trim()
-        };
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Envoi en cours…';
-        fetch(SHEET_WEBAPP_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: {'Content-Type': 'text/plain;charset=utf-8'},
-            body: JSON.stringify(payload)
-        }).then(function(){
-            confirmMsg.textContent = 'Votre réponse a été envoyée. En cas de doute, contactez Eden ou Ilan pour confirmer sa réception.';
-            confirmMsg.classList.add('show');
-            // Conserver la réponse tant que le serveur ne confirme pas son enregistrement.
-            confirmMsg.scrollIntoView({behavior:'smooth', block:'center'});
-        }).catch(function(){
-            alert("Une erreur est survenue lors de l'envoi. Merci de réessayer.");
-        }).finally(function(){
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Confirmer ma présence';
-        });
-    });
 </script>
+<script src="rsvp.js"></script>
 </body>
 </html>
