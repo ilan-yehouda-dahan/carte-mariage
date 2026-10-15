@@ -164,3 +164,16 @@ test('mairie date is February 11 in programme, RSVP, calendar and admin', async 
     await page.goto('/admindahan/?preview=1');
     await expect(page.locator('label').filter({has:page.locator('#mairie')})).toContainText('11 février');
 });
+
+test('personal welcome appears on envelope, card and cover without capacity announcement', async ({page}) => {
+    await page.goto('/?preview=1&invite=ilan-dahan');
+    await expect(page.locator('body')).toHaveClass(/invitation-ready/);
+    await expect(page.locator('#envelope-recipient')).toHaveText('À l’attention de ilan dahan');
+    await expect(page.locator('#card-recipient')).toHaveText('Pour ilan dahan');
+    await page.locator('#btn_skip').click();
+    await expect(page.locator('#cover-recipient')).toHaveText('ilan dahan,');
+    await expect(page.locator('.cover-invite')).toContainText('Hachem');
+    await expect(page.locator('#invitation-capacity')).toHaveCount(0);
+    await expect(page.locator('#houppa-adultes option')).toHaveText(['1','2']);
+    await expect(page.locator('#houppa-enfants')).toBeHidden();
+});

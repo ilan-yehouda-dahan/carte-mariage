@@ -53,14 +53,23 @@
                 });
                 document.querySelector('.nav-item[data-target="' + name + '"]').hidden = !allowed;
             });
-            document.getElementById('invitation-capacity').textContent = 'Votre invitation prévoit jusqu’à ' + guest.maxAdultes + ' adulte(s)' + (guest.maxEnfants ? ' et ' + guest.maxEnfants + ' enfant(s).' : '.');
             var hasEvents = eventNames.some(function (name) { return events[name]; });
             document.getElementById('programme').hidden = !hasEvents;
             document.getElementById('reponse').hidden = !hasEvents;
             document.querySelector('.cover-enter').hidden = !hasEvents;
             document.getElementById('nom').value = guest.nom;
             document.getElementById('nom').readOnly = true;
-            document.getElementById('invitation-greeting').textContent = 'Bienvenue ' + guest.nom;
+            document.getElementById('invitation-greeting').textContent = 'Ces moments, nous souhaitons les partager avec vous.';
+            [
+                ['envelope-recipient', 'À l’attention de ' + guest.nom],
+                ['card-recipient', 'Pour ' + guest.nom],
+                ['cover-recipient', guest.nom + ',']
+            ].forEach(function (entry) {
+                var recipient = document.getElementById(entry[0]);
+                recipient.textContent = entry[1];
+                recipient.hidden = false;
+            });
+            document.querySelector('.cover-invite').textContent = 'C’est avec une immense joie et une profonde gratitude envers Hachem que nous vous invitons à partager ces moments précieux à nos côtés.';
             window.currentInvitation = { id: inviteId, events: events };
             status.hidden = hasEvents;
             if (!hasEvents) status.textContent = 'Bonjour ' + guest.nom + '. Aucun événement n’est associé à votre invitation pour le moment. Contactez Eden ou Ilan.';
