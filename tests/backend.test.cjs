@@ -22,7 +22,7 @@ test('canonical name, permissions, literal text and receipt, without duplicate w
     assert.equal(rows.length, 2);
     assert.equal(rows[1][1], "'=Nom");
     assert.equal(rows[1][2], 'Masqué');
-    assert.match(rows[1][3], /2 adulte\(s\), 1 enfant\(s\)/);
+    assert.equal(rows[1][3], 'Houppa & Soirée : Oui (3 personne(s))');
     assert.equal(rows[1][4], 'Masqué');
     assert.equal(rows[1][5], "'=FORMULE()");
     assert.equal(api.get({ action: 'status', id: 'elie-chicha', requestId }).saved, true);
@@ -67,7 +67,7 @@ test('absent answer records zero attendance without requiring counts', () => {
 });
 
 test('family capacity is enforced by server for adults and children', () => {
-    for (const [adults, children] of [[3,0],[2,2],[1,-1],[1.5,0]]) {
+    for (const [adults, children] of [[4,0],[2,2],[1,-1],[1.5,0]]) {
         const api = backend();
         const payload = answer();
         payload.events.houppa = { presence:'oui', adultes:adults, enfants:children };
@@ -105,7 +105,7 @@ test('admin adds capacity headers without overwriting existing columns', () => {
     api.tables['Invités'].forEach(row=>row.splice(5));
     assert.equal(api.post(create()).ok,true);
     assert.equal(api.get({id:requestId}).maxAdultes,2);
-    assert.equal(api.tables['Invités'][0][5],'Max adultes');
+    assert.equal(api.tables['Invités'][0][5],'Max personnes');
 });
 test('invalid admin event selection and limits do not create a guest', () => {
     for (const patch of [{maxAdultes:0},{maxEnfants:-1},{houppa:false},{nom:''}]) {
@@ -132,15 +132,14 @@ test('latest reply only counts, absences and pending separated per family and ev
     newer.events.houppa={presence:'oui',adultes:1,enfants:0};
     assert.equal(api.post(newer).ok,true);
     let report=api.post(auth('dahan'));
-    assert.equal(report.totals.houppa.adults,1);
-    assert.equal(report.totals.houppa.children,0);
-    assert.equal(report.totals.houppa.invitedAdults,2);
+    assert.equal(report.totals.houppa.people,1);
+    assert.equal(report.totals.houppa.invited,3);
     assert.equal(report.totals.houppa.pending,0);
-    assert.equal(api.post(auth('chiche')).totals.houppa.adults,0);
+    assert.equal(api.post(auth('chiche')).totals.houppa.people,0);
     const absent=answer();absent.requestId='00000000-0000-4000-8000-000000000003';absent.events.houppa={presence:'non'};
     assert.equal(api.post(absent).ok,true);
     report=api.post(auth('dahan'));
-    assert.equal(report.totals.houppa.adults,0);
+    assert.equal(report.totals.houppa.people,0);
     assert.equal(report.totals.houppa.declined,1);
 });
 test('new invitation belongs only to authorized family and guest lookup omits accounting', () => {
@@ -159,7 +158,7 @@ test('legacy responses warned about rather than guessed from names', () => {
     const api=backend({existing:true});const report=api.post(auth('dahan'));
     assert.equal(report.legacyResponses,true);
     assert.equal(report.totals.houppa.pending,1);
-    assert.equal(report.totals.houppa.adults,0);
+    assert.equal(report.totals.houppa.people,0);
 });
 test('private POST reply targets approved origin, escapes script markup and includes no key', () => {
     const api=backend();
@@ -179,7 +178,7 @@ test('sorted response rows still use the latest timestamp', () => {
     api.tables['Réponses'][1][0]=new Date('2026-10-14T10:00:00Z');
     api.tables['Réponses'][2][0]=new Date('2026-10-15T10:00:00Z');
     const rows=api.tables['Réponses'];[rows[1],rows[2]]=[rows[2],rows[1]];
-    assert.equal(api.post(auth('dahan')).totals.houppa.adults,0);
+    assert.equal(api.post(auth('dahan')).totals.houppa.people,0);
     assert.equal(api.post(auth('dahan')).totals.houppa.declined,1);
 });
 
@@ -199,6 +198,27 @@ test('setup adds missing columns without replacing existing guests or guessing t
     api.tables['Invités'].forEach(row=>row.splice(5));
     const before=api.tables['Invités'][1].slice();api.showLinks();
     assert.deepEqual(api.tables['Invités'][1],before);
-    assert.equal(api.tables['Invités'][0][7],'Famille');
+    assert.equal(api.tables['Invités'][0][6],'Famille');
     assert.equal(api.post({action:'dashboard',family:'dahan',adminKey:api.properties.ADMIN_KEY_DAHAN}).guests.length,0);
+});
+
+test('single number of people is stored and enforced without categories', () => {
+    const api=backend();
+    const payload={...create(),maxPersonnes:2};delete payload.maxAdultes;delete payload.maxEnfants;
+    assert.equal(api.post(payload).ok,true);
+    assert.equal(api.get({id:requestId}).maxPersonnes,2);
+    const reply={invite:requestId,requestId:'00000000-0000-4000-8000-000000000099',events:{houppa:{presence:'oui',personnes:2}},message:''};
+    assert.equal(api.post({...reply,events:{houppa:{presence:'oui',personnes:3}}}).error,'invalid_counts');
+    assert.equal(api.post({...reply,events:{houppa:{presence:'oui',personnes:0}}}).error,'invalid_counts');
+    assert.equal(api.post(reply).ok,true);
+    assert.equal(api.tables['Réponses'][1][3],'Houppa & Soirée : Oui (2 personne(s))');
+    assert.equal(api.post(auth('dahan')).totals.houppa.people,2);
+});
+test('historical adults and children are summed for both invitations and replies', () => {
+    const api=backend();
+    assert.equal(api.get({id:'elie-chicha'}).maxPersonnes,3);
+    api.tables['Réponses']=[['Date','Nom','Mairie','Houppa','Shabbat','Message','ID invité','ID envoi'],
+       [new Date(),'Nom','Masqué','Houppa & Soirée : Oui (2 adulte(s), 1 enfant(s))','Masqué','','elie-chicha',requestId]];
+    assert.equal(api.post(auth('dahan')).totals.houppa.invited,3);
+    assert.equal(api.post(auth('dahan')).totals.houppa.people,3);
 });

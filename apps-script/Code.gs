@@ -33,13 +33,22 @@ function guest_(id, sourceRows) {
     if (['oui', 'non', 'true', 'false', ''].indexOf(value) < 0) throw new Error('invalid_guest_permission');
     guest[name] = value === 'oui' || value === 'true';
   });
-  ['Max adultes', 'Max enfants'].forEach(function (name, index) {
-    var column = headers.indexOf(normalize_(name));
-    var raw = column < 0 ? '' : row[column];
-    var value = Number(raw);
-    if (raw === '' || raw == null || !Number.isInteger(value) || value < (index === 0 ? 1 : 0) || value > 50) throw new Error('invalid_guest_limits');
-    guest[index === 0 ? 'maxAdultes' : 'maxEnfants'] = value;
-  });
+  var capacityColumn = headers.indexOf('max personnes');
+  var capacity = capacityColumn < 0 ? '' : row[capacityColumn];
+  if (capacity !== '' && capacity != null) {
+    guest.maxPersonnes = Number(capacity);
+    if (!Number.isInteger(guest.maxPersonnes) || guest.maxPersonnes < 1 || guest.maxPersonnes > 100) throw new Error('invalid_guest_limits');
+  } else {
+    var limits = ['max adultes', 'max enfants'].map(function (name, index) {
+      var col = headers.indexOf(name); var raw = col < 0 ? '' : row[col]; var value = Number(raw);
+      if (raw === '' || raw == null || !Number.isInteger(value) || value < (index === 0 ? 1 : 0) || value > 50) throw new Error('invalid_guest_limits');
+      return value;
+    });
+    guest.maxPersonnes = limits[0] + limits[1];
+  }
+  // Compatibilité avec les anciennes cartes pendant la mise à jour du site.
+  guest.maxAdultes = guest.maxPersonnes;
+  guest.maxEnfants = 0;
   return guest;
 }
 
@@ -92,9 +101,10 @@ function eventLine_(guest, payload, name, label) {
   var answer = payload.events && payload.events[name];
   if (!answer || ['oui', 'non'].indexOf(answer.presence) < 0) throw new Error('invalid_answer');
   if (answer.presence === 'non') return label + ' : Non';
-  if (!Number.isInteger(answer.adultes) || answer.adultes < 1 || answer.adultes > guest.maxAdultes ||
-      !Number.isInteger(answer.enfants) || answer.enfants < 0 || answer.enfants > guest.maxEnfants) throw new Error('invalid_counts');
-  return label + ' : Oui (' + answer.adultes + ' adulte(s), ' + answer.enfants + ' enfant(s))';
+  var people = answer.personnes;
+  if (people === undefined && Number.isInteger(answer.adultes) && Number.isInteger(answer.enfants) && answer.adultes >= 0 && answer.enfants >= 0) people = answer.adultes + answer.enfants;
+  if (!Number.isInteger(people) || people < 1 || people > guest.maxPersonnes) throw new Error('invalid_counts');
+  return label + ' : Oui (' + people + ' personne(s))';
 }
 
 function doPost(e) {
@@ -147,8 +157,9 @@ function createGuest_(payload) {
   var family = authorize_(payload);
   if (!validRequest_(payload.id)) throw new Error('invalid_id');
   if (typeof payload.nom !== 'string' || !payload.nom.trim() || payload.nom.length > 120) throw new Error('invalid_name');
-  if (!Number.isInteger(payload.maxAdultes) || payload.maxAdultes < 1 || payload.maxAdultes > 50 ||
-      !Number.isInteger(payload.maxEnfants) || payload.maxEnfants < 0 || payload.maxEnfants > 50) throw new Error('invalid_guest_limits');
+  var capacity = payload.maxPersonnes;
+  if (capacity === undefined && Number.isInteger(payload.maxAdultes) && Number.isInteger(payload.maxEnfants) && payload.maxAdultes >= 1 && payload.maxEnfants >= 0) capacity = payload.maxAdultes + payload.maxEnfants;
+  if (!Number.isInteger(capacity) || capacity < 1 || capacity > 100) throw new Error('invalid_guest_limits');
   if (!EVENTS.every(function (name) { return typeof payload[name] === 'boolean'; }) ||
       !EVENTS.some(function (name) { return payload[name]; })) throw new Error('invalid_events');
   var lock = LockService.getScriptLock();
@@ -156,7 +167,7 @@ function createGuest_(payload) {
   try {
     var book = spreadsheet_();
     var sheet = book.getSheetByName('Invités') || book.insertSheet('Invités');
-    var required = ['ID', 'Nom', 'Mairie', 'Houppa', 'Shabbat', 'Max adultes', 'Max enfants', 'Famille'];
+    var required = ['ID', 'Nom', 'Mairie', 'Houppa', 'Shabbat', 'Max personnes', 'Famille'];
     if (!sheet.getLastRow()) sheet.appendRow(required);
     var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
     required.forEach(function (name) {
@@ -174,7 +185,7 @@ function createGuest_(payload) {
     }
     var record = { id: payload.id, nom: textCell_(payload.nom.trim()), mairie: payload.mairie ? 'oui' : 'non',
       houppa: payload.houppa ? 'oui' : 'non', shabbat: payload.shabbat ? 'oui' : 'non',
-      'max adultes': payload.maxAdultes, 'max enfants': payload.maxEnfants, famille: family };
+      'max personnes': capacity, famille: family };
     sheet.appendRow(headers.map(function (header) {
       return Object.prototype.hasOwnProperty.call(record, normalize_(header)) ? record[normalize_(header)] : '';
     }));
@@ -210,9 +221,11 @@ function adminOutput_(data, payload) {
 
 function parseAnswer_(value) {
   var text = String(value || '');
-  if (/ : Non$/.test(text)) return { presence: 'non', adultes: 0, enfants: 0 };
-  var match = text.match(/ : Oui \((\d+) adulte\(s\), (\d+) enfant\(s\)\)$/);
-  return match ? { presence: 'oui', adultes: Number(match[1]), enfants: Number(match[2]) } : null;
+  if (/ : Non$/.test(text)) return { presence: 'non', personnes: 0 };
+  var people = text.match(/ : Oui \((\d+) personne\(s\)\)$/);
+  if (people) return { presence: 'oui', personnes: Number(people[1]) };
+  var legacy = text.match(/ : Oui \((\d+) adulte\(s\), (\d+) enfant\(s\)\)$/);
+  return legacy ? { presence: 'oui', personnes: Number(legacy[1]) + Number(legacy[2]) } : null;
 }
 
 function dashboard_(payload) {
@@ -220,7 +233,7 @@ function dashboard_(payload) {
   var book = spreadsheet_();
   var sheet = book.getSheetByName('Invités');
   var totals = {};
-  EVENTS.forEach(function (name) { totals[name] = { invitedAdults: 0, invitedChildren: 0, adults: 0, children: 0, pending: 0, declined: 0 }; });
+  EVENTS.forEach(function (name) { totals[name] = { invited: 0, people: 0, pending: 0, declined: 0 }; });
   if (!sheet || sheet.getLastRow() < 2) return { ok: true, family: family, guests: [], totals: totals, legacyResponses: false };
   var rows = sheet.getDataRange().getValues();
   var headers = rows[0].map(normalize_);
@@ -258,14 +271,12 @@ function dashboard_(payload) {
     EVENTS.forEach(function (name) {
       if (!guest[name]) { delete guest.answers[name]; return; }
       var total = totals[name];
-      total.invitedAdults += guest.maxAdultes;
-      total.invitedChildren += guest.maxEnfants;
+      total.invited += guest.maxPersonnes;
       var answer = guest.answers[name];
       if (!answer) { total.pending++; return; }
-      if (answer.adultes > guest.maxAdultes || answer.enfants > guest.maxEnfants) throw new Error('response_exceeds_capacity');
+      if (answer.personnes > guest.maxPersonnes) throw new Error('response_exceeds_capacity');
       if (answer.presence === 'non') total.declined++;
-      total.adults += answer.adultes;
-      total.children += answer.enfants;
+      total.people += answer.personnes;
     });
   });
   return { ok: true, family: family, guests: guests, totals: totals, legacyResponses: legacy };
@@ -295,7 +306,7 @@ function afficherLiensPrives() {
     // Ajouter seulement les en-têtes manquants, sans affecter ni supprimer les anciens invités.
     var book = spreadsheet_();
     var sheet = book.getSheetByName('Invités') || book.insertSheet('Invités');
-    var required = ['ID', 'Nom', 'Mairie', 'Houppa', 'Shabbat', 'Max adultes', 'Max enfants', 'Famille'];
+    var required = ['ID', 'Nom', 'Mairie', 'Houppa', 'Shabbat', 'Max personnes', 'Famille'];
     if (!sheet.getLastRow()) sheet.appendRow(required);
     else {
       var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];

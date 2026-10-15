@@ -15,8 +15,7 @@
             if (!invitation.events[name]) return;
             answers[name] = {
                 presence: form.querySelector('input[name="' + name + '-presence"]:checked').value,
-                adultes: Number(document.getElementById(name + '-adultes').value),
-                enfants: Number(document.getElementById(name + '-enfants').value)
+                personnes: Number(document.getElementById(name + '-personnes').value)
             };
         });
         var data = { invite: invitation.id, events: answers, message: document.getElementById('message').value.trim() };

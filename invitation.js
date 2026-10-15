@@ -20,10 +20,10 @@
 
     window.sheetApi.guest(inviteId)
         .then(function (guest) {
+            var capacity = guest && (guest.maxPersonnes === undefined ? guest.maxAdultes + guest.maxEnfants : guest.maxPersonnes);
             if (!guest || typeof guest.nom !== 'string' || !guest.nom.trim() ||
                 !eventNames.every(function (name) { return typeof guest[name] === 'boolean'; }) ||
-                !Number.isInteger(guest.maxAdultes) || guest.maxAdultes < 1 || guest.maxAdultes > 50 ||
-                !Number.isInteger(guest.maxEnfants) || guest.maxEnfants < 0 || guest.maxEnfants > 50) {
+                !Number.isInteger(capacity) || capacity < 1 || capacity > 100) {
                 throw new Error('Invitation mal configurée');
             }
             if (window.localPreview) {
@@ -36,15 +36,9 @@
             eventNames.forEach(function (name) {
                 var allowed = guest[name] === true;
                 events[name] = allowed;
-                ['adultes', 'enfants'].forEach(function (kind) {
-                    var select = document.getElementById(name + '-' + kind);
-                    var max = kind === 'adultes' ? guest.maxAdultes : guest.maxEnfants;
-                    select.replaceChildren();
-                    for (var count = kind === 'adultes' ? 1 : 0; count <= max; count++) {
-                        select.add(new Option(String(count), String(count)));
-                    }
-                    select.parentElement.hidden = kind === 'enfants' && max === 0;
-                });
+                var select = document.getElementById(name + '-personnes');
+                select.replaceChildren();
+                for (var count = 1; count <= capacity; count++) select.add(new Option(String(count), String(count)));
                 document.getElementById(name).hidden = !allowed;
                 var responseSection = document.getElementById('rsvp-' + name);
                 responseSection.hidden = !allowed;
@@ -61,7 +55,7 @@
             document.getElementById('nom').readOnly = true;
             document.getElementById('invitation-greeting').textContent = 'Ces moments, nous souhaitons les partager avec vous.';
             [
-                ['envelope-recipient', 'À l’attention de ' + guest.nom],
+                ['envelope-recipient', guest.nom],
                 ['card-recipient', 'Pour ' + guest.nom],
                 ['cover-recipient', guest.nom + ',']
             ].forEach(function (entry) {
@@ -69,6 +63,7 @@
                 recipient.textContent = entry[1];
                 recipient.hidden = false;
             });
+            document.getElementById('envelope-addressee').hidden = false;
             document.querySelector('.cover-invite').textContent = 'C’est avec une immense joie et une profonde gratitude envers Hachem que nous vous invitons à partager ces moments précieux à nos côtés.';
             window.currentInvitation = { id: inviteId, events: events };
             status.hidden = hasEvents;

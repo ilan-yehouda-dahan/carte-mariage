@@ -16,12 +16,12 @@ Le secret Dahan est refusé dans l’espace Chiche et inversement.
 Les adresses ci-dessus, sans leur partie secrète `#acces=…`, n’ouvrent aucune donnée. La page `/admin.html` est seulement une orientation
 vers les deux adresses ; elle ne contient aucun tableau commun.
 
-Dans chaque espace : création d'invitations, maximum d'adultes et d'enfants,
+Dans chaque espace : création d'invitations, nombre maximum de personnes,
 liste de ses foyers, lien personnel, préparation WhatsApp et export CSV des
 effectifs par événement. « Actualiser » relit Google Sheets ; les données ne sont
 pas actualisées automatiquement en arrière-plan.
 
-Les tableaux distinguent adultes/enfants invités, adultes/enfants confirmés,
+Les tableaux distinguent personnes invitées, personnes confirmées,
 foyers sans réponse et foyers absents. Si un foyer répond plusieurs fois, seule
 sa réponse la plus récente (horodatage) compte : les personnes ne sont pas additionnées.
 Le CSV reprend ces mêmes effectifs pour communiquer avec le traiteur.
@@ -58,22 +58,23 @@ Ne pas cliquer sur Exécuter pour tester `doPost` : cette fonction attend une re
 
 L'onglet **Invités** utilise ces en-têtes (ordre libre) :
 
-`ID | Nom | Mairie | Houppa | Shabbat | Max adultes | Max enfants | Famille`
+`ID | Nom | Mairie | Houppa | Shabbat | Max personnes | Famille`
 
 `Famille` vaut `dahan` ou `chiche` et n'est renseignée que par le serveur pour les
 nouvelles invitations. Les colonnes manquantes sont ajoutées à la première création
 autorisée ; aucune ancienne ligne n'est supprimée.
 
-Pour les invitations déjà présentes, compléter une fois `Max adultes`, `Max enfants`
-et `Famille`. Une ancienne ligne sans famille n'apparaît dans aucun espace :
-le serveur ne devine pas qui la prend en charge. Un tableau rempli sans colonne
-Famille provoque un message de configuration plutôt qu'un récapitulatif incomplet.
+Pour les invitations déjà présentes, les anciennes colonnes `Max adultes` et
+`Max enfants` restent compatibles : leur somme devient le maximum de personnes
+si `Max personnes` est vide. Les anciennes réponses sont également additionnées.
+Une ancienne ligne sans `Famille` n'apparaît dans aucun espace : compléter cette
+colonne avec `dahan` ou `chiche` ; le serveur ne devine pas qui la prend en charge.
 
-`oui`/`non` ou cases à cocher sont acceptés pour les événements. Les limites sont
-obligatoires : 1 à 50 adultes, 0 à 50 enfants, par foyer et par événement autorisé.
-Avec **2 adultes, 0 enfant**, l'invité choisit 1 ou 2 adultes ; le choix des enfants
-est masqué. Le serveur refuse aussi les effectifs excessifs en cas de modification
-du navigateur. L'absence est toujours possible.
+`oui`/`non` ou cases à cocher sont acceptés pour les événements. Le maximum est
+compris entre 1 et 100 personnes par foyer et par événement autorisé.
+Avec **2 personnes maximum**, l'invité choisit 1 ou 2 personnes.
+Le serveur refuse aussi les effectifs excessifs en cas de modification du navigateur.
+L'absence est toujours possible.
 
 Le fichier `guests.json` contient uniquement des exemples pour les aperçus et tests.
 Le site réel ne l'utilise pas.

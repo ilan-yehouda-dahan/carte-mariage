@@ -39,8 +39,8 @@ for (const width of [360, 1280]) {
         await expect(page.locator('body')).toHaveClass(/invitation-ready/);
         await page.locator('#btn_skip').click();
         await expect(page.locator('#nom')).toHaveValue('Sarah et David Cohen');
-        await expect(page.locator('#houppa-adultes option')).toHaveText(['1','2']);
-        await expect(page.locator('#houppa-enfants')).toBeHidden();
+        await expect(page.locator('#houppa-personnes option')).toHaveText(['1','2']);
+        await expect(page.locator('#houppa-enfants')).toHaveCount(0);
         await expect(page.locator('#mairie')).toBeHidden();
         await expect(page.locator('#shabbat')).toBeHidden();
         await expect(page.locator('.submit-btn')).toBeDisabled();
@@ -94,23 +94,23 @@ test('live separation, creation, WhatsApp, RSVP, latest counts and CSV end to en
     // Tester le même lien sur l'origine locale avec le vrai code Apps Script et un Sheets simulé.
     await page.goto('/?invite=' + id);
     await expect(page.locator('body')).toHaveClass(/invitation-ready/); await page.locator('#btn_skip').click();
-    await page.locator('#houppa-adultes').selectOption('2'); await page.locator('.submit-btn').click();
+    await page.locator('#houppa-personnes').selectOption('2'); await page.locator('.submit-btn').click();
     await expect(page.locator('#confirm-msg')).toContainText('bien été enregistrée');
     await login(page,'dahan');
     const houppa = page.locator('#totals tr').filter({hasText:'Houppa & soirée'});
-    await expect(houppa.locator('td')).toHaveText(['Houppa & soirée','2','0','2','0','0','0']);
+    await expect(houppa.locator('td')).toHaveText(['Houppa & soirée','2','2','0','0']);
     // Une réponse corrigée crée de l'historique, sans doubler les effectifs.
-    expect(api.post({invite:id,requestId:'00000000-0000-4000-8000-000000000001',events:{mairie:{presence:'non'},houppa:{presence:'oui',adultes:1,enfants:0}},message:''}).ok).toBe(true);
+    expect(api.post({invite:id,requestId:'00000000-0000-4000-8000-000000000001',events:{mairie:{presence:'non'},houppa:{presence:'oui',personnes:1}},message:''}).ok).toBe(true);
     await page.locator('#refresh').click();
-    await expect(houppa.locator('td')).toHaveText(['Houppa & soirée','2','0','1','0','0','0']);
+    await expect(houppa.locator('td')).toHaveText(['Houppa & soirée','2','1','0','0']);
     const downloadPromise = page.waitForEvent('download'); await page.locator('#export').click();
     const download = await downloadPromise; expect(download.suggestedFilename()).toBe('effectifs-dahan.csv');
-    expect(await fs.readFile(await download.path(),'utf8')).toContain('"Houppa & soirée";"2";"0";"1";"0";"0";"0"');
+    expect(await fs.readFile(await download.path(),'utf8')).toContain('"Houppa & soirée";"2";"1";"0";"0"');
     expect(await page.evaluate(() => JSON.stringify(localStorage))).not.toContain('a'.repeat(40));
     await page.locator('#logout').click(); await expect(page.locator('#private-space')).toBeHidden(); await expect(page.locator('#guest-list')).toBeEmpty(); expect(new URL(page.url()).hash).toBe('');
     await login(page,'chiche');
     await expect(page.locator('#guest-list')).not.toContainText('Sarah et David Cohen');
-    await expect(page.locator('#totals tr').filter({hasText:'Houppa & soirée'}).locator('td')).toHaveText(['Houppa & soirée','0','0','0','0','0','0']);
+    await expect(page.locator('#totals tr').filter({hasText:'Houppa & soirée'}).locator('td')).toHaveText(['Houppa & soirée','0','0','0','0']);
 });
 
 test('a bare family address does not request or display private data', async ({page}) => {

@@ -74,12 +74,12 @@ test('RSVP only confirms a saved receipt and excludes uninvited events', async (
     await page.goto('/?invite=elie-chicha');
     await expect(page.locator('body')).toHaveClass(/invitation-ready/);
     await page.locator('#btn_skip').click();
-    await page.locator('#houppa-adultes').selectOption('3');
+    await page.locator('#houppa-personnes').selectOption('3');
     await page.locator('.submit-btn').click();
     await expect(page.locator('#confirm-msg')).toContainText('bien été enregistrée');
     expect(payload.invite).toBe('elie-chicha');
-    expect(payload.events).toEqual({ houppa: { presence: 'oui', adultes: 3, enfants: 0 } });
-    await expect(page.locator('#houppa-adultes')).toHaveValue('3');
+    expect(payload.events).toEqual({ houppa: { presence: 'oui', personnes: 3 } });
+    await expect(page.locator('#houppa-personnes')).toHaveValue('3');
 });
 
 test('unconfirmed POST does not show success, retry keeps request ID', async ({ page }) => {
@@ -168,12 +168,12 @@ test('mairie date is February 11 in programme, RSVP, calendar and admin', async 
 test('personal welcome appears on envelope, card and cover without capacity announcement', async ({page}) => {
     await page.goto('/?preview=1&invite=ilan-dahan');
     await expect(page.locator('body')).toHaveClass(/invitation-ready/);
-    await expect(page.locator('#envelope-recipient')).toHaveText('À l’attention de ilan dahan');
+    await expect(page.locator('#envelope-recipient')).toHaveText('ilan dahan');
     await expect(page.locator('#card-recipient')).toHaveText('Pour ilan dahan');
     await page.locator('#btn_skip').click();
     await expect(page.locator('#cover-recipient')).toHaveText('ilan dahan,');
     await expect(page.locator('.cover-invite')).toContainText('Hachem');
     await expect(page.locator('#invitation-capacity')).toHaveCount(0);
-    await expect(page.locator('#houppa-adultes option')).toHaveText(['1','2']);
-    await expect(page.locator('#houppa-enfants')).toBeHidden();
+    await expect(page.locator('#houppa-personnes option')).toHaveText(['1','2']);
+    await expect(page.locator('#houppa-enfants')).toHaveCount(0);
 });
