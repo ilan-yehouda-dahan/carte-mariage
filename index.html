@@ -2,7 +2,7 @@
 <html lang="fr" dir="ltr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Eden & Ilan — 18 février 2027</title>
     <meta name="description" content="Invitation au mariage de Eden et Ilan — 18 février 2027.">
     <meta name="robots" content="noindex, nofollow">
@@ -16,8 +16,6 @@
     <link rel="preload" as="image" href="assets/img/seal-logo.webp">
     <link rel="preload" as="image" href="assets/img/white-velvet-pocket.webp">
     <link rel="preload" as="image" href="assets/img/white-velvet-flap.webp">
-    <!-- jQuery -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <style>
         /* Polices auto-hébergées Enveloppe */
         @font-face {
@@ -91,6 +89,13 @@
         @media (min-width: 768px) { :root { --cs: 1.35; } }
         @media (min-width: 1200px) { :root { --cs: 1.45; } }
         *{box-sizing:border-box;}
+        [hidden] { display: none !important; }
+        body:not(.invitation-ready) #programme,
+        body:not(.invitation-ready) #reponse,
+        body:not(.invitation-ready) .bottom-nav-dock,
+        body:not(.invitation-ready) .cover-enter { display: none !important; }
+        .invitation-status { text-align: center; padding: 28px 20px; }
+        .invitation-greeting { text-align: center; font-size: 22px; margin: 0 0 20px; }
         html{scroll-behavior:smooth;}
         body{
             margin:0;
@@ -1106,7 +1111,7 @@
             <span>Ilan</span>
         </h1>
         <p class="cover-hebrew">כֹּל שָׂשׂוֹן וְכָל שִׂמְחָה</p>
-        <!-- Compte à rebours dynamique calé sur le 18 février 2027 à 17h00 -->
+        <!-- Compte à rebours dynamique calé sur le 18 février 2027 à 16h00 -->
         <div class="countdown" id="countdown">
             <div class="cell"><span class="num" id="cd-days">00</span><span class="lbl">jours</span></div>
             <span class="sep">·</span>
@@ -1165,11 +1170,13 @@
 </nav>
 <!-- ========================= 4. PROGRAMME DÉTAILLÉ ========================= -->
 <main>
+    <p id="invitation-status" class="invitation-status" role="status">Chargement de votre invitation…</p>
     <section id="programme">
         <div class="wrap">
             <div class="section-head in-view">
                 <h2>Le programme</h2>
             </div>
+            <p id="invitation-greeting" class="invitation-greeting"></p>
             <div class="timeline">
                 <!-- 1. MAIRIE -->
                 <div class="event" id="mairie">
@@ -1200,7 +1207,7 @@
                         <div class="fp-corner-bl"></div><div class="fp-corner-br"></div>
                         <div style="padding: 24px 24px 0;">
                             <div class="event-photo-wrap">
-                                <img src="factorie.jpg" alt="Pavillon Royal — Lieu de la Houppa & Soirée" loading="lazy">
+                                <img src="factorie.jpg" alt="Factory 58 — Lieu de la Houppa & Soirée" loading="lazy">
                             </div>
                         </div>
                         <div class="event-kicker">Cérémonie religieuse & soirée</div>
@@ -1210,14 +1217,14 @@
                             Mr et Mme Michael Dahan
                         </div>
                         <h3 class="fp-names">Eden <span class="amp">&</span> Ilan</h3>
-                        <div class="when">Jeudi 18 février 2027<br>à 17h00 précises</div>
-                        <div class="where">Au Complexe<br>Pavillon Royal</div>
+                        <div class="when">Jeudi 18 février 2027<br>à 16h00 précises</div>
+                        <div class="where">Factory 58<br><span class="addr">12 rue Gutenberg, 93000 Bobigny</span></div>
                         <div class="actions">
-                            <a class="btn" href="https://waze.com/ul?q=60%20Route%20de%20Garges%2C%2095200%20Sarcelles&navigate=yes" target="_blank" rel="noopener">
+                            <a class="btn" href="https://waze.com/ul?q=Factory%2058%2C%2012%20rue%20Gutenberg%2C%2093000%20Bobigny&navigate=yes" target="_blank" rel="noopener">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="9" r="2.4"/></svg>
                                 Itinéraire Waze
                             </a>
-                            <button class="btn" onclick="downloadIcs('Houppa & Soirée — Eden & Ilan','Pavillon Royal','2027-02-18')">
+                            <button class="btn" onclick="downloadIcs('Houppa & Soirée — Eden & Ilan','Factory 58, 12 rue Gutenberg, 93000 Bobigny','2027-02-18','16:00')">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="16" rx="1"/><path d="M3 9h18M8 3v4M16 3v4"/></svg>
                                 Ajouter au calendrier
                             </button>
@@ -1354,7 +1361,7 @@
                     </div>
                     <button type="submit" class="submit-btn">Confirmer ma présence</button>
                 </form>
-                <div class="confirm-msg" id="confirm-msg">Merci infiniment ! Votre réponse a bien été enregistrée.</div>
+                <div class="confirm-msg" id="confirm-msg" role="status" aria-live="polite"></div>
             </div>
         </div>
     </section>
@@ -1374,6 +1381,7 @@
         <div class="footer-bsd">בס״ד</div>
     </div>
 </footer>
+<script src="invitation.js"></script>
 <script>
     // 1. Enveloppe
     (function() {
@@ -1520,7 +1528,7 @@
         navPill.style.transform = 'translateX(' + (el.offsetLeft - offset) + 'px)';
     }
     function initDockPosition() {
-        var currentActive = document.querySelector('.bottom-nav-dock .nav-item.active') || navItems[0];
+        var currentActive = document.querySelector('.bottom-nav-dock .nav-item.active:not([hidden])') || navItems[0];
         if(currentActive) moveIndicator(currentActive);
     }
     document.addEventListener('DOMContentLoaded', initDockPosition);
@@ -1547,7 +1555,7 @@
         var activeId = 'cover';
         for (var i = 0; i < targets.length; i++) {
             var item = targets[i];
-            if (item.el) {
+            if (item.el && !item.el.hidden) {
                 var title = item.el.querySelector('h1, h2, h3') || item.el;
                 var rect = title.getBoundingClientRect();
                 if (rect.top <= centerScreen + 50) {
@@ -1556,10 +1564,11 @@
             }
         }
         if ((window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 60)) {
-            activeId = 'shabbat';
+            var visibleTargets = targets.filter(function(target) { return target.el && !target.el.hidden; });
+            if (visibleTargets.length) activeId = visibleTargets[visibleTargets.length - 1].id;
         }
         var matchBtn = document.querySelector('.bottom-nav-dock .nav-item[data-target="' + activeId + '"]');
-        if (matchBtn && !matchBtn.classList.contains('active')) {
+        if (matchBtn && !matchBtn.hidden && !matchBtn.classList.contains('active')) {
             moveIndicator(matchBtn);
         }
     }, { passive: true });
@@ -1568,9 +1577,9 @@
         if (active) moveIndicator(active);
     });
 
-    // 3. Compte à rebours calé sur le 18 février 2027 à 17h00
+    // 3. Compte à rebours calé sur le 18 février 2027 à 16h00
     (function(){
-        var target = new Date('2027-02-18T17:00:00');
+        var target = new Date('2027-02-18T16:00:00+01:00');
         function setVal(id, val){
             var el = document.getElementById(id);
             if(el) el.textContent = String(val).padStart(2, '0');
@@ -1654,20 +1663,35 @@
     })();
 
     // 7. ICS
-    function downloadIcs(title, location, dateStr){
+    function downloadIcs(title, location, dateStr, timeStr){
         var d = dateStr.replace(/-/g,'');
+        var nextDay = new Date(dateStr + 'T00:00:00Z');
+        nextDay.setUTCDate(nextDay.getUTCDate() + 1);
+        var end = nextDay.toISOString().slice(0, 10).replace(/-/g, '');
+        function escapeIcs(value) {
+            return value.replace(/\\/g, '\\\\').replace(/\r?\n/g, '\\n').replace(/,/g, '\\,').replace(/;/g, '\\;');
+        }
+        var startLine = 'DTSTART;VALUE=DATE:' + d;
+        var endLine = 'DTEND;VALUE=DATE:' + end;
+        if (timeStr) {
+            // Les événements datés de février 2027 sont à l'heure de Paris (UTC+1).
+            var start = new Date(dateStr + 'T' + timeStr + ':00+01:00');
+            function utc(value) { return value.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z'); }
+            startLine = 'DTSTART:' + utc(start);
+            endLine = null; // L'heure de fin n'a pas encore été précisée.
+        }
         var ics = [
             'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Eden et Ilan//Mariage//FR',
             'BEGIN:VEVENT',
             'UID:'+d+'-'+Math.random().toString(36).slice(2)+'@eden-ilan',
-            'DTSTAMP:'+d+'T000000Z',
-            'DTSTART;VALUE=DATE:'+d,
-            'DTEND;VALUE=DATE:'+d,
-            'SUMMARY:'+title,
-            'LOCATION:'+location,
+            'DTSTAMP:'+new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z'),
+            startLine,
+            endLine,
+            'SUMMARY:'+escapeIcs(title),
+            'LOCATION:'+escapeIcs(location),
             'DESCRIPTION:Mariage Eden & Ilan',
             'END:VEVENT','END:VCALENDAR'
-        ].join('\r\n');
+        ].filter(function(line) { return line !== null; }).join('\r\n');
         var blob = new Blob([ics], {type:'text/calendar'});
         var url = URL.createObjectURL(blob);
         var a = document.createElement('a');
@@ -1705,15 +1729,23 @@
     var confirmMsg = document.getElementById('confirm-msg');
     rsvpForm.addEventListener('submit', function(e){
         e.preventDefault();
+        confirmMsg.classList.remove('show');
+        var invitation = window.currentInvitation;
+        if (!invitation || !Object.values(invitation.events).some(Boolean)) {
+            alert('Merci d’utiliser votre lien personnel pour répondre.');
+            return;
+        }
         var nom = document.getElementById('nom').value.trim();
         if(!nom){ alert('Merci de renseigner votre nom et prénom.'); return; }
         function line(label, groupName, adultId, childId){
+            if (!invitation.events[groupName.replace('-presence', '')]) return null;
             var radioChecked = document.querySelector('input[name="'+groupName+'"]:checked');
             if(!radioChecked) return null;
             if(radioChecked.value === 'non') return label + ' : Non';
             return label + ' : Oui (' + document.getElementById(adultId).value + ' adulte(s), ' + document.getElementById(childId).value + ' enfant(s))';
         }
         var payload = {
+            invite: invitation.id,
             nom: nom,
             mairie: line('Mairie', 'mairie-presence', 'mairie-adultes', 'mairie-enfants') || 'Masqué',
             houppa: line('Houppa & Soirée', 'houppa-presence', 'houppa-adultes', 'houppa-enfants') || 'Masqué',
@@ -1728,10 +1760,9 @@
             headers: {'Content-Type': 'text/plain;charset=utf-8'},
             body: JSON.stringify(payload)
         }).then(function(){
-            confirmMsg.textContent = 'Merci ! Votre réponse a bien été enregistrée.';
+            confirmMsg.textContent = 'Votre réponse a été envoyée. En cas de doute, contactez Eden ou Ilan pour confirmer sa réception.';
             confirmMsg.classList.add('show');
-            rsvpForm.reset();
-            document.querySelectorAll('.guests-counts-wrap').forEach(function(gc){ gc.classList.remove('is-hidden'); });
+            // Conserver la réponse tant que le serveur ne confirme pas son enregistrement.
             confirmMsg.scrollIntoView({behavior:'smooth', block:'center'});
         }).catch(function(){
             alert("Une erreur est survenue lors de l'envoi. Merci de réessayer.");

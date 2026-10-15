@@ -1,3 +1,7 @@
 .DS_Store
 .idea/
 fond.avi
+
+node_modules/
+test-results/
+playwright-report/
