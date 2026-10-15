@@ -161,6 +161,6 @@ test('mairie date is February 11 in programme, RSVP, calendar and admin', async 
     await expect(page.locator('#rsvp-mairie .rsvp-event-title')).toContainText('11 février');
     await expect(page.locator('#mairie button.btn')).toHaveAttribute('onclick', /2027-02-11/);
     await expect(page.locator('#houppa .when')).toContainText('18 février 2027');
-    await page.goto('/admin.html?preview=1');
+    await page.goto('/admindahan/?preview=1');
     await expect(page.locator('label').filter({has:page.locator('#mairie')})).toContainText('11 février');
 });

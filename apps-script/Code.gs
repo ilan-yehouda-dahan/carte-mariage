@@ -11,11 +11,11 @@ function normalize_(value) {
   return String(value == null ? '' : value).trim().toLowerCase();
 }
 
-function guest_(id) {
+function guest_(id, sourceRows) {
   if (!id || id.length > 200) throw new Error('invalid_id');
   var sheet = spreadsheet_().getSheetByName('Invités');
   if (!sheet) throw new Error('missing_guests_sheet');
-  var rows = sheet.getDataRange().getValues();
+  var rows = sourceRows || sheet.getDataRange().getValues();
   var headers = rows[0].map(normalize_);
   var columns = ['id', 'nom', 'mairie', 'houppa', 'shabbat'].map(function (name) {
     var index = headers.indexOf(name);
@@ -101,11 +101,14 @@ function doPost(e) {
   var lock = LockService.getScriptLock();
   var locked = false;
   try {
-    var body = e && e.postData && e.postData.contents;
+    var body = e && e.parameter && e.parameter.payload || e && e.postData && e.postData.contents;
     if (!body || body.length > 12000) throw new Error('invalid_payload');
     var payload = JSON.parse(body);
     if (!payload || typeof payload !== 'object') throw new Error('invalid_payload');
-    if (payload.action === 'create') return createGuest_(payload);
+    if (payload.action === 'create' || payload.action === 'dashboard') {
+      var result = payload.action === 'create' ? createGuest_(payload) : dashboard_(payload);
+      return adminOutput_(result, payload);
+    }
     if (!validRequest_(payload.requestId)) throw new Error('invalid_request_id');
     var id = normalize_(payload.invite);
     var guest = guest_(id);
@@ -132,17 +135,16 @@ function doPost(e) {
     }
     return output_({ ok: true, saved: true, requestId: payload.requestId });
   } catch (error) {
-    return output_({ ok: false, error: error.message || 'server_error' });
+    return adminOutput_({ ok: false, error: error.message || 'server_error' }, typeof payload === 'object' && payload || {});
   } finally {
     if (locked) lock.releaseLock();
   }
 }
 
-// La clé est définie dans Paramètres du projet → Propriétés du script, ADMIN_KEY.
+// Deux clés distinctes : ADMIN_KEY_DAHAN et ADMIN_KEY_CHICHE, propriétés privées du script.
 // Elle n'est jamais stockée dans le dépôt ni transmise dans une URL.
 function createGuest_(payload) {
-  var expected = PropertiesService.getScriptProperties().getProperty('ADMIN_KEY');
-  if (!expected || expected.length < 32 || typeof payload.adminKey !== 'string' || payload.adminKey !== expected) throw new Error('unauthorized');
+  var family = authorize_(payload);
   if (!validRequest_(payload.id)) throw new Error('invalid_id');
   if (typeof payload.nom !== 'string' || !payload.nom.trim() || payload.nom.length > 120) throw new Error('invalid_name');
   if (!Number.isInteger(payload.maxAdultes) || payload.maxAdultes < 1 || payload.maxAdultes > 50 ||
@@ -154,7 +156,7 @@ function createGuest_(payload) {
   try {
     var book = spreadsheet_();
     var sheet = book.getSheetByName('Invités') || book.insertSheet('Invités');
-    var required = ['ID', 'Nom', 'Mairie', 'Houppa', 'Shabbat', 'Max adultes', 'Max enfants'];
+    var required = ['ID', 'Nom', 'Mairie', 'Houppa', 'Shabbat', 'Max adultes', 'Max enfants', 'Famille'];
     if (!sheet.getLastRow()) sheet.appendRow(required);
     var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
     required.forEach(function (name) {
@@ -164,18 +166,107 @@ function createGuest_(payload) {
       }
     });
     var idColumn = headers.map(normalize_).indexOf('id');
-    if (sheet.getDataRange().getValues().slice(1).some(function (row) { return normalize_(row[idColumn]) === payload.id; })) {
-      return output_({ ok: true, id: payload.id }); // Réessai : ne pas ajouter une seconde ligne.
+    var familyColumn = headers.map(normalize_).indexOf('famille');
+    var existing = sheet.getDataRange().getValues().slice(1).filter(function (row) { return normalize_(row[idColumn]) === payload.id; });
+    if (existing.length) {
+      if (existing.length !== 1 || normalize_(existing[0][familyColumn]) !== family) throw new Error('forbidden');
+      return { ok: true, guest: guest_(payload.id) };
     }
     var record = { id: payload.id, nom: textCell_(payload.nom.trim()), mairie: payload.mairie ? 'oui' : 'non',
       houppa: payload.houppa ? 'oui' : 'non', shabbat: payload.shabbat ? 'oui' : 'non',
-      'max adultes': payload.maxAdultes, 'max enfants': payload.maxEnfants };
+      'max adultes': payload.maxAdultes, 'max enfants': payload.maxEnfants, famille: family };
     sheet.appendRow(headers.map(function (header) {
       return Object.prototype.hasOwnProperty.call(record, normalize_(header)) ? record[normalize_(header)] : '';
     }));
     SpreadsheetApp.flush();
-    return output_({ ok: true, id: payload.id });
+    return { ok: true, guest: guest_(payload.id) };
   } finally {
     lock.releaseLock();
   }
+}
+
+function authorize_(payload) {
+  var family = normalize_(payload.family);
+  if (['dahan', 'chiche'].indexOf(family) < 0) throw new Error('unauthorized');
+  var properties = PropertiesService.getScriptProperties();
+  var expected = properties.getProperty('ADMIN_KEY_' + family.toUpperCase());
+  var other = properties.getProperty('ADMIN_KEY_' + (family === 'dahan' ? 'CHICHE' : 'DAHAN'));
+  if (!expected || expected.length < 32 || expected === other || typeof payload.adminKey !== 'string' || payload.adminKey !== expected) throw new Error('unauthorized');
+  return family;
+}
+
+// Les réponses privées ne passent jamais par JSONP ou par des paramètres d'URL.
+// Le formulaire POST embarqué renvoie sa réponse au seul domaine autorisé.
+function adminOutput_(data, payload) {
+  if (!payload.replyOrigin) return output_(data); // Appels serveur / tests.
+  var origin = payload.replyOrigin;
+  var allowed = origin === 'https://mariage-eden-ilan.com' || /^http:\/\/(localhost|127\.0\.0\.1):[0-9]+$/.test(origin);
+  if (!allowed || !validRequest_(payload.rpcId)) return output_({ ok: false, error: 'invalid_origin' });
+  var envelope = JSON.stringify({ source: 'wedding-admin', rpcId: payload.rpcId, data: data })
+    .replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
+  return HtmlService.createHtmlOutput('<!doctype html><html><body><script>window.top.postMessage(' + envelope + ',' + JSON.stringify(origin) + ');</script></body></html>')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+function parseAnswer_(value) {
+  var text = String(value || '');
+  if (/ : Non$/.test(text)) return { presence: 'non', adultes: 0, enfants: 0 };
+  var match = text.match(/ : Oui \((\d+) adulte\(s\), (\d+) enfant\(s\)\)$/);
+  return match ? { presence: 'oui', adultes: Number(match[1]), enfants: Number(match[2]) } : null;
+}
+
+function dashboard_(payload) {
+  var family = authorize_(payload);
+  var book = spreadsheet_();
+  var sheet = book.getSheetByName('Invités');
+  var totals = {};
+  EVENTS.forEach(function (name) { totals[name] = { invitedAdults: 0, invitedChildren: 0, adults: 0, children: 0, pending: 0, declined: 0 }; });
+  if (!sheet || sheet.getLastRow() < 2) return { ok: true, family: family, guests: [], totals: totals, legacyResponses: false };
+  var rows = sheet.getDataRange().getValues();
+  var headers = rows[0].map(normalize_);
+  var familyColumn = headers.indexOf('famille');
+  var idColumn = headers.indexOf('id');
+  if (familyColumn < 0 || idColumn < 0) throw new Error('missing_family_column');
+  var guests = rows.slice(1).filter(function (row) { return normalize_(row[familyColumn]) === family; }).map(function (row) {
+    var guest = guest_(normalize_(row[idColumn]), rows);
+    guest.answers = {};
+    return guest;
+  });
+  var byId = Object.create(null);
+  guests.forEach(function (guest) { byId[guest.id] = guest; });
+  var responseSheet = book.getSheetByName('Réponses');
+  var legacy = false;
+  if (responseSheet && responseSheet.getLastRow() > 1) {
+    var responses = responseSheet.getDataRange().getValues();
+    var responseHeaders = responses[0];
+    if (!RESPONSE_HEADERS.slice(0, 6).every(function (name, index) { return responseHeaders[index] === name; })) throw new Error('invalid_response_headers');
+    var tracked = responseHeaders[6] === RESPONSE_HEADERS[6] && responseHeaders[7] === RESPONSE_HEADERS[7];
+    var latest = Object.create(null);
+    responses.slice(1).forEach(function (row) {
+      if (!tracked || !row[6]) { legacy = true; return; }
+      var guest = byId[normalize_(row[6])];
+      if (!guest) return;
+      var timestamp = new Date(row[0]).getTime();
+      if (!isFinite(timestamp)) throw new Error('invalid_response_date');
+      if (latest[guest.id] !== undefined && timestamp < latest[guest.id]) return;
+      latest[guest.id] = timestamp;
+      // La réponse la plus récente compte, même si les lignes ont été triées.
+      EVENTS.forEach(function (name, index) { guest.answers[name] = parseAnswer_(row[index + 2]); });
+    });
+  }
+  guests.forEach(function (guest) {
+    EVENTS.forEach(function (name) {
+      if (!guest[name]) { delete guest.answers[name]; return; }
+      var total = totals[name];
+      total.invitedAdults += guest.maxAdultes;
+      total.invitedChildren += guest.maxEnfants;
+      var answer = guest.answers[name];
+      if (!answer) { total.pending++; return; }
+      if (answer.adultes > guest.maxAdultes || answer.enfants > guest.maxEnfants) throw new Error('response_exceeds_capacity');
+      if (answer.presence === 'non') total.declined++;
+      total.adults += answer.adultes;
+      total.children += answer.enfants;
+    });
+  });
+  return { ok: true, family: family, guests: guests, totals: totals, legacyResponses: legacy };
 }

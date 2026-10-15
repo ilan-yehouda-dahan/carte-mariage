@@ -3,44 +3,7 @@ const assert = require('node:assert/strict');
 const vm = require('node:vm');
 const fs = require('node:fs');
 
-function backend(options = {}) {
-    const tables = { 'Invités': [
-        ['ID', 'Nom', 'Mairie', 'Houppa', 'Shabbat', 'Max adultes', 'Max enfants'],
-        ['elie-chicha', '=Nom', 'non', 'oui', false, 2, 1],
-        ['sans-evenement', 'Sans', 'non', 'non', 'non', 2, 0]
-    ] };
-    if (options.existing) tables['Réponses'] = [['Date', 'Nom', 'Mairie', 'Houppa', 'Shabbat', 'Message'], ['ancienne date', 'Ancien', 'Non', 'Oui', 'Non', 'ancien message']];
-    let locks = 0;
-    function sheet(name) {
-        return {
-            getDataRange: () => ({ getValues: () => tables[name] }),
-            getLastRow: () => tables[name].length,
-            getLastColumn: () => Math.max(0, ...tables[name].map(row => row.length)),
-            getRange: (r, c, nr, nc) => ({
-                getValues: () => Array.from({ length: nr }, (_, i) => Array.from({ length: nc }, (_, j) => tables[name][r - 1 + i]?.[c - 1 + j] ?? '')),
-                setValues: values => values.forEach((row, i) => row.forEach((value, j) => { tables[name][r - 1 + i][c - 1 + j] = value; }))
-            }),
-            appendRow: row => tables[name].push(row)
-        };
-    }
-    const book = {
-        getSheetByName: name => tables[name] ? sheet(name) : null,
-        insertSheet: name => { tables[name] = []; return sheet(name); }
-    };
-    const context = vm.createContext({
-        PropertiesService: { getScriptProperties: () => ({ getProperty: () => 'a'.repeat(40) }) },
-        SpreadsheetApp: { openById: () => book, flush: () => {} },
-        ContentService: { MimeType: { JSON: 'json', JAVASCRIPT: 'js' }, createTextOutput: text => ({ text, setMimeType() { return this; } }) },
-        LockService: { getScriptLock: () => ({ waitLock: () => { locks++; }, releaseLock: () => { locks--; } }) }
-    });
-    vm.runInContext(fs.readFileSync('apps-script/Code.gs', 'utf8'), context);
-    return {
-        tables, locks: () => locks,
-        post: payload => JSON.parse(context.doPost({ postData: { contents: JSON.stringify(payload) } }).text),
-        get: params => JSON.parse(context.doGet({ parameter: params }).text),
-        rawGet: params => context.doGet({ parameter: params }).text
-    };
-}
+const { backend } = require('./support/apps-script.cjs');
 const requestId = '00000000-0000-4000-8000-000000000001';
 const answer = () => ({ invite: 'elie-chicha', requestId, nom: 'Faux nom', events: { houppa: { presence: 'oui', adultes: 2, enfants: 1 }, mairie: { presence: 'oui', adultes: 6, enfants: 5 } }, message: '=FORMULE()' });
 
@@ -121,7 +84,7 @@ test('missing or invalid capacities fail closed', () => {
     assert.equal(api.get({id:'elie-chicha'}).error, 'invalid_guest_limits');
     assert.equal(api.post(answer()).ok, false);
 });
-const create = () => ({ action:'create', id:requestId, adminKey:'a'.repeat(40), nom:'Famille Cohen', mairie:false, houppa:true, shabbat:false, maxAdultes:2, maxEnfants:0 });
+const create = () => ({ action:'create', family:'dahan', id:requestId, adminKey:'a'.repeat(40), nom:'Famille Cohen', mairie:false, houppa:true, shabbat:false, maxAdultes:2, maxEnfants:0 });
 test('admin creation requires the secret and returns a reusable guest with limits', () => {
     const api = backend();
     assert.equal(api.post({...create(),adminKey:'wrong'}).error, 'unauthorized');
@@ -150,4 +113,72 @@ test('invalid admin event selection and limits do not create a guest', () => {
         assert.equal(api.post({...create(),...patch}).ok,false);
         assert.equal(api.tables['Invités'].length,3);
     }
+});
+
+const auth = family => ({action:'dashboard', family, adminKey:(family==='dahan'?'a':'b').repeat(40)});
+test('different keys cannot read or create on the other family side', () => {
+    const api=backend();
+    assert.equal(api.post({...auth('chiche'),adminKey:'a'.repeat(40)}).error,'unauthorized');
+    assert.equal(api.post({...create(),family:'chiche'}).error,'unauthorized');
+    assert.equal(api.post(auth('dahan')).guests.length,1);
+    assert.equal(api.post(auth('chiche')).guests.length,1);
+    assert.equal(api.get({id:'elie-chicha'}).family,undefined);
+    assert.equal(api.get({action:'dashboard',family:'dahan',adminKey:'a'.repeat(40)}).ok,false);
+});
+test('latest reply only counts, absences and pending separated per family and event', () => {
+    const api=backend();
+    assert.equal(api.post(answer()).ok,true);
+    const newer=answer();newer.requestId='00000000-0000-4000-8000-000000000002';
+    newer.events.houppa={presence:'oui',adultes:1,enfants:0};
+    assert.equal(api.post(newer).ok,true);
+    let report=api.post(auth('dahan'));
+    assert.equal(report.totals.houppa.adults,1);
+    assert.equal(report.totals.houppa.children,0);
+    assert.equal(report.totals.houppa.invitedAdults,2);
+    assert.equal(report.totals.houppa.pending,0);
+    assert.equal(api.post(auth('chiche')).totals.houppa.adults,0);
+    const absent=answer();absent.requestId='00000000-0000-4000-8000-000000000003';absent.events.houppa={presence:'non'};
+    assert.equal(api.post(absent).ok,true);
+    report=api.post(auth('dahan'));
+    assert.equal(report.totals.houppa.adults,0);
+    assert.equal(report.totals.houppa.declined,1);
+});
+test('new invitation belongs only to authorized family and guest lookup omits accounting', () => {
+    const api=backend();api.post(create());
+    assert.equal(api.post(auth('dahan')).guests.length,2);
+    assert.equal(api.post(auth('chiche')).guests.length,1);
+    assert.equal(api.get({id:requestId}).family,undefined);
+    assert.equal(api.get({id:requestId}).famille,undefined);
+    assert.equal(api.post({...create(),family:'chiche',adminKey:'b'.repeat(40)}).error,'forbidden');
+});
+test('missing family column cannot silently produce a partial report', () => {
+    const api=backend();api.tables['Invités'][0].pop();
+    assert.equal(api.post(auth('dahan')).error,'missing_family_column');
+});
+test('legacy responses warned about rather than guessed from names', () => {
+    const api=backend({existing:true});const report=api.post(auth('dahan'));
+    assert.equal(report.legacyResponses,true);
+    assert.equal(report.totals.houppa.pending,1);
+    assert.equal(report.totals.houppa.adults,0);
+});
+test('private POST reply targets approved origin, escapes script markup and includes no key', () => {
+    const api=backend();
+    api.tables['Invités'][1][1]='</script><script>alert(1)</script>';
+    const response=api.rawPostForm({...auth('dahan'),rpcId:requestId,replyOrigin:'http://127.0.0.1:8765'});
+    assert.match(response,/window.top.postMessage/);
+    assert.ok(response.includes('http://127.0.0.1:8765'));
+    assert.equal(response.includes('</script><script>alert'),false);
+    assert.equal(response.includes('a'.repeat(40)),false);
+    const refused=JSON.parse(api.rawPostForm({...auth('dahan'),rpcId:requestId,replyOrigin:'https://evil.example'}));
+    assert.equal(refused.error,'invalid_origin');
+});
+
+test('sorted response rows still use the latest timestamp', () => {
+    const api=backend();api.post(answer());
+    const next=answer();next.requestId='00000000-0000-4000-8000-000000000004';next.events.houppa={presence:'non'};api.post(next);
+    api.tables['Réponses'][1][0]=new Date('2026-10-14T10:00:00Z');
+    api.tables['Réponses'][2][0]=new Date('2026-10-15T10:00:00Z');
+    const rows=api.tables['Réponses'];[rows[1],rows[2]]=[rows[2],rows[1]];
+    assert.equal(api.post(auth('dahan')).totals.houppa.adults,0);
+    assert.equal(api.post(auth('dahan')).totals.houppa.declined,1);
 });

@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<base href="../">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Gestion famille Dahan — Eden & Ilan</title>
+<link rel="stylesheet" href="admin.css">
+</head>
+<body data-family="dahan">
+<main class="admin-shell">
+    <header><p class="eyebrow">Eden & Ilan · 18 février 2027</p><h1>Espace famille Dahan</h1><p>Vos invités, leurs réponses et vos effectifs pour chaque événement.</p></header>
+    <p id="demo-notice" class="notice" hidden>Mode aperçu : les invitations restent dans ce navigateur. Aucun invité n’est ajouté à Google Sheets.</p>
+    <section class="panel" id="login-panel"><form id="login-form"><label for="admin-key">Clé privée famille Dahan</label><input type="password" id="admin-key" autocomplete="off" minlength="32" required><p class="hint">Votre clé reste en mémoire uniquement pendant cette session.</p><button type="submit" class="primary" id="login-button">Ouvrir mon espace</button><p id="login-feedback" role="status" aria-live="polite"></p></form></section>
+    <div id="private-space" hidden>
+    <section class="panel"><div class="dashboard-heading"><h2>Vos effectifs par événement</h2><div class="toolbar"><button type="button" id="refresh">Actualiser</button><button type="button" id="export">Exporter CSV traiteur</button><button type="button" id="logout">Fermer l’espace</button></div></div><p id="dashboard-status" role="status"></p><p class="hint">Les personnes invitées et les présences confirmées sont comptées séparément. Sans réponse = nombre de foyers.</p><div class="table-scroll"><table><thead><tr><th>Événement</th><th>Adultes invités</th><th>Enfants invités</th><th>Adultes confirmés</th><th>Enfants confirmés</th><th>Foyers sans réponse</th><th>Foyers absents</th></tr></thead><tbody id="totals"></tbody></table></div><p id="legacy-notice" class="notice" hidden>Certaines anciennes réponses sans ID ne peuvent pas être rattachées automatiquement. Vérifiez-les avant de communiquer les effectifs au traiteur.</p></section>
+    <div class="workspace">
+    <form id="create-form" class="panel">
+        <div class="step"><span>01</span><h2>À qui s’adresse l’invitation ?</h2></div>
+        <label for="guest-name">Nom de la famille ou des invités</label>
+        <input id="guest-name" required maxlength="120" placeholder="Ex. Sarah et David Cohen" autocomplete="off">
+        <div class="step"><span>02</span><h2>Les moments partagés</h2></div>
+        <div class="events">
+            <label class="event-choice"><input type="checkbox" id="mairie"><span>Mairie<small>11 février · Levallois-Perret</small></span></label>
+            <label class="event-choice"><input type="checkbox" id="houppa" checked><span>Houppa & soirée<small>18 février · 16 h · Factory 58</small></span></label>
+            <label class="event-choice"><input type="checkbox" id="shabbat"><span>Chabbat<small>19 février · Neuilly-sur-Seine</small></span></label>
+        </div>
+        <div class="step"><span>03</span><h2>Les places réservées</h2></div>
+        <div class="counts"><div><label for="max-adults">Adultes maximum</label><input type="number" id="max-adults" min="1" max="50" step="1" value="2" required></div><div><label for="max-children">Enfants maximum</label><input type="number" id="max-children" min="0" max="50" step="1" value="0" required></div></div>
+        <p class="hint">Pour inviter seulement les deux parents : 2 adultes et 0 enfant. Les limites s’appliquent à chaque événement choisi.</p>
+        <button class="primary" id="create-button" type="submit">Créer l’invitation <span aria-hidden="true">↗</span></button>
+        <p id="form-feedback" role="status" aria-live="polite"></p>
+    </form>
+    <aside class="panel summary"><p class="eyebrow">Votre invitation</p><h2 id="summary-name">Votre famille invitée</h2><p id="summary-events">Houppa & soirée</p><div class="summary-line"></div><p id="summary-capacity">Jusqu’à 2 adultes · sans enfants</p><p class="hint">Vos invités choisiront leur présence et le nombre de personnes, dans la limite fixée.</p>
+        <section id="result" hidden aria-label="Invitation créée"><p class="result-title">Votre lien est prêt</p><label for="invite-url">Lien personnel</label><input id="invite-url" readonly><button type="button" id="copy-button" class="primary">Copier le lien</button><a id="view-link" class="view-link" target="_blank" rel="noopener">Voir l’invitation ↗</a><label for="whatsapp-message">Votre message WhatsApp</label><textarea id="whatsapp-message" readonly rows="10"></textarea><a id="whatsapp-link" class="primary" target="_blank" rel="noopener noreferrer">Préparer sur WhatsApp ↗</a><p class="hint">Vous choisissez le destinataire et confirmez l’envoi dans WhatsApp.</p><p id="copy-feedback" role="status"></p></section>
+    </aside>
+    </div>
+    <section class="panel"><h2>Vos foyers invités</h2><div class="table-scroll"><table><thead><tr><th>Foyer</th><th>Adultes max.</th><th>Enfants max.</th><th>Événements et réponses</th><th>Invitation</th></tr></thead><tbody id="guest-list"></tbody></table></div><p id="empty-list" class="hint">Aucune invitation pour le moment. Créez votre premier foyer ci-dessus.</p></section>
+    </div>
+    <footer>Un lien par famille. Une invitation à votre image.</footer>
+</main>
+<script src="sheet-api.js"></script><script src="admin.js"></script>
+</body>
+</html>

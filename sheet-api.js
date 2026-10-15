@@ -27,13 +27,77 @@
             document.head.appendChild(script);
         });
     }
+    function publicGuest(guest) {
+        var result = {};
+        ['id', 'nom', 'mairie', 'houppa', 'shabbat', 'maxAdultes', 'maxEnfants'].forEach(function (key) { result[key] = guest[key]; });
+        return result;
+    }
+    function adminRequest(payload) {
+        if (window.localPreview) return previewAdmin(payload);
+        return new Promise(function (resolve, reject) {
+            var rpcId = crypto.randomUUID();
+            var frame = document.createElement('iframe');
+            frame.name = 'admin_' + rpcId;
+            frame.hidden = true;
+            var form = document.createElement('form');
+            form.method = 'POST'; form.action = endpoint; form.target = frame.name; form.hidden = true;
+            var input = document.createElement('textarea'); input.name = 'payload';
+            input.value = JSON.stringify(Object.assign({}, payload, { rpcId: rpcId, replyOrigin: location.origin }));
+            form.appendChild(input);
+            var timer = setTimeout(function () { finish(new Error('timeout')); }, 45000);
+            function finish(error, result) {
+                clearTimeout(timer); window.removeEventListener('message', receive);
+                input.value = ''; form.remove(); frame.remove();
+                if (error) reject(error); else resolve(result);
+            }
+            function receive(event) {
+                var google = event.origin === 'https://script.google.com' || event.origin === 'https://script.googleusercontent.com' ||
+                    /^https:\/\/[a-z0-9-]+-script\.googleusercontent\.com$/.test(event.origin);
+                var data = event.data;
+                if (!google || !data || data.source !== 'wedding-admin' || data.rpcId !== rpcId) return;
+                if (!data.data || data.data.ok !== true) finish(new Error(data.data && data.data.error || 'server_error'));
+                else finish(null, data.data);
+            }
+            window.addEventListener('message', receive);
+            document.body.append(frame, form);
+            try { form.submit(); } catch (error) { finish(error); }
+        });
+    }
+    async function previewAdmin(payload) {
+        if (!['dahan', 'chiche'].includes(payload.family)) throw new Error('unauthorized');
+        var saved = JSON.parse(localStorage.getItem('wedding-preview-guests') || '{}');
+        if (payload.action === 'create') {
+            if (Object.hasOwn(saved, payload.id) && saved[payload.id].family !== payload.family) throw new Error('forbidden');
+            var guest = publicGuest(payload);
+            guest.family = payload.family;
+            saved[payload.id] = guest;
+            localStorage.setItem('wedding-preview-guests', JSON.stringify(saved));
+            return { ok: true, guest: publicGuest(guest) };
+        }
+        var guests = Object.values(saved).filter(function (guest) { return guest.family === payload.family; });
+        var totals = {};
+        ['mairie', 'houppa', 'shabbat'].forEach(function (name) {
+            totals[name] = { invitedAdults: 0, invitedChildren: 0, adults: 0, children: 0, pending: 0, declined: 0 };
+            guests.forEach(function (guest) {
+                if (!guest[name]) return;
+                totals[name].invitedAdults += guest.maxAdultes;
+                totals[name].invitedChildren += guest.maxEnfants;
+                var answer = guest.answers && guest.answers[name];
+                if (!answer) { totals[name].pending++; return; }
+                totals[name].adults += answer.adultes;
+                totals[name].children += answer.enfants;
+                if (answer.presence === 'non') totals[name].declined++;
+            });
+        });
+        return { ok: true, family: payload.family, guests: guests, totals: totals, legacyResponses: false };
+    }
     window.localPreview = ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname) &&
         new URLSearchParams(location.search).get('preview') === '1';
     window.sheetApi = {
         guest: function (id) {
             if (!window.localPreview) return read({ action: 'guest', id: id });
             var saved = JSON.parse(localStorage.getItem('wedding-preview-guests') || '{}');
-            if (Object.hasOwn(saved, id)) return Promise.resolve(saved[id]);
+            if (Object.hasOwn(saved, id)) return Promise.resolve(publicGuest(saved[id]));
             return fetch('guests.json', { cache: 'no-store' }).then(function (response) {
                 if (!response.ok) throw new Error('preview_error');
                 return response.json();
@@ -42,30 +106,10 @@
                 return guests[id];
             });
         },
+        dashboard: function (family, adminKey) { return adminRequest({ action: 'dashboard', family: family, adminKey: adminKey }); },
         create: async function (payload) {
-            if (window.localPreview) {
-                var guests = JSON.parse(localStorage.getItem('wedding-preview-guests') || '{}');
-                var guest = { id: payload.id, nom: payload.nom, mairie: payload.mairie, houppa: payload.houppa,
-                    shabbat: payload.shabbat, maxAdultes: payload.maxAdultes, maxEnfants: payload.maxEnfants };
-                guests[payload.id] = guest;
-                localStorage.setItem('wedding-preview-guests', JSON.stringify(guests));
-                return guest;
-            }
-            try {
-                await fetch(endpoint, {
-                    method: 'POST', mode: 'no-cors', credentials: 'omit', signal: AbortSignal.timeout(20000),
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload)
-                });
-            } catch (_) { /* Un POST opaque doit être vérifié par une lecture. */ }
-            for (var attempt = 0; attempt < 3; attempt++) {
-                if (attempt) await new Promise(function (resolve) { setTimeout(resolve, 1500); });
-                try {
-                    var result = await read({ action: 'guest', id: payload.id });
-                    if (result && result.id === payload.id && result.nom === payload.nom &&
-                        ['mairie', 'houppa', 'shabbat', 'maxAdultes', 'maxEnfants'].every(function (key) { return result[key] === payload[key]; })) return result;
-                } catch (_) { /* L'écriture peut encore être en cours. */ }
-            }
-            throw new Error('creation_unconfirmed');
+            var result = await adminRequest(payload);
+            return result.guest;
         },
         submit: async function (payload) {
             if (window.localPreview) throw new Error('preview_no_submit');
