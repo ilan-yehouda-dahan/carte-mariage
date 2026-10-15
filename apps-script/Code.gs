@@ -33,6 +33,13 @@ function guest_(id) {
     if (['oui', 'non', 'true', 'false', ''].indexOf(value) < 0) throw new Error('invalid_guest_permission');
     guest[name] = value === 'oui' || value === 'true';
   });
+  ['Max adultes', 'Max enfants'].forEach(function (name, index) {
+    var column = headers.indexOf(normalize_(name));
+    var raw = column < 0 ? '' : row[column];
+    var value = Number(raw);
+    if (raw === '' || raw == null || !Number.isInteger(value) || value < (index === 0 ? 1 : 0) || value > 50) throw new Error('invalid_guest_limits');
+    guest[index === 0 ? 'maxAdultes' : 'maxEnfants'] = value;
+  });
   return guest;
 }
 
@@ -85,8 +92,8 @@ function eventLine_(guest, payload, name, label) {
   var answer = payload.events && payload.events[name];
   if (!answer || ['oui', 'non'].indexOf(answer.presence) < 0) throw new Error('invalid_answer');
   if (answer.presence === 'non') return label + ' : Non';
-  if (!Number.isInteger(answer.adultes) || answer.adultes < 1 || answer.adultes > 6 ||
-      !Number.isInteger(answer.enfants) || answer.enfants < 0 || answer.enfants > 5) throw new Error('invalid_counts');
+  if (!Number.isInteger(answer.adultes) || answer.adultes < 1 || answer.adultes > guest.maxAdultes ||
+      !Number.isInteger(answer.enfants) || answer.enfants < 0 || answer.enfants > guest.maxEnfants) throw new Error('invalid_counts');
   return label + ' : Oui (' + answer.adultes + ' adulte(s), ' + answer.enfants + ' enfant(s))';
 }
 
@@ -98,6 +105,7 @@ function doPost(e) {
     if (!body || body.length > 12000) throw new Error('invalid_payload');
     var payload = JSON.parse(body);
     if (!payload || typeof payload !== 'object') throw new Error('invalid_payload');
+    if (payload.action === 'create') return createGuest_(payload);
     if (!validRequest_(payload.requestId)) throw new Error('invalid_request_id');
     var id = normalize_(payload.invite);
     var guest = guest_(id);
@@ -127,5 +135,47 @@ function doPost(e) {
     return output_({ ok: false, error: error.message || 'server_error' });
   } finally {
     if (locked) lock.releaseLock();
+  }
+}
+
+// La clé est définie dans Paramètres du projet → Propriétés du script, ADMIN_KEY.
+// Elle n'est jamais stockée dans le dépôt ni transmise dans une URL.
+function createGuest_(payload) {
+  var expected = PropertiesService.getScriptProperties().getProperty('ADMIN_KEY');
+  if (!expected || expected.length < 32 || typeof payload.adminKey !== 'string' || payload.adminKey !== expected) throw new Error('unauthorized');
+  if (!validRequest_(payload.id)) throw new Error('invalid_id');
+  if (typeof payload.nom !== 'string' || !payload.nom.trim() || payload.nom.length > 120) throw new Error('invalid_name');
+  if (!Number.isInteger(payload.maxAdultes) || payload.maxAdultes < 1 || payload.maxAdultes > 50 ||
+      !Number.isInteger(payload.maxEnfants) || payload.maxEnfants < 0 || payload.maxEnfants > 50) throw new Error('invalid_guest_limits');
+  if (!EVENTS.every(function (name) { return typeof payload[name] === 'boolean'; }) ||
+      !EVENTS.some(function (name) { return payload[name]; })) throw new Error('invalid_events');
+  var lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    var book = spreadsheet_();
+    var sheet = book.getSheetByName('Invités') || book.insertSheet('Invités');
+    var required = ['ID', 'Nom', 'Mairie', 'Houppa', 'Shabbat', 'Max adultes', 'Max enfants'];
+    if (!sheet.getLastRow()) sheet.appendRow(required);
+    var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+    required.forEach(function (name) {
+      if (headers.map(normalize_).indexOf(normalize_(name)) < 0) {
+        headers.push(name);
+        sheet.getRange(1, headers.length, 1, 1).setValues([[name]]);
+      }
+    });
+    var idColumn = headers.map(normalize_).indexOf('id');
+    if (sheet.getDataRange().getValues().slice(1).some(function (row) { return normalize_(row[idColumn]) === payload.id; })) {
+      return output_({ ok: true, id: payload.id }); // Réessai : ne pas ajouter une seconde ligne.
+    }
+    var record = { id: payload.id, nom: textCell_(payload.nom.trim()), mairie: payload.mairie ? 'oui' : 'non',
+      houppa: payload.houppa ? 'oui' : 'non', shabbat: payload.shabbat ? 'oui' : 'non',
+      'max adultes': payload.maxAdultes, 'max enfants': payload.maxEnfants };
+    sheet.appendRow(headers.map(function (header) {
+      return Object.prototype.hasOwnProperty.call(record, normalize_(header)) ? record[normalize_(header)] : '';
+    }));
+    SpreadsheetApp.flush();
+    return output_({ ok: true, id: payload.id });
+  } finally {
+    lock.releaseLock();
   }
 }

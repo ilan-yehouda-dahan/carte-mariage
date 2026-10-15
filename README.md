@@ -8,14 +8,14 @@ Branche : `correction-ilan`. Houppa le 18 février 2027 à **16 h, heure de Pari
 L'onglet **Invités** du Google Sheets est désormais la source utilisée par le site :
 https://docs.google.com/spreadsheets/d/1rpb6pRC_cQ3_3dYrnFl5WKfFRMgX2KYeFcqdhgQYJxE/edit
 
-Première ligne : `ID | Nom | Mairie | Houppa | Shabbat`.
+Première ligne : `ID | Nom | Mairie | Houppa | Shabbat | Max adultes | Max enfants`.
 Une ligne par foyer. Chaque ID doit être unique. Autorisations : `oui` / `non`
 (les cases à cocher booléennes fonctionnent aussi ; une cellule vide vaut non).
 Exemple à adapter dans le tableau, sans remplacer les invités existants :
 
-| ID | Nom | Mairie | Houppa | Shabbat |
-| --- | --- | --- | --- | --- |
-| famille-exemple | Famille Exemple | non | oui | non |
+| ID | Nom | Mairie | Houppa | Shabbat | Max adultes | Max enfants |
+| --- | --- | --- | --- | --- | --- | --- |
+| famille-exemple | Famille Exemple | non | oui | non | 2 | 0 |
 
 Lien : `https://mariage-eden-ilan.com/?invite=famille-exemple`.
 Les anciens liens `?id=famille-exemple` fonctionnent aussi. Utiliser les ID réels
@@ -24,6 +24,13 @@ Le fichier `guests.json` reste uniquement un jeu d'exemples pour les tests ; il
 n'est plus lu par le site. Aucun repli automatique sur ce fichier.
 
 Nom prérempli ; événements, navigation et réponses non autorisés masqués.
+`Max adultes` et `Max enfants` sont les plafonds par famille, identiques pour chacun
+des événements autorisés. Les invités peuvent choisir entre 1 et le maximum d'adultes,
+et entre 0 et le maximum d'enfants, ou répondre absent. Avec 2 adultes et 0 enfant,
+seuls 1 ou 2 adultes sont proposés ; le choix des enfants est masqué.
+Les limites sont obligatoires, contrôlées côté serveur, et acceptent jusqu'à 50 par
+catégorie. Pour les anciennes lignes, renseigner explicitement ces deux nouvelles
+colonnes ; une limite manquante ferme l'invitation plutôt que d'autoriser trop de monde.
 Sans lien, ID inconnu, mauvaise configuration ou serveur inaccessible : programme
 et formulaire restent fermés. Si tous les événements sont non, afficher un message
 sans formulaire.
@@ -112,3 +119,38 @@ Cliquer sur le sceau : le rabat s'ouvre, la carte sort, l'enveloppe s'efface et 
 couverture de la carte se déplie. L'invitation apparaît ensuite automatiquement.
 Le bouton « Passer » permet d'accéder directement au site.
 Retirer `preview=1` et utiliser un ID réel pour tester le service Google déployé.
+
+## Créer les invitations depuis le site
+
+Ouvrir `/admin.html` après déploiement, ou
+http://127.0.0.1:8000/admin.html?preview=1 en aperçu local.
+
+La page de gestion propose : nom du foyer, événements à cocher, maximum d'adultes,
+maximum d'enfants, puis **Créer l'invitation**, **Copier le lien** et **Voir l'invitation**.
+Elle enregistre une nouvelle ligne dans **Invités** en arrière-plan et génère un ID
+aléatoire. Il n'est plus nécessaire de remplir manuellement le tableau pour les
+nouvelles invitations. La création répétée sans modifier les champs conserve le
+même ID pour éviter les doublons. Pour inviter une autre famille, modifier le nom.
+
+Configuration unique avant utilisation réelle :
+
+1. Installer la **dernière version** de `apps-script/Code.gs` et redéployer le service.
+2. Dans Apps Script → **Paramètres du projet → Propriétés du script**, ajouter
+   `ADMIN_KEY` avec une clé secrète aléatoire d'au moins 32 caractères.
+   Choisir et conserver cette clé dans votre gestionnaire de mots de passe ;
+   ne pas la mettre dans le dépôt GitHub ni dans un lien d'invitation.
+3. Saisir cette clé dans la page de gestion pour créer les invitations.
+   Elle est vérifiée côté serveur et envoyée uniquement dans le corps du POST.
+   Elle n'est enregistrée ni dans localStorage ni dans les liens générés.
+4. Déployer aussi les fichiers du site depuis `correction-ilan`.
+
+La page de gestion est consultable par URL, mais aucune création réelle n'est
+possible sans la clé. Le tableau Google Sheets n'a pas besoin d'être public.
+Si **Invités** n'existe pas, la première création autorisée le crée ; les colonnes
+manquantes sont ajoutées sans supprimer les données existantes.
+
+En aperçu `?preview=1`, accessible uniquement sur localhost, les nouvelles familles
+sont conservées dans localStorage du navigateur courant. Leurs liens d'aperçu
+fonctionnent dans ce même navigateur et sur ce même ordinateur ; ils ne sont pas
+à envoyer aux vrais invités. Aucun appel d'écriture Google n'est effectué et les
+réponses RSVP restent désactivées. La clé de gestion n'est pas demandée en aperçu.

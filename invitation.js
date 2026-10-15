@@ -21,7 +21,9 @@
     window.sheetApi.guest(inviteId)
         .then(function (guest) {
             if (!guest || typeof guest.nom !== 'string' || !guest.nom.trim() ||
-                !eventNames.every(function (name) { return typeof guest[name] === 'boolean'; })) {
+                !eventNames.every(function (name) { return typeof guest[name] === 'boolean'; }) ||
+                !Number.isInteger(guest.maxAdultes) || guest.maxAdultes < 1 || guest.maxAdultes > 50 ||
+                !Number.isInteger(guest.maxEnfants) || guest.maxEnfants < 0 || guest.maxEnfants > 50) {
                 throw new Error('Invitation mal configurée');
             }
             if (window.localPreview) {
@@ -34,6 +36,15 @@
             eventNames.forEach(function (name) {
                 var allowed = guest[name] === true;
                 events[name] = allowed;
+                ['adultes', 'enfants'].forEach(function (kind) {
+                    var select = document.getElementById(name + '-' + kind);
+                    var max = kind === 'adultes' ? guest.maxAdultes : guest.maxEnfants;
+                    select.replaceChildren();
+                    for (var count = kind === 'adultes' ? 1 : 0; count <= max; count++) {
+                        select.add(new Option(String(count), String(count)));
+                    }
+                    select.parentElement.hidden = kind === 'enfants' && max === 0;
+                });
                 document.getElementById(name).hidden = !allowed;
                 var responseSection = document.getElementById('rsvp-' + name);
                 responseSection.hidden = !allowed;
@@ -42,6 +53,7 @@
                 });
                 document.querySelector('.nav-item[data-target="' + name + '"]').hidden = !allowed;
             });
+            document.getElementById('invitation-capacity').textContent = 'Votre invitation prévoit jusqu’à ' + guest.maxAdultes + ' adulte(s)' + (guest.maxEnfants ? ' et ' + guest.maxEnfants + ' enfant(s).' : '.');
             var hasEvents = eventNames.some(function (name) { return events[name]; });
             document.getElementById('programme').hidden = !hasEvents;
             document.getElementById('reponse').hidden = !hasEvents;

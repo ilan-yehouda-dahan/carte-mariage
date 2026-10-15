@@ -32,6 +32,8 @@
     window.sheetApi = {
         guest: function (id) {
             if (!window.localPreview) return read({ action: 'guest', id: id });
+            var saved = JSON.parse(localStorage.getItem('wedding-preview-guests') || '{}');
+            if (Object.hasOwn(saved, id)) return Promise.resolve(saved[id]);
             return fetch('guests.json', { cache: 'no-store' }).then(function (response) {
                 if (!response.ok) throw new Error('preview_error');
                 return response.json();
@@ -39,6 +41,31 @@
                 if (!Object.hasOwn(guests, id)) throw new Error('not_found');
                 return guests[id];
             });
+        },
+        create: async function (payload) {
+            if (window.localPreview) {
+                var guests = JSON.parse(localStorage.getItem('wedding-preview-guests') || '{}');
+                var guest = { id: payload.id, nom: payload.nom, mairie: payload.mairie, houppa: payload.houppa,
+                    shabbat: payload.shabbat, maxAdultes: payload.maxAdultes, maxEnfants: payload.maxEnfants };
+                guests[payload.id] = guest;
+                localStorage.setItem('wedding-preview-guests', JSON.stringify(guests));
+                return guest;
+            }
+            try {
+                await fetch(endpoint, {
+                    method: 'POST', mode: 'no-cors', credentials: 'omit', signal: AbortSignal.timeout(20000),
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload)
+                });
+            } catch (_) { /* Un POST opaque doit être vérifié par une lecture. */ }
+            for (var attempt = 0; attempt < 3; attempt++) {
+                if (attempt) await new Promise(function (resolve) { setTimeout(resolve, 1500); });
+                try {
+                    var result = await read({ action: 'guest', id: payload.id });
+                    if (result && result.id === payload.id && result.nom === payload.nom &&
+                        ['mairie', 'houppa', 'shabbat', 'maxAdultes', 'maxEnfants'].every(function (key) { return result[key] === payload[key]; })) return result;
+                } catch (_) { /* L'écriture peut encore être en cours. */ }
+            }
+            throw new Error('creation_unconfirmed');
         },
         submit: async function (payload) {
             if (window.localPreview) throw new Error('preview_no_submit');

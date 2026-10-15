@@ -5,9 +5,9 @@ const fs = require('node:fs');
 
 function backend(options = {}) {
     const tables = { 'Invités': [
-        ['ID', 'Nom', 'Mairie', 'Houppa', 'Shabbat'],
-        ['elie-chicha', '=Nom', 'non', 'oui', false],
-        ['sans-evenement', 'Sans', 'non', 'non', 'non']
+        ['ID', 'Nom', 'Mairie', 'Houppa', 'Shabbat', 'Max adultes', 'Max enfants'],
+        ['elie-chicha', '=Nom', 'non', 'oui', false, 2, 1],
+        ['sans-evenement', 'Sans', 'non', 'non', 'non', 2, 0]
     ] };
     if (options.existing) tables['Réponses'] = [['Date', 'Nom', 'Mairie', 'Houppa', 'Shabbat', 'Message'], ['ancienne date', 'Ancien', 'Non', 'Oui', 'Non', 'ancien message']];
     let locks = 0;
@@ -28,6 +28,7 @@ function backend(options = {}) {
         insertSheet: name => { tables[name] = []; return sheet(name); }
     };
     const context = vm.createContext({
+        PropertiesService: { getScriptProperties: () => ({ getProperty: () => 'a'.repeat(40) }) },
         SpreadsheetApp: { openById: () => book, flush: () => {} },
         ContentService: { MimeType: { JSON: 'json', JAVASCRIPT: 'js' }, createTextOutput: text => ({ text, setMimeType() { return this; } }) },
         LockService: { getScriptLock: () => ({ waitLock: () => { locks++; }, releaseLock: () => { locks--; } }) }
@@ -100,4 +101,53 @@ test('absent answer records zero attendance without requiring counts', () => {
     payload.events.houppa = { presence: 'non' };
     assert.equal(api.post(payload).ok, true);
     assert.equal(api.tables['Réponses'][1][3], 'Houppa & Soirée : Non');
+});
+
+test('family capacity is enforced by server for adults and children', () => {
+    for (const [adults, children] of [[3,0],[2,2],[1,-1],[1.5,0]]) {
+        const api = backend();
+        const payload = answer();
+        payload.events.houppa = { presence:'oui', adultes:adults, enfants:children };
+        assert.equal(api.post(payload).error, 'invalid_counts');
+        assert.equal(api.tables['Réponses'], undefined);
+    }
+    const api = backend();
+    api.tables['Invités'][1][6] = 0;
+    assert.equal(api.post(answer()).error, 'invalid_counts');
+});
+test('missing or invalid capacities fail closed', () => {
+    const api = backend();
+    api.tables['Invités'][1][5] = '';
+    assert.equal(api.get({id:'elie-chicha'}).error, 'invalid_guest_limits');
+    assert.equal(api.post(answer()).ok, false);
+});
+const create = () => ({ action:'create', id:requestId, adminKey:'a'.repeat(40), nom:'Famille Cohen', mairie:false, houppa:true, shabbat:false, maxAdultes:2, maxEnfants:0 });
+test('admin creation requires the secret and returns a reusable guest with limits', () => {
+    const api = backend();
+    assert.equal(api.post({...create(),adminKey:'wrong'}).error, 'unauthorized');
+    assert.equal(api.tables['Invités'].length,3);
+    assert.equal(api.post(create()).ok,true);
+    assert.equal(api.post(create()).ok,true);
+    assert.equal(api.tables['Invités'].length,4);
+    const guest = api.get({id:requestId});
+    assert.equal(guest.nom,'Famille Cohen');
+    assert.equal(guest.maxAdultes,2);
+    assert.equal(guest.maxEnfants,0);
+    assert.equal(guest.houppa,true);
+    assert.equal(guest.mairie,false);
+    assert.equal(api.locks(),0);
+});
+test('admin adds capacity headers without overwriting existing columns', () => {
+    const api = backend();
+    api.tables['Invités'].forEach(row=>row.splice(5));
+    assert.equal(api.post(create()).ok,true);
+    assert.equal(api.get({id:requestId}).maxAdultes,2);
+    assert.equal(api.tables['Invités'][0][5],'Max adultes');
+});
+test('invalid admin event selection and limits do not create a guest', () => {
+    for (const patch of [{maxAdultes:0},{maxEnfants:-1},{houppa:false},{nom:''}]) {
+        const api = backend();
+        assert.equal(api.post({...create(),...patch}).ok,false);
+        assert.equal(api.tables['Invités'].length,3);
+    }
 });
