@@ -24,6 +24,12 @@
                 !eventNames.every(function (name) { return typeof guest[name] === 'boolean'; })) {
                 throw new Error('Invitation mal configurée');
             }
+            if (window.localPreview) {
+                document.getElementById('local-preview-notice').hidden = false;
+                var submit = document.querySelector('.submit-btn');
+                submit.disabled = true;
+                submit.textContent = 'Aperçu — aucun envoi';
+            }
             var events = {};
             eventNames.forEach(function (name) {
                 var allowed = guest[name] === true;

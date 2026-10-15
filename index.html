@@ -277,11 +277,33 @@
         .cenv-back, .cenv-front, .cenv-bottom, .cenv-flap, .cenv-seal {
             transition: transform 1s var(--e-out), opacity 1s ease;
         }
-        .cenv-wrap.cenv-away {
-            transition: transform 1.25s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.9s cubic-bezier(0.4, 0, 0.2, 1);
-            transform: scale(var(--cs)) translateY(125vh) rotate(5deg) !important;
-            opacity: 0 !important;
-            pointer-events: none !important;
+        .cenv-wrap.cenv-away > :not(.cenv-card) {
+            transition: transform 1.1s var(--e-out), opacity 0.8s ease;
+            transform: translateY(100vh) rotate(5deg);
+            opacity: 0;
+            pointer-events: none;
+        }
+        .cenv-card::before {
+            content: "Eden & Ilan";
+            position: absolute;
+            inset: 0;
+            z-index: 3;
+            display: grid;
+            place-items: center;
+            border: 1px solid var(--gold);
+            border-radius: inherit;
+            background: linear-gradient(135deg, #fffdf9, #efe6d8);
+            color: var(--gold-deep);
+            font-family: var(--cenv-cursive);
+            font-size: 38px;
+            transform-origin: left center;
+            backface-visibility: hidden;
+            transition: transform 1s var(--e-out), opacity 0.7s ease;
+            pointer-events: none;
+        }
+        .cenv-card.cenv-unfolded::before {
+            transform: perspective(900px) rotateY(-165deg);
+            opacity: 0;
         }
         .cenv-back {
             position: absolute;
@@ -350,12 +372,12 @@
         .cenv-card.cenv-grow {
             z-index: 70;
             transition: transform 0.9s var(--e-out), box-shadow 0.9s ease;
-            transform: translateY(-48%) scale(1.22);
-            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+            transform: translateY(-8%) scale(1);
+            box-shadow: 0 24px 60px rgba(60, 45, 30, 0.24);
         }
         @media (min-width: 768px) {
             .cenv-card.cenv-grow {
-                transform: translateY(-42%) scale(1.36);
+                transform: translateY(-8%) scale(1.36);
             }
         }
         .cenv-card-inner {
@@ -440,7 +462,7 @@
             transform: translateX(-50%) translateY(-2px);
             box-shadow: 0 10px 25px rgba(0,0,0,0.45);
         }
-        .cenv-card.cenv-grow .cenv-enter-btn {
+        .cenv-card.cenv-unfolded .cenv-enter-btn {
             opacity: 1;
             pointer-events: auto;
             transform: translateX(-50%) translateY(0);
@@ -1170,6 +1192,7 @@
 </nav>
 <!-- ========================= 4. PROGRAMME DÉTAILLÉ ========================= -->
 <main>
+    <p id="local-preview-notice" class="invitation-status" hidden>Aperçu local — données d’exemple, envoi des réponses désactivé.</p>
     <p id="invitation-status" class="invitation-status" role="status">Chargement de votre invitation…</p>
     <section id="programme">
         <div class="wrap">
@@ -1437,13 +1460,16 @@
             }, 480));
             timers.push(setTimeout(function() {
                 card.classList.add('cenv-grow');
-            }, 820));
+            }, 1400));
             timers.push(setTimeout(function() {
                 wrap.classList.add('cenv-away');
-            }, 1100));
+            }, 1650));
+            timers.push(setTimeout(function() {
+                card.classList.add('cenv-unfolded');
+            }, 2000));
             autoRevealTimer = setTimeout(function() {
                 revealSite(false);
-            }, 2250);
+            }, 4400);
         }
         function replayEnvelope() {
             clearAllTimers();
@@ -1456,7 +1482,7 @@
             document.body.classList.add('env-locked');
             screen.classList.remove('cenv-opened');
             wrap.classList.remove('cenv-away');
-            card.classList.remove('cenv-sliding', 'cenv-grow');
+            card.classList.remove('cenv-sliding', 'cenv-grow', 'cenv-unfolded');
             flap.classList.remove('cenv-open', 'cenv-behind');
             seal.classList.remove('cenv-press', 'cenv-pop');
         }
@@ -1480,20 +1506,14 @@
         if (card) {
             card.addEventListener('click', function(e) {
                 e.stopPropagation();
-                revealSite(false);
+                if (!sequenceStarted) openEnvelope();
+                else if (card.classList.contains('cenv-unfolded')) revealSite(false);
             });
         }
         if (enter) {
             enter.addEventListener('click', function(e) {
                 e.stopPropagation();
                 revealSite(false);
-            });
-        }
-        if (screen) {
-            screen.addEventListener('click', function(e) {
-                if (sequenceStarted) {
-                    revealSite(false);
-                }
             });
         }
         if (skip) {

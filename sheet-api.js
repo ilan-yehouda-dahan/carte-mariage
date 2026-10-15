@@ -27,9 +27,21 @@
             document.head.appendChild(script);
         });
     }
+    window.localPreview = ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname) &&
+        new URLSearchParams(location.search).get('preview') === '1';
     window.sheetApi = {
-        guest: function (id) { return read({ action: 'guest', id: id }); },
+        guest: function (id) {
+            if (!window.localPreview) return read({ action: 'guest', id: id });
+            return fetch('guests.json', { cache: 'no-store' }).then(function (response) {
+                if (!response.ok) throw new Error('preview_error');
+                return response.json();
+            }).then(function (guests) {
+                if (!Object.hasOwn(guests, id)) throw new Error('not_found');
+                return guests[id];
+            });
+        },
         submit: async function (payload) {
+            if (window.localPreview) throw new Error('preview_no_submit');
             // Une réponse opaque au POST ne prouve rien : lire ensuite le reçu.
             // Même si le POST échoue côté navigateur, le serveur peut avoir écrit.
             try {

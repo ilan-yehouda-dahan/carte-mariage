@@ -98,3 +98,17 @@ réponses Apps Script simulées : aucun accès en écriture au vrai Google Sheet
 Pour une prévisualisation avec le service Google réellement déployé :
 `python3 -m http.server 8000`, puis ouvrir
 `http://localhost:8000/?invite=UN-ID-EXISTANT`.
+
+## Aperçu local sans déploiement Google
+
+Depuis le dossier du dépôt : `python3 -m http.server 8000 --bind 127.0.0.1`.
+Ouvrir http://127.0.0.1:8000/?preview=1&invite=gabriel-arzoin pour les trois événements,
+ou http://127.0.0.1:8000/?preview=1&invite=elie-chicha pour la houppa seule.
+Ce mode fonctionne uniquement sur localhost, lit les exemples de `guests.json`
+et désactive les envois RSVP. Il permet de vérifier l'animation, la présentation et
+les événements masqués sans modifier Google Sheets.
+
+Cliquer sur le sceau : le rabat s'ouvre, la carte sort, l'enveloppe s'efface et la
+couverture de la carte se déplie. L'invitation apparaît ensuite automatiquement.
+Le bouton « Passer » permet d'accéder directement au site.
+Retirer `preview=1` et utiliser un ID réel pour tester le service Google déployé.

@@ -116,7 +116,10 @@ test('envelope opens and countdown uses Paris time', async ({ page }) => {
     await page.goto('/?invite=ilan-dahan');
     await expect(page.locator('#cd-hours')).toHaveText('01');
     await page.locator('#env-seal').click();
-    await page.clock.fastForward(2500);
+    await page.clock.runFor(2400);
+    await expect(page.locator('#cenv-card')).toHaveClass(/cenv-unfolded/);
+    await expect(page.locator('body')).not.toHaveClass(/revealed/);
+    await page.clock.runFor(2200);
     await expect(page.locator('body')).toHaveClass(/revealed/);
     await expect(page.locator('body')).not.toHaveClass(/env-locked/);
     await expect(page.locator('#houppa .when')).toContainText('16h00');
@@ -139,4 +142,14 @@ test('calendar contains 16h Paris and a valid all-day end date', async ({ page }
     expect(files[0]).toContain('LOCATION:Factory 58\\, Bobigny');
     expect(files[1]).toContain('DTSTART;VALUE=DATE:20270218');
     expect(files[1]).toContain('DTEND;VALUE=DATE:20270219');
+});
+
+ test('local preview works without Google and never submits', async ({ page }) => {
+    await page.route(apiPattern, () => { throw new Error('Preview must not contact Google'); });
+    await page.goto('/?preview=1&invite=gabriel-arzoin');
+    await expect(page.locator('body')).toHaveClass(/invitation-ready/);
+    await page.locator('#btn_skip').click();
+    await expect(page.locator('#local-preview-notice')).toBeVisible();
+    await expect(page.locator('.submit-btn')).toBeDisabled();
+    await expect(page.locator('#shabbat')).toBeVisible();
 });
