@@ -135,13 +135,13 @@ test('calendar contains 16h Paris and a valid all-day end date', async ({ page }
         URL.createObjectURL = blob => { blobs.push(blob); return 'blob:test'; };
         HTMLAnchorElement.prototype.click = () => {};
         downloadIcs('Houppa & Soirée', 'Factory 58, Bobigny', '2027-02-18', '16:00');
-        downloadIcs('Mairie', 'Levallois', '2027-02-18');
+        downloadIcs('Mairie', 'Levallois', '2027-02-11');
         return Promise.all(blobs.map(blob => blob.text()));
     });
     expect(files[0]).toContain('DTSTART:20270218T150000Z');
     expect(files[0]).toContain('LOCATION:Factory 58\\, Bobigny');
-    expect(files[1]).toContain('DTSTART;VALUE=DATE:20270218');
-    expect(files[1]).toContain('DTEND;VALUE=DATE:20270219');
+    expect(files[1]).toContain('DTSTART;VALUE=DATE:20270211');
+    expect(files[1]).toContain('DTEND;VALUE=DATE:20270212');
 });
 
  test('local preview works without Google and never submits', async ({ page }) => {
@@ -152,4 +152,15 @@ test('calendar contains 16h Paris and a valid all-day end date', async ({ page }
     await expect(page.locator('#local-preview-notice')).toBeVisible();
     await expect(page.locator('.submit-btn')).toBeDisabled();
     await expect(page.locator('#shabbat')).toBeVisible();
+});
+
+test('mairie date is February 11 in programme, RSVP, calendar and admin', async ({page}) => {
+    await page.goto('/?preview=1&invite=gabriel-arzoin');
+    await expect(page.locator('body')).toHaveClass(/invitation-ready/);
+    await expect(page.locator('#mairie .when')).toHaveText('Jeudi 11 février 2027');
+    await expect(page.locator('#rsvp-mairie .rsvp-event-title')).toContainText('11 février');
+    await expect(page.locator('#mairie button.btn')).toHaveAttribute('onclick', /2027-02-11/);
+    await expect(page.locator('#houppa .when')).toContainText('18 février 2027');
+    await page.goto('/admin.html?preview=1');
+    await expect(page.locator('label').filter({has:page.locator('#mairie')})).toContainText('11 février');
 });

@@ -1,6 +1,6 @@
 # Carte de mariage Eden & Ilan
 
-Branche : `correction-ilan`. Houppa le 18 février 2027 à **16 h, heure de Paris**,
+Branche : `correction-ilan`. Mairie le **11 février 2027**. Houppa le 18 février 2027 à **16 h, heure de Paris**,
 à **Factory 58, 12 rue Gutenberg, 93000 Bobigny**. Compteur, Waze et calendrier alignés.
 
 ## Source des invités
@@ -154,3 +154,8 @@ sont conservées dans localStorage du navigateur courant. Leurs liens d'aperçu
 fonctionnent dans ce même navigateur et sur ce même ordinateur ; ils ne sont pas
 à envoyer aux vrais invités. Aucun appel d'écriture Google n'est effectué et les
 réponses RSVP restent désactivées. La clé de gestion n'est pas demandée en aperçu.
+
+Après déploiement sur le domaine actuel, la page de création est :
+https://mariage-eden-ilan.com/admin.html (sans `preview=1`).
+Les liens personnels produits utilisent ce même domaine. La mise en ligne de la
+branche et le déploiement du dernier Apps Script avec `ADMIN_KEY` sont nécessaires.
