@@ -746,6 +746,12 @@
             box-shadow:0 10px 25px -8px var(--gold-glow);
         }
         /* ==================== NAVETTE EN BAS ==================== */
+        .music-control{position:fixed;top:calc(12px + env(safe-area-inset-top, 0px));right:12px;z-index:10000;display:none;max-width:calc(100vw - 24px);text-align:right}
+        body.revealed .music-control{display:block}
+        #music-toggle{min-height:44px;min-width:100px;padding:10px 16px;border:1px solid var(--gold-soft);border-radius:24px;background:#fbf7f1;color:var(--ink);font:inherit;font-size:14px;cursor:pointer;box-shadow:0 3px 12px #292b2810}
+        #music-toggle:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+        #music-status{font-size:12px;max-width:240px;background:#fbf7f1;border-radius:12px;padding:8px;margin:6px 0 0}
+        #music-status:empty{display:none}
         .bottom-nav-dock {
             position: fixed;
             bottom: calc(14px + env(safe-area-inset-bottom, 0px));
@@ -1411,6 +1417,9 @@
         <div class="footer-bsd">בס״ד</div>
     </div>
 </footer>
+<audio id="wedding-music" src="assets/audio/gan-eden.mp3" preload="none" loop playsinline></audio>
+<div class="music-control"><button id="music-toggle" type="button" aria-controls="wedding-music" aria-label="Écouter la musique" aria-pressed="false">♫ Musique</button><p id="music-status" role="status"></p></div>
+<script src="music.js?v=20261016-1"></script>
 <script src="sheet-api.js?v=20261015-4"></script>
 <script src="invitation.js?v=20261015-4"></script>
 <script>

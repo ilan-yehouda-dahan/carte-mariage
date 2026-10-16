@@ -178,3 +178,12 @@ https://developers.google.com/apps-script/reference/base/ui#showModalDialog(Html
 Les liens de gestion donnent accès aux données à toute personne qui les possède ;
 les conserver entre les organisateurs et envoyer seulement les liens personnels
 aux invités. Ne pas publier les liens de gestion dans GitHub ni dans les cellules.
+
+## Musique
+
+Le fichier `assets/audio/gan-eden.mp3` est lu au clic sur « Découvrir
+l’invitation » ou « Découvrir le programme », sans lecture automatique au
+chargement. Un bouton fixe permet de mettre en pause et reprendre. Le morceau
+boucle à volume modéré ; si le navigateur bloque la lecture, le bouton permet
+de réessayer. Le lecteur utilise `preload="none"` pour préserver le chargement
+initial de la carte.
