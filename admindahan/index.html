@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Gestion famille Dahan — Eden & Ilan</title>
-<link rel="stylesheet" href="admin.css">
+<link rel="stylesheet" href="admin.css?v=20261016-1">
 </head>
 <body data-family="dahan">
 <main class="admin-shell">
@@ -36,10 +36,10 @@
         <section id="result" hidden aria-label="Invitation créée"><p class="result-title">Votre lien est prêt</p><label for="invite-url">Lien personnel</label><input id="invite-url" readonly><button type="button" id="copy-button" class="primary">Copier le lien</button><a id="view-link" class="view-link" target="_blank" rel="noopener">Voir l’invitation ↗</a><label for="whatsapp-message">Votre message WhatsApp</label><textarea id="whatsapp-message" readonly rows="10"></textarea><a id="whatsapp-link" class="primary" target="_blank" rel="noopener noreferrer">Préparer sur WhatsApp ↗</a><p class="hint">Vous choisissez le destinataire et confirmez l’envoi dans WhatsApp.</p><p id="copy-feedback" role="status"></p></section>
     </aside>
     </div>
-    <section class="panel"><h2>Vos foyers invités</h2><div class="table-scroll"><table><thead><tr><th>Foyer</th><th>Personnes max.</th><th>Événements et réponses</th><th>Invitation</th></tr></thead><tbody id="guest-list"></tbody></table></div><p id="empty-list" class="hint">Aucune invitation pour le moment. Créez votre premier foyer ci-dessus.</p></section>
+    <section class="panel"><h2>Vos foyers invités</h2><div class="guest-filters"><div><label for="guest-search">Rechercher un invité</label><input type="search" id="guest-search" placeholder="Prénom ou nom…" autocomplete="off"></div><div><label for="guest-filter">Afficher</label><select id="guest-filter"><option value="all">Tous les invités</option><option value="pending">Sans réponse</option></select></div></div><p id="filter-status" class="hint" role="status"></p><div class="table-scroll"><table><thead><tr><th>Foyer</th><th>Personnes max.</th><th>Événements et réponses</th><th>Invitation</th></tr></thead><tbody id="guest-list"></tbody></table></div><p id="empty-list" class="hint">Aucune invitation pour le moment. Créez votre premier foyer ci-dessus.</p></section>
     </div>
     <footer>Un lien par famille. Une invitation à votre image.</footer>
 </main>
-<script src="sheet-api.js?v=20261015-4"></script><script src="admin.js?v=20261015-4"></script>
+<script src="sheet-api.js?v=20261016-1"></script><script src="admin.js?v=20261016-1"></script>
 </body>
 </html>

@@ -8,7 +8,7 @@ async function wire(context, api) {
         if (request.method() === 'POST') {
             const body = request.postData();
             const form = new URLSearchParams(body);
-            if (form.has('payload')) return route.fulfill({ contentType: 'text/html', body: api.rawPostForm(JSON.parse(form.get('payload'))) });
+            if (form.has('payload')) return route.fulfill({ contentType: 'text/html; charset=utf-8', body: api.rawPostForm(JSON.parse(form.get('payload'))) });
             return route.fulfill({ contentType: 'application/json', body: JSON.stringify(api.post(JSON.parse(body))) });
         }
         return route.fulfill({ contentType: 'application/javascript', body: api.rawGet(Object.fromEntries(new URL(request.url()).searchParams)) });
@@ -122,4 +122,44 @@ test('a bare family address does not request or display private data', async ({p
     await expect(page.locator('#login-feedback')).toContainText('lien privé');
     await expect(page.locator('input[type=password]')).toHaveCount(0);
     expect(calls).toBe(0);
+});
+
+
+test('search and reminders respect pending replies, family boundaries and full totals', async ({ page, context }) => {
+    const api = backend();
+    api.tables['Invités'] = [api.tables['Invités'][0],
+        ['pending', 'Élodie Cohen', 'oui', 'oui', 'non', 2, 0, 'dahan'],
+        ['absent', 'David Cohen', 'non', 'oui', 'non', 2, 0, 'dahan'],
+        ['private', 'Élodie Chiche', 'oui', 'oui', 'non', 2, 0, 'chiche']];
+    expect(api.post({invite:'absent',requestId:'00000000-0000-4000-8000-000000000010',events:{houppa:{presence:'non'}},message:''}).ok).toBe(true);
+    await wire(context, api);
+    await page.setViewportSize({width:360,height:844});
+    await login(page, 'dahan');
+    await expect(page.locator('#guest-list tr')).toHaveCount(2);
+    const totals = await page.locator('#totals').innerText();
+    await page.locator('#guest-search').fill('elodie');
+    await expect(page.locator('#guest-list tr')).toHaveCount(1);
+    await expect(page.locator('#guest-list')).toContainText('Élodie Cohen');
+    await expect(page.locator('#guest-list')).not.toContainText('Chiche');
+    await page.locator('#guest-filter').selectOption('pending');
+    await page.getByRole('button', {name:'Préparer une relance'}).click();
+    const message = await page.locator('#whatsapp-message').inputValue();
+    expect(message).toContain('Élodie Cohen'); expect(message).toContain('Bé’ezrat Hachem');
+    expect(message).toContain('Mairie'); expect(message).toContain('Houppa'); expect(message).not.toContain('Chabbat');
+    expect(message).not.toContain('a'.repeat(40));
+    const whatsapp = new URL(await page.locator('#whatsapp-link').getAttribute('href'));
+    expect(whatsapp.searchParams.get('text')).toBe(message);
+    expect(new URL(await page.locator('#invite-url').inputValue()).searchParams.get('nom')).toBe('Élodie Cohen');
+    expect(await page.locator('#totals').innerText()).toBe(totals);
+    await page.locator('#guest-search').fill('David');
+    await expect(page.locator('#guest-list tr')).toHaveCount(0);
+    await expect(page.locator('#empty-list')).toContainText('Aucun invité');
+    await page.locator('#guest-filter').selectOption('all');
+    await expect(page.locator('#guest-list tr')).toHaveCount(1);
+    await expect(page.getByRole('button', {name:'Préparer une relance'})).toHaveCount(0);
+    await page.locator('#guest-search').fill('');
+    await page.locator('#guest-filter').selectOption('pending');
+    await page.locator('#refresh').click();
+    await expect(page.locator('#guest-list tr')).toHaveCount(1);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });

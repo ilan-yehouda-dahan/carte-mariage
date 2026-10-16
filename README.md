@@ -26,6 +26,12 @@ foyers sans réponse et foyers absents. Si un foyer répond plusieurs fois, seul
 sa réponse la plus récente (horodatage) compte : les personnes ne sont pas additionnées.
 Le CSV reprend ces mêmes effectifs pour communiquer avec le traiteur.
 
+La liste des foyers propose une recherche par nom, sans distinction de casse ou
+d’accents, et un filtre « Sans réponse » (au moins un événement en attente).
+« Préparer une relance » affiche un message WhatsApp avec uniquement les événements
+sans réponse et le lien personnel. Vous choisissez ensuite le destinataire et
+validez l’envoi dans WhatsApp. Les filtres ne modifient ni les totaux ni le CSV.
+
 Aucune répartition familiale ni information de frais n'est renvoyée à un invité.
 Le calcul des montants à payer n'est pas inclus.
 

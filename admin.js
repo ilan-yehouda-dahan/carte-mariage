@@ -21,11 +21,17 @@
         var intro = guest.houppa ? 'C’est avec une immense gratitude envers Hachem et le cœur rempli de joie que nous vous invitons à célébrer le mariage d’Eden et Ilan, qui aura lieu, Bé’ezrat Hachem, le jeudi 18 février 2027.' : 'C’est avec une immense gratitude envers Hachem et le cœur rempli de joie que nous vous invitons à partager les célébrations de notre mariage, Bé’ezrat Hachem.';
         return 'Bonjour ' + guest.nom + ' 🤍\n\n' + intro + '\n\n' + Object.keys(labels).filter(function (name) { return guest[name]; }).map(function (name) { return labels[name] + ' — ' + dates[name]; }).join('\n') + '\n\nNous espérons de tout cœur vous avoir à nos côtés pour partager ces moments si précieux !\n\nRetrouvez votre invitation personnelle et tous les détails dans le lien ci-dessous. Vous pourrez également y confirmer votre présence :\n\n💌 ' + url + '\n\nAvec toute notre affection,\nEden & Ilan' + (window.localPreview ? '\n\n[Aperçu local : ce lien fonctionne uniquement dans ce navigateur sur cet ordinateur.]' : '');
     }
-    function share(guest) {
+    function unanswered(guest) {
+        return Object.keys(labels).filter(function (name) { return guest[name] && !(guest.answers && guest.answers[name]); });
+    }
+    function reminder(guest, url) {
+        return 'Bonjour ' + guest.nom + ' 🤍\n\nNous espérons, Bé’ezrat Hachem, avoir la joie de vous retrouver pour les célébrations de notre mariage !\n\nPour nous aider à préparer ces beaux moments, pourriez-vous nous confirmer votre présence et le nombre de personnes pour :\n' + unanswered(guest).map(function (name) { return labels[name] + ' — ' + dates[name]; }).join('\n') + '\n\nVoici votre invitation personnelle pour nous répondre :\n💌 ' + url + '\n\nMerci de tout cœur,\nEden & Ilan' + (window.localPreview ? '\n\n[Aperçu local : ce lien fonctionne uniquement dans ce navigateur sur cet ordinateur.]' : '');
+    }
+    function share(guest, isReminder) {
         var url = invitationUrl(guest);
         document.getElementById('invite-url').value = url;
         document.getElementById('view-link').href = url;
-        var text = message(guest, url);
+        var text = isReminder ? reminder(guest, url) : message(guest, url);
         document.getElementById('whatsapp-message').value = text;
         document.getElementById('whatsapp-link').href = 'https://wa.me/?text=' + encodeURIComponent(text);
         document.getElementById('result').hidden = false;
@@ -39,8 +45,20 @@
             var total = data.totals[name]; var row = document.createElement('tr');
             [labels[name], total.invited, total.people, total.pending, total.declined].forEach(function (text) { td(row, text); }); totals.appendChild(row);
         });
+        renderGuests();
+        document.getElementById('legacy-notice').hidden = !data.legacyResponses;
+        document.getElementById('dashboard-status').textContent = (window.localPreview ? 'Données de démonstration locales. ' : 'Données Google Sheets actualisées. ') + data.guests.length + ' foyer(s).';
+    }
+    function normalizeName(value) { return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('fr').trim(); }
+    function renderGuests() {
         var list = document.getElementById('guest-list'); list.replaceChildren();
-        data.guests.forEach(function (guest) {
+        if (!snapshot) { document.getElementById('filter-status').textContent = ''; return; }
+        var query = normalizeName(document.getElementById('guest-search').value);
+        var onlyPending = document.getElementById('guest-filter').value === 'pending';
+        var guests = snapshot.guests.filter(function (guest) {
+            return normalizeName(guest.nom).includes(query) && (!onlyPending || unanswered(guest).length > 0);
+        });
+        guests.forEach(function (guest) {
             var row = document.createElement('tr');
             td(row, guest.nom); td(row, guest.maxPersonnes);
             var replies = Object.keys(labels).filter(function (name) { return guest[name]; }).map(function (name) {
@@ -48,14 +66,22 @@
                 return labels[name] + ' : ' + (!answer ? 'en attente' : answer.presence === 'non' ? 'absent' : answer.personnes + ' personne(s)');
             });
             td(row, replies.join(' · '));
-            var action = document.createElement('button'); action.type = 'button'; action.className = 'share-button'; action.textContent = 'Lien / WhatsApp';
-            action.addEventListener('click', function () { share(guest); document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'center' }); });
-            td(row, '').appendChild(action); list.appendChild(row);
+            var actions = document.createElement('div'); actions.className = 'guest-actions';
+            function addAction(text, isReminder) {
+                var action = document.createElement('button'); action.type = 'button'; action.className = 'share-button' + (isReminder ? ' reminder-button' : ''); action.textContent = text;
+                action.addEventListener('click', function () { share(guest, isReminder); document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'center' }); });
+                actions.appendChild(action);
+            }
+            addAction('Lien / WhatsApp', false);
+            if (unanswered(guest).length) addAction('Préparer une relance', true);
+            td(row, '').appendChild(actions); list.appendChild(row);
         });
-        document.getElementById('empty-list').hidden = data.guests.length > 0;
-        document.getElementById('legacy-notice').hidden = !data.legacyResponses;
-        document.getElementById('dashboard-status').textContent = (window.localPreview ? 'Données de démonstration locales. ' : 'Données Google Sheets actualisées. ') + data.guests.length + ' foyer(s).';
+        document.getElementById('filter-status').textContent = guests.length + ' foyer(s) affiché(s) sur ' + snapshot.guests.length + '. Sans réponse : au moins un événement reste en attente. Les effectifs et le CSV restent complets.';
+        document.getElementById('empty-list').hidden = guests.length > 0;
+        document.getElementById('empty-list').textContent = snapshot.guests.length ? 'Aucun invité ne correspond à ces filtres.' : 'Aucune invitation pour le moment. Créez votre premier foyer ci-dessus.';
     }
+    document.getElementById('guest-search').addEventListener('input', renderGuests);
+    document.getElementById('guest-filter').addEventListener('change', renderGuests);
     async function refresh() {
         var currentSession = session;
         var data = await window.sheetApi.dashboard(family, key);
@@ -75,6 +101,7 @@
         document.getElementById('invite-url').value = ''; document.getElementById('whatsapp-message').value = '';
         document.getElementById('whatsapp-link').removeAttribute('href'); document.getElementById('view-link').removeAttribute('href');
         feedback.textContent = ''; form.reset();
+        document.getElementById('guest-search').value = ''; document.getElementById('guest-filter').value = 'all'; renderGuests();
     }
     async function openPrivateLink() {
         var token = new URLSearchParams(location.hash.slice(1)).get('acces') || '';
