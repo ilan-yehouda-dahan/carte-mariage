@@ -709,13 +709,12 @@
         }
         .cover-bsd{ font-family:'Frank Ruhl Libre',serif; direction:rtl; color:var(--ink-soft); font-size:14px; }
         .cover-monogram{
-            width:64px; height:64px; border:1px solid var(--gold); border-radius:50%;
-            display:flex; align-items:center; justify-content:center; gap:3px; position:relative;
-            color:var(--gold-deep); font:500 20px 'Cormorant Garamond',serif; background:rgba(255,255,255,.25);
-            box-shadow:0 0 0 4px rgba(184,150,99,.05), 0 6px 16px rgba(31,36,48,.04);
+            width:76px; max-width:100%; flex-shrink:0;
         }
-        .cover-monogram::before{ content:""; position:absolute; inset:4px; border:1px solid var(--gold-soft); border-radius:50%; }
-        .cover-monogram b{ font-weight:400; font-style:italic; color:var(--gold); font-size:15px; }
+        .cover-monogram img{
+            display:block; width:100%; height:auto;
+            filter:drop-shadow(0 4px 6px rgba(31,36,48,.12));
+        }
         .cover-line{ width:60px; height:1px; background:linear-gradient(90deg,transparent,var(--gold),transparent); margin:4px 0; }
         .cover-bottom-line{ width:50px; height:1px; background:linear-gradient(90deg,transparent,var(--gold),transparent); margin:4px 0; }
         .cover-kicker{ margin:0; text-transform:uppercase; letter-spacing:.24em; font-size:10px; color:var(--silver); }
@@ -1158,8 +1157,8 @@
     <div class="aurora"><span></span><span></span><span></span></div>
     <div class="cover-content">
         <div class="cover-bsd">בס״ד</div>
-        <div class="cover-monogram" aria-label="Eden et Ilan">
-            <span>E</span><b>&</b><span>I</span>
+        <div class="cover-monogram">
+            <img src="assets/img/logo-removebg-preview.png" alt="Sceau doré aux initiales d’Eden et Ilan" width="440" height="439" decoding="async">
         </div>
         <div class="cover-line"></div>
         <p class="cover-kicker">Notre mariage</p>
