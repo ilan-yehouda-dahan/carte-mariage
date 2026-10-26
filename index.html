@@ -723,7 +723,9 @@
             letter-spacing:-.035em; margin:0; color:var(--ink);
         }
         .cover-content h1 em{ display:inline-block; color:var(--gold); font-size:.42em; margin:0 .06em; vertical-align:middle; font-style:italic; }
-        .cover-hebrew{ font-family:'Frank Ruhl Libre',serif; font-weight:400; font-size:clamp(18px, 4vw, 24px); direction:rtl; color:var(--gold-deep); margin:4px 0; letter-spacing:.04em; }
+        .cover-hebrew{width:100%;margin:4px 0;color:var(--gold-deep);}
+        .cover-hebrew svg{display:block;width:100%;height:auto;overflow:visible;}
+        .cover-hebrew text{font-family:'Frank Ruhl Libre',serif;font-weight:400;font-size:34px;fill:currentColor;}
         .countdown{ display:flex; gap:clamp(8px, 2.5vw, 12px); margin:10px auto; align-items:center; justify-content:center; width:100%; }
         .countdown .cell{
             display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; max-width:68px; aspect-ratio:1/1;
@@ -1167,7 +1169,12 @@
             <em>&</em>
             <span>Ilan</span>
         </h1>
-        <p class="cover-hebrew">כֹּל שָׂשׂוֹן וְכָל שִׂמְחָה</p>
+        <p class="cover-hebrew" role="img" aria-label="קוֹל שָשוֹן וְקוֹל שִמְחָה קוֹל חָתָן וְקוֹל כָּלָה">
+            <svg viewBox="0 0 600 110" aria-hidden="true" focusable="false">
+                <defs><path id="hebrew-arc" d="M 20,90 Q 300,-25 580,90"/></defs>
+                <text direction="rtl" text-anchor="middle"><textPath href="#hebrew-arc" startOffset="50%">קוֹל שָשוֹן וְקוֹל שִמְחָה קוֹל חָתָן וְקוֹל כָּלָה</textPath></text>
+            </svg>
+        </p>
         <!-- Compte à rebours dynamique calé sur le 18 février 2027 à 16h00 -->
         <div class="countdown" id="countdown">
             <div class="cell"><span class="num" id="cd-days">00</span><span class="lbl">jours</span></div>
