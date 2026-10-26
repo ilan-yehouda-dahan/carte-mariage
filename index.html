@@ -723,9 +723,8 @@
             letter-spacing:-.035em; margin:0; color:var(--ink);
         }
         .cover-content h1 em{ display:inline-block; color:var(--gold); font-size:.42em; margin:0 .06em; vertical-align:middle; font-style:italic; }
-        .cover-hebrew{width:100%;margin:4px 0;color:var(--gold-deep);}
-        .cover-hebrew svg{display:block;width:100%;height:auto;overflow:visible;}
-        .cover-hebrew text{font-family:'Frank Ruhl Libre',serif;font-weight:400;font-size:34px;fill:currentColor;}
+        .cover-hebrew{width:100%;aspect-ratio:600/110;position:relative;container-type:inline-size;margin:4px 0;color:var(--gold-deep);}
+        .cover-hebrew span{position:absolute;white-space:nowrap;font-family:'Frank Ruhl Libre',serif;font-weight:400;font-size:5.6667cqw;line-height:1.2;direction:rtl;unicode-bidi:isolate;transform:translate(-50%,-100%) rotate(var(--angle));transform-origin:center bottom;}
         .countdown{ display:flex; gap:clamp(8px, 2.5vw, 12px); margin:10px auto; align-items:center; justify-content:center; width:100%; }
         .countdown .cell{
             display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; max-width:68px; aspect-ratio:1/1;
@@ -1170,10 +1169,15 @@
             <span>Ilan</span>
         </h1>
         <p class="cover-hebrew" role="img" aria-label="קוֹל שָשוֹן וְקוֹל שִמְחָה קוֹל חָתָן וְקוֹל כָּלָה">
-            <svg viewBox="0 0 600 110" aria-hidden="true" focusable="false">
-                <defs><path id="hebrew-arc" d="M 20,90 Q 300,-25 580,90"/></defs>
-                <text direction="rtl" text-anchor="middle"><textPath href="#hebrew-arc" startOffset="50%">קוֹל שָשוֹן וְקוֹל שִמְחָה קוֹל חָתָן וְקוֹל כָּלָה</textPath></text>
-            </svg>
+            <!-- HTML RTL natif : même sens de lecture sur Safari et Chrome. -->
+            <span dir="rtl" aria-hidden="true" style="left:91.3333%;top:77.2727%;--angle:20deg">קוֹל</span>
+            <span dir="rtl" aria-hidden="true" style="left:79.6667%;top:57.2727%;--angle:14deg">שָשוֹן</span>
+            <span dir="rtl" aria-hidden="true" style="left:66.8333%;top:43.6364%;--angle:8deg">וְקוֹל</span>
+            <span dir="rtl" aria-hidden="true" style="left:54.0000%;top:38.1818%;--angle:2deg">שִמְחָה</span>
+            <span dir="rtl" aria-hidden="true" style="left:41.8333%;top:40.0000%;--angle:-4deg">קוֹל</span>
+            <span dir="rtl" aria-hidden="true" style="left:30.8333%;top:49.0909%;--angle:-10deg">חָתָן</span>
+            <span dir="rtl" aria-hidden="true" style="left:19.6667%;top:63.6364%;--angle:-16deg">וְקוֹל</span>
+            <span dir="rtl" aria-hidden="true" style="left:8.1667%;top:83.6364%;--angle:-22deg">כָּלָה</span>
         </p>
         <!-- Compte à rebours dynamique calé sur le 18 février 2027 à 16h00 -->
         <div class="countdown" id="countdown">
