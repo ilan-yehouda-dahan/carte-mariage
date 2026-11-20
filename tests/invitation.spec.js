@@ -157,7 +157,7 @@ test('calendar contains 16h Paris and a valid all-day end date', async ({ page }
 test('mairie date is February 11 in programme, RSVP, calendar and admin', async ({page}) => {
     await page.goto('/?preview=1&invite=gabriel-arzoin');
     await expect(page.locator('body')).toHaveClass(/invitation-ready/);
-    await expect(page.locator('#mairie .when')).toHaveText('Jeudi 11 février 2027');
+    await expect(page.locator('#mairie .when')).toHaveText('Jeudi 11 février 2027 à 14h00');
     await expect(page.locator('#rsvp-mairie .rsvp-event-title')).toContainText('11 février');
     await expect(page.locator('#mairie button.btn')).toHaveAttribute('onclick', /2027-02-11/);
     await expect(page.locator('#houppa .when')).toContainText('18 février 2027');

@@ -9,7 +9,7 @@
     var feedback = document.getElementById('form-feedback');
     var button = document.getElementById('create-button');
     var labels = { mairie: 'Mairie', houppa: 'Houppa & soirée', shabbat: 'Chabbat' };
-    var dates = { mairie: '11 février 2027', houppa: '18 février 2027 à 16 h', shabbat: '19 février 2027' };
+    var dates = { mairie: '11 février 2027 à 14 h, suivie d’un after-mairie à la synagogue Ancelle (Neuilly-sur-Seine)', houppa: '18 février 2027 à 16 h', shabbat: '19 février 2027' };
     function invitationUrl(guest) {
         var url = new URL(window.localPreview ? '/' : 'https://mariage-eden-ilan.com/', location.href);
         url.searchParams.set('invite', guest.id);
