@@ -18,8 +18,9 @@
         return url.href;
     }
     function message(guest, url) {
-        var intro = guest.houppa ? 'C’est avec une immense gratitude envers Hachem et le cœur rempli de joie que nous vous invitons à célébrer le mariage d’Eden et Ilan, qui aura lieu, Bé’ezrat Hachem, le jeudi 18 février 2027.' : 'C’est avec une immense gratitude envers Hachem et le cœur rempli de joie que nous vous invitons à partager les célébrations de notre mariage, Bé’ezrat Hachem.';
-        return 'Bonjour ' + guest.nom + ' 🤍\n\n' + intro + '\n\n' + Object.keys(labels).filter(function (name) { return guest[name]; }).map(function (name) { return labels[name] + ' — ' + dates[name]; }).join('\n') + '\n\nNous espérons de tout cœur vous avoir à nos côtés pour partager ces moments si précieux !\n\nRetrouvez votre invitation personnelle et tous les détails dans le lien ci-dessous. Vous pourrez également y confirmer votre présence :\n\n💌 ' + url + '\n\nAvec toute notre affection,\nEden & Ilan' + (window.localPreview ? '\n\n[Aperçu local : ce lien fonctionne uniquement dans ce navigateur sur cet ordinateur.]' : '');
+        var mairieOnly = guest.mairie && !guest.houppa && !guest.soiree && !guest.shabbat;
+        var date = mairieOnly ? '11 février 2027' : '18 février 2027';
+        return 'Chère famille, chers amis,\n\nC’est le cœur rempli de joie et de gratitude envers Hachem que nous vous annonçons notre mariage, qui aura lieu בע״ה le jeudi ' + date + ' à Paris 💍\n\nVous trouverez le programme des festivités dans notre faire-part. Merci de nous confirmer votre présence dès que possible via le lien ci-dessous 👇🏼\n\n' + url + '\n\nEden & Ilan 🤍' + (window.localPreview ? '\n\n[Aperçu local : ce lien fonctionne uniquement dans ce navigateur sur cet ordinateur.]' : '');
     }
     function unanswered(guest) {
         return Object.keys(labels).filter(function (name) { return guest[name] && !(guest.answers && guest.answers[name]); });

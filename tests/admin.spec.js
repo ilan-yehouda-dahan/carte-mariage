@@ -32,7 +32,7 @@ for (const width of [360, 1280]) {
         const whatsapp = new URL(await page.locator('#whatsapp-link').getAttribute('href'));
         expect(whatsapp.hostname).toBe('wa.me');
         const message = whatsapp.searchParams.get('text');
-        expect(message).toContain('Hachem'); expect(message).toContain('Bé’ezrat Hachem'); expect(message).toContain(link);
+        expect(message).toContain('Hachem'); expect(message).toContain('בע״ה'); expect(message).toContain(link);
         expect(message).not.toMatch(/clé|adminKey|Famille Dahan|Famille Chiche/);
         expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
         await page.goto(link);
@@ -89,7 +89,7 @@ test('live separation, creation, WhatsApp, RSVP, latest counts and CSV end to en
     const popupPromise = page.waitForEvent('popup');
     await page.locator('#whatsapp-link').click(); const popup = await popupPromise; await popup.waitForLoadState();
     const text = new URL(popup.url()).searchParams.get('text');
-    expect(text).toContain('immense gratitude envers Hachem'); expect(text).toContain('Bé’ezrat Hachem'); expect(text).toContain(link);
+    expect(text).toContain('joie et de gratitude envers Hachem'); expect(text).toContain('בע״ה'); expect(text).toContain(link);
     expect(text).not.toContain('a'.repeat(40));
     await popup.close();
     // Tester le même lien sur l'origine locale avec le vrai code Apps Script et un Sheets simulé.
@@ -223,7 +223,7 @@ for (const family of ['dahan','chiche']) {
         expect(row[headers.indexOf('Max personnes')]).toBe(4);
         for(const col of ['Mairie','Houppa','Shabbat','Soirée']) expect(row[headers.indexOf(col)]).toBe('oui');
         const whatsapp=new URL(await page.locator('#whatsapp-link').getAttribute('href')).searchParams.get('text');
-        expect(whatsapp).toContain('13 h 30');expect(whatsapp).toContain('16 h');expect(whatsapp).toContain('19 h');
+        expect(whatsapp).toContain('le jeudi 18 février 2027 à Paris');expect(whatsapp).toMatch(/^Chère famille, chers amis,/);expect(whatsapp.split(url.origin)[0]).not.toContain(guestName);
         await page.goto('/?'+url.searchParams.toString());await expect(page.locator('body')).toHaveClass(/invitation-ready/);
         await page.locator('#btn_skip').click();
         for(const event of ['mairie','houppa','soiree','shabbat']) await expect(page.locator('#'+event+'-personnes option')).toHaveCount(4);
@@ -262,5 +262,20 @@ for (const family of ['dahan','chiche']) {
         const other=family==='dahan'?'chiche':'dahan';await login(page,other);
         await expect(page.locator('#guest-list')).not.toContainText(guestName);
         for(const cells of await page.locator('#totals tr').all()) expect(await cells.locator('td').allTextContents()).toEqual([expect.any(String),'0','0','0','0']);
+    });
+}
+
+for (const family of ['dahan','chiche']) {
+    test(`generic WhatsApp message uses mairie date only for mairie-only invitations in ${family}`, async ({page})=>{
+        await page.goto('/admin'+family+'/?preview=1');
+        await page.locator('#guest-name').fill('Nom qui ne doit pas apparaître');
+        await page.locator('#mairie').check();await page.locator('#houppa').uncheck();await page.locator('#soiree').uncheck();
+        await page.locator('#create-button').click();await expect(page.locator('#result')).toBeVisible();
+        const url=await page.locator('#invite-url').inputValue();
+        const expected='Chère famille, chers amis,\n\nC’est le cœur rempli de joie et de gratitude envers Hachem que nous vous annonçons notre mariage, qui aura lieu בע״ה le jeudi 11 février 2027 à Paris 💍\n\nVous trouverez le programme des festivités dans notre faire-part. Merci de nous confirmer votre présence dès que possible via le lien ci-dessous 👇🏼\n\n'+url+'\n\nEden & Ilan 🤍';
+        expect(await page.locator('#whatsapp-message').inputValue()).toBe(expected+'\n\n[Aperçu local : ce lien fonctionne uniquement dans ce navigateur sur cet ordinateur.]');
+        expect(new URL(await page.locator('#whatsapp-link').getAttribute('href')).searchParams.get('text')).toContain(expected);
+        await page.locator('#houppa').check();await page.locator('#create-button').click();await expect(page.locator('#result')).toBeVisible();
+        await expect(page.locator('#whatsapp-message')).toHaveValue(/le jeudi 18 février 2027 à Paris/);
     });
 }
