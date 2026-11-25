@@ -1336,7 +1336,7 @@
                         </div>
                         <div class="event-kicker">Office & Chabbat Hatan</div>
                         <h3>Chabbat</h3>
-                        <div class="when">Vendredi 19 février 2027</div>
+                        <div class="when">Chabbat du 19 au 20 février 2027</div>
                         <div class="where">Synagogue Ancelle<br><span class="addr">Neuilly-sur-Seine</span></div>
                         <div class="note">Nous serons heureux de partager ce Chabbat avec vous dans la joie et la convivialité.</div>
                         <div class="actions">
@@ -1344,7 +1344,7 @@
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="9" r="2.4"/></svg>
                                 Itinéraire Waze
                             </a>
-                            <button class="btn" onclick="downloadIcs('Chabbat — Eden & Ilan','Synagogue Ancelle, Neuilly-sur-Seine','2027-02-19')">
+                            <button class="btn" onclick="downloadIcs('Chabbat — Eden & Ilan','Synagogue Ancelle, Neuilly-sur-Seine','2027-02-19',null,'2027-02-21')">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="16" rx="1"/><path d="M3 9h18M8 3v4M16 3v4"/></svg>
                                 Ajouter au calendrier
                             </button>
@@ -1423,7 +1423,7 @@
                         </div>
                         <div class="rsvp-event-item" id="rsvp-shabbat">
                             <div class="rsvp-event-header">
-                                <span class="rsvp-event-title">Chabbat Hatan — 19 février</span>
+                                <span class="rsvp-event-title">Chabbat Hatan — 19 et 20 février</span>
                                 <div class="presence-options" data-group="shabbat">
                                     <input type="radio" name="shabbat-presence" id="shabbat-oui" value="oui" checked>
                                     <label for="shabbat-oui">Présent(e)</label>
@@ -1750,11 +1750,11 @@
     })();
 
     // 7. ICS
-    function downloadIcs(title, location, dateStr, timeStr){
+    function downloadIcs(title, location, dateStr, timeStr, endDateStr){
         var d = dateStr.replace(/-/g,'');
         var nextDay = new Date(dateStr + 'T00:00:00Z');
         nextDay.setUTCDate(nextDay.getUTCDate() + 1);
-        var end = nextDay.toISOString().slice(0, 10).replace(/-/g, '');
+        var end = endDateStr ? endDateStr.replace(/-/g, '') : nextDay.toISOString().slice(0, 10).replace(/-/g, '');
         function escapeIcs(value) {
             return value.replace(/\\/g, '\\\\').replace(/\r?\n/g, '\\n').replace(/,/g, '\\,').replace(/;/g, '\\;');
         }
