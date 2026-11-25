@@ -168,10 +168,10 @@ test('mairie date is February 11 in programme, RSVP, calendar and admin', async 
 test('personal welcome appears on envelope, card and cover without capacity announcement', async ({page}) => {
     await page.goto('/?preview=1&invite=ilan-dahan');
     await expect(page.locator('body')).toHaveClass(/invitation-ready/);
-    await expect(page.locator('#envelope-recipient')).toHaveText('ilan dahan');
-    await expect(page.locator('#card-recipient')).toHaveText('Pour ilan dahan');
+    await expect(page.locator('#envelope-recipient')).toHaveText('Ilan Dahan');
+    await expect(page.locator('#card-recipient')).toHaveText('Pour Ilan Dahan');
     await page.locator('#btn_skip').click();
-    await expect(page.locator('#cover-recipient')).toHaveText('ilan dahan,');
+    await expect(page.locator('#cover-recipient')).toHaveText('Ilan Dahan,');
     await expect(page.locator('.cover-invite')).toContainText('Hachem');
     await expect(page.locator('#invitation-capacity')).toHaveCount(0);
     await expect(page.locator('#houppa-personnes option')).toHaveText(['1','2']);
@@ -193,9 +193,21 @@ test('link name appears before Google responds and cannot change capacity or ide
     expect(await page.evaluate(() => window.currentInvitation)).toBeFalsy();
     release();
     await expect(page.locator('body')).toHaveClass(/invitation-ready/);
-    await expect(page.locator('#envelope-recipient')).toHaveText(guests['elie-chicha'].nom);
+    await expect(page.locator('#envelope-recipient')).toHaveText('Elie Chicha');
     await expect(page.locator('#nom')).toHaveValue(guests['elie-chicha'].nom);
     const cap = guests['elie-chicha'].maxAdultes + guests['elie-chicha'].maxEnfants;
     await expect(page.locator('#houppa-personnes option')).toHaveCount(cap);
     expect(await page.locator('#houppa-personnes option').last().getAttribute('value')).toBe(String(cap));
+});
+
+
+test('recipient capitalization handles accents, hyphens and apostrophes without changing stored identity', async ({page})=>{
+    const name="élodie jean-pierre d’ahan";
+    await page.route(apiPattern, route=>respond(route,{...guests['elie-chicha'],nom:name}));
+    await page.goto('/?invite=elie-chicha&nom='+encodeURIComponent(name));
+    await expect(page.locator('body')).toHaveClass(/invitation-ready/);
+    await expect(page.locator('#envelope-recipient')).toHaveText('Élodie Jean-Pierre D’Ahan');
+    await expect(page.locator('#card-recipient')).toHaveText('Pour Élodie Jean-Pierre D’Ahan');
+    await expect(page.locator('#cover-recipient')).toHaveText('Élodie Jean-Pierre D’Ahan,');
+    await expect(page.locator('#nom')).toHaveValue(name);
 });

@@ -6,10 +6,16 @@
     var params = new URLSearchParams(window.location.search);
     var inviteId = (params.get('invite') || params.get('id') || '').trim().toLowerCase();
 
+    function presentationName(value) {
+        return value.trim().replace(/(^|[\s’'\-])(\p{L})/gu, function (_, separator, letter) {
+            return separator + letter.toLocaleUpperCase('fr');
+        });
+    }
+
     // Le nom dans le lien sert uniquement à l’affichage, jamais aux autorisations.
     var displayName = (params.get('nom') || '').trim().slice(0, 200);
     if (inviteId && displayName) {
-        document.getElementById('envelope-recipient').textContent = displayName;
+        document.getElementById('envelope-recipient').textContent = presentationName(displayName);
         document.getElementById('envelope-addressee').hidden = false;
     }
 
@@ -74,9 +80,9 @@
             document.getElementById('nom').readOnly = true;
             document.getElementById('invitation-greeting').textContent = 'Ces moments, nous souhaitons les partager avec vous.';
             [
-                ['envelope-recipient', guest.nom],
-                ['card-recipient', 'Pour ' + guest.nom],
-                ['cover-recipient', guest.nom + ',']
+                ['envelope-recipient', presentationName(guest.nom)],
+                ['card-recipient', 'Pour ' + presentationName(guest.nom)],
+                ['cover-recipient', presentationName(guest.nom) + ',']
             ].forEach(function (entry) {
                 var recipient = document.getElementById(entry[0]);
                 recipient.textContent = entry[1];
