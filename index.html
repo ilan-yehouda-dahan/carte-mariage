@@ -874,6 +874,16 @@
         .event .where{font-size:14.5px;color:var(--ink);margin-bottom:12px;line-height:1.6;}
         .event .where .addr{color:var(--ink-soft);}
         .event .note{font-size:13.5px;color:var(--ink-soft);line-height:1.6;margin-bottom:18px;}
+        /* Même écriture de faire-part pour les trois moments. */
+        #mairie .event-body, #shabbat .event-body{text-align:center;}
+        #mairie h3, #shabbat h3{font:400 clamp(46px,11vw,62px)/1.2 'Pinyon Script',cursive;margin:12px 0 18px;}
+        #mairie .event-kicker, #shabbat .event-kicker{font:500 italic 18px/1.5 'Cormorant Garamond',serif;letter-spacing:.02em;}
+        #mairie .when, #shabbat .when{font:700 italic clamp(21px,5vw,26px)/1.5 'Cormorant Garamond',serif;color:var(--ink);}
+        #mairie .where, #shabbat .where{font:700 22px/1.5 'Cormorant Garamond',serif;}
+        #mairie .where .addr, #shabbat .where .addr{font-weight:500;font-size:20px;}
+        #mairie .note, #shabbat .note{font:500 italic 21px/1.5 'Cormorant Garamond',serif;}
+        #mairie .actions, #shabbat .actions{justify-content:center;}
+
         .actions{display:flex;flex-wrap:wrap;gap:10px;}
         .btn{
             appearance:none;border:1px solid rgba(184,150,99,0.3);background:rgba(255,255,255,0.6);
