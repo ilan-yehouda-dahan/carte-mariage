@@ -1,7 +1,7 @@
 // Copier ce fichier dans le projet Apps Script lié au Google Sheets.
 var SPREADSHEET_ID = '1rpb6pRC_cQ3_3dYrnFl5WKfFRMgX2KYeFcqdhgQYJxE';
-var EVENTS = ['mairie', 'houppa', 'shabbat'];
-var RESPONSE_HEADERS = ['Date', 'Nom', 'Mairie', 'Houppa', 'Shabbat', 'Message', 'ID invité', 'ID envoi'];
+var EVENTS = ['mairie', 'houppa', 'shabbat', 'soiree'];
+var RESPONSE_HEADERS = ['Date', 'Nom', 'Mairie', 'Houppa', 'Shabbat', 'Message', 'ID invité', 'ID envoi', 'Soirée'];
 
 function spreadsheet_() {
   return SpreadsheetApp.openById(SPREADSHEET_ID);
@@ -29,7 +29,11 @@ function guest_(id, sourceRows) {
   var guest = { id: id, nom: String(row[columns[1]] || '').trim() };
   if (!guest.nom) throw new Error('missing_guest_name');
   EVENTS.forEach(function (name, index) {
-    var value = normalize_(row[columns[index + 2]]);
+    var col = headers.indexOf(name === 'soiree' ? 'soirée' : name);
+    var raw = col < 0 ? '' : row[col];
+    // Ancienne invitation groupée : conserver ses deux accès.
+    if (name === 'soiree' && (raw === '' || raw == null)) { guest.soiree = guest.houppa; return; }
+    var value = normalize_(raw);
     if (['oui', 'non', 'true', 'false', ''].indexOf(value) < 0) throw new Error('invalid_guest_permission');
     guest[name] = value === 'oui' || value === 'true';
   });
@@ -99,6 +103,7 @@ function textCell_(value) {
 function eventLine_(guest, payload, name, label) {
   if (!guest[name]) return 'Masqué';
   var answer = payload.events && payload.events[name];
+  if (name === 'soiree' && !answer) answer = payload.events && payload.events.houppa;
   if (!answer || ['oui', 'non'].indexOf(answer.presence) < 0) throw new Error('invalid_answer');
   if (answer.presence === 'non') return label + ' : Non';
   var people = answer.personnes;
@@ -126,7 +131,7 @@ function doPost(e) {
     var message = payload.message == null ? '' : payload.message;
     if (typeof message !== 'string' || message.length > 2000) throw new Error('invalid_message');
     var answers = EVENTS.map(function (name, index) {
-      return eventLine_(guest, payload, name, ['Mairie', 'Houppa & Soirée', 'Chabbat'][index]);
+      return eventLine_(guest, payload, name, ['Mairie', 'Houppa', 'Chabbat', 'Soirée'][index]);
     });
     lock.waitLock(10000);
     locked = true;
@@ -137,10 +142,19 @@ function doPost(e) {
       var headers = sheet.getRange(1, 1, 1, 8).getValues()[0];
       if (!RESPONSE_HEADERS.slice(0, 6).every(function (name, index) { return headers[index] === name; })) throw new Error('invalid_response_headers');
       if ((headers[6] && headers[6] !== RESPONSE_HEADERS[6]) || (headers[7] && headers[7] !== RESPONSE_HEADERS[7])) throw new Error('occupied_tracking_columns');
-      sheet.getRange(1, 7, 1, 2).setValues([RESPONSE_HEADERS.slice(6)]);
+      sheet.getRange(1, 7, 1, 2).setValues([RESPONSE_HEADERS.slice(6, 8)]);
+    }
+    var responseColumns = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+    var soireeColumn = responseColumns.indexOf('Soirée');
+    if (soireeColumn < 0) {
+      soireeColumn = responseColumns.length;
+      sheet.getRange(1, soireeColumn + 1, 1, 1).setValues([['Soirée']]);
     }
     if (!receipt_(sheet, id, payload.requestId)) {
-      sheet.appendRow([new Date(), textCell_(guest.nom)].concat(answers, [textCell_(message.trim()), textCell_(id), payload.requestId]));
+      var responseRow = [new Date(), textCell_(guest.nom), answers[0], answers[1], answers[2], textCell_(message.trim()), textCell_(id), payload.requestId];
+      while (responseRow.length <= soireeColumn) responseRow.push('');
+      responseRow[soireeColumn] = answers[3];
+      sheet.appendRow(responseRow);
       SpreadsheetApp.flush();
     }
     return output_({ ok: true, saved: true, requestId: payload.requestId });
@@ -160,6 +174,7 @@ function createGuest_(payload) {
   var capacity = payload.maxPersonnes;
   if (capacity === undefined && Number.isInteger(payload.maxAdultes) && Number.isInteger(payload.maxEnfants) && payload.maxAdultes >= 1 && payload.maxEnfants >= 0) capacity = payload.maxAdultes + payload.maxEnfants;
   if (!Number.isInteger(capacity) || capacity < 1 || capacity > 100) throw new Error('invalid_guest_limits');
+  if (payload.soiree === undefined) payload.soiree = payload.houppa;
   if (!EVENTS.every(function (name) { return typeof payload[name] === 'boolean'; }) ||
       !EVENTS.some(function (name) { return payload[name]; })) throw new Error('invalid_events');
   var lock = LockService.getScriptLock();
@@ -167,7 +182,7 @@ function createGuest_(payload) {
   try {
     var book = spreadsheet_();
     var sheet = book.getSheetByName('Invités') || book.insertSheet('Invités');
-    var required = ['ID', 'Nom', 'Mairie', 'Houppa', 'Shabbat', 'Max personnes', 'Famille'];
+    var required = ['ID', 'Nom', 'Mairie', 'Houppa', 'Shabbat', 'Max personnes', 'Famille', 'Soirée'];
     if (!sheet.getLastRow()) sheet.appendRow(required);
     var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
     required.forEach(function (name) {
@@ -184,7 +199,7 @@ function createGuest_(payload) {
       return { ok: true, guest: guest_(payload.id) };
     }
     var record = { id: payload.id, nom: textCell_(payload.nom.trim()), mairie: payload.mairie ? 'oui' : 'non',
-      houppa: payload.houppa ? 'oui' : 'non', shabbat: payload.shabbat ? 'oui' : 'non',
+      houppa: payload.houppa ? 'oui' : 'non', 'soirée': payload.soiree ? 'oui' : 'non', shabbat: payload.shabbat ? 'oui' : 'non',
       'max personnes': capacity, famille: family };
     sheet.appendRow(headers.map(function (header) {
       return Object.prototype.hasOwnProperty.call(record, normalize_(header)) ? record[normalize_(header)] : '';
@@ -264,7 +279,13 @@ function dashboard_(payload) {
       if (latest[guest.id] !== undefined && timestamp < latest[guest.id]) return;
       latest[guest.id] = timestamp;
       // La réponse la plus récente compte, même si les lignes ont été triées.
-      EVENTS.forEach(function (name, index) { guest.answers[name] = parseAnswer_(row[index + 2]); });
+      EVENTS.forEach(function (name, index) {
+        if (name === 'soiree') {
+          var col = responseHeaders.indexOf('Soirée');
+          // Les anciennes réponses concernaient une présence groupée.
+          guest.answers.soiree = parseAnswer_(col >= 0 && row[col] ? row[col] : row[3]);
+        } else guest.answers[name] = parseAnswer_(row[index + 2]);
+      });
     });
   }
   guests.forEach(function (guest) {
@@ -306,7 +327,7 @@ function afficherLiensPrives() {
     // Ajouter seulement les en-têtes manquants, sans affecter ni supprimer les anciens invités.
     var book = spreadsheet_();
     var sheet = book.getSheetByName('Invités') || book.insertSheet('Invités');
-    var required = ['ID', 'Nom', 'Mairie', 'Houppa', 'Shabbat', 'Max personnes', 'Famille'];
+    var required = ['ID', 'Nom', 'Mairie', 'Houppa', 'Shabbat', 'Max personnes', 'Famille', 'Soirée'];
     if (!sheet.getLastRow()) sheet.appendRow(required);
     else {
       var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];

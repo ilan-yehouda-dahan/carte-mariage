@@ -933,7 +933,7 @@
             box-shadow: 0 16px 40px -15px rgba(31,36,48,0.14);
         }
         .fp-frame > .event-kicker, .fp-frame > .fp-parents,
-        .fp-frame > .fp-names, .fp-frame > .when,
+        .fp-frame > .fp-announcement, .fp-frame > .fp-times, .fp-frame > .fp-names, .fp-frame > .when,
         .fp-frame > .where, .fp-frame > .actions, .fp-frame > .fp-tsniout, .fp-frame > .fp-memory{
             padding-left:26px;padding-right:26px;
         }
@@ -947,7 +947,16 @@
         .fp-frame .fp-corner-bl{bottom:-1px;left:-1px;border-bottom-width:2px;border-left-width:2px;}
         .fp-frame .fp-corner-br{bottom:-1px;right:-1px;border-bottom-width:2px;border-right-width:2px;}
         .event.faire-part .event-kicker{text-align:center;}
-        .fp-parents{font-size:14.5px;color:var(--ink);line-height:2.1;margin-bottom:16px;}
+        .fp-parents{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px 18px;font:italic 500 clamp(12px,3vw,18px)/1.5 'Cormorant Garamond',serif;color:var(--ink);margin-bottom:22px;}
+        .fp-grandparents{grid-column:2;grid-row:1}.fp-chiche{grid-column:1;grid-row:2}.fp-dahan{grid-column:2;grid-row:2}
+        .fp-announcement{font:italic 500 clamp(18px,4vw,24px)/1.5 'Cormorant Garamond',serif;margin:16px 0;}
+        .fp-frame .fp-names{display:flex;align-items:start;justify-content:center;gap:12px;font-family:'Pinyon Script',cursive;font-weight:400;font-size:clamp(45px,11vw,78px);line-height:1.2;}
+        .fp-names small{display:block;font:400 24px/1.5 'Frank Ruhl Libre',serif;margin-top:10px;color:var(--gold-deep);}
+        .fp-frame .when{font-family:'Cormorant Garamond',serif;font-size:26px;font-style:italic;}
+        .fp-hebrew-date{display:inline-block;font:400 23px/1.7 'Frank Ruhl Libre',serif;color:var(--gold-deep);margin:8px 0;}
+        .fp-times{font:italic 500 22px/1.4 'Cormorant Garamond',serif;margin:10px 0 18px;}.fp-times p{margin:6px 0}
+        .fp-frame .where{font-weight:700;}
+
         .fp-names{font-size:clamp(38px,9vw,58px);margin:14px 0 22px;}
         .fp-names .amp{font-style:italic;font-weight:400;color:var(--gold);font-size:0.7em;padding:0 6px;}
         .event.faire-part .when{text-align:center;font-size:15px;margin-bottom:18px;}
@@ -1256,7 +1265,7 @@
                         </div>
                         <div class="event-kicker">Cérémonie civile</div>
                         <h3>Mairie</h3>
-                        <div class="when">Jeudi 11 février 2027 à 14h00</div>
+                        <div class="when">Jeudi 11 février 2027 à 13h30</div>
                         <div class="where">Mairie de Levallois-Perret<br><span class="addr">1 Place de la République, 92300 Levallois-Perret</span></div>
                         <div class="note">La cérémonie civile sera suivie d’un after-mairie à la synagogue Ancelle, à Neuilly-sur-Seine.</div>
                         <div class="actions">
@@ -1265,7 +1274,7 @@
                                 Itinéraire Waze
                             </a>
                             <a class="btn" href="https://waze.com/ul?q=Synagogue%20Ancelle%2C%20Neuilly-sur-Seine&navigate=yes" target="_blank" rel="noopener noreferrer">After-mairie · Itinéraire Ancelle</a>
-                            <button class="btn" onclick="downloadIcs('Mairie — Eden & Ilan','Mairie de Levallois-Perret, 1 Place de la République, 92300 Levallois-Perret','2027-02-11','14:00')">
+                            <button class="btn" onclick="downloadIcs('Mairie — Eden & Ilan','Mairie de Levallois-Perret, 1 Place de la République, 92300 Levallois-Perret','2027-02-11','13:30')">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="16" rx="1"/><path d="M3 9h18M8 3v4M16 3v4"/></svg>
                                 Ajouter au calendrier
                             </button>
@@ -1281,25 +1290,28 @@
                                 <img src="factorie.jpg" alt="Factory 58 — Lieu de la Houppa & Soirée" loading="lazy">
                             </div>
                         </div>
-                        <div class="event-kicker">Cérémonie religieuse & soirée</div>
+                        <div class="event-kicker" id="wedding-kicker">Cérémonie religieuse & soirée</div>
                         <div class="fp-parents">
-                            Mr et Mme Claude Dahan<br>
-                            Mr et Mme Philippe Chiche<br>
-                            Mr et Mme Michael Dahan
+                            <div class="fp-grandparents">Mr et Mme Claude Dahan</div>
+                            <div class="fp-chiche">Mr et Mme Philippe Chiche</div>
+                            <div class="fp-dahan">Mr et Mme Michael Dahan</div>
                         </div>
-                        <h3 class="fp-names">Eden <span class="amp">&</span> Ilan</h3>
-                        <div class="when">Jeudi 18 février 2027<br>à 16h00 précises</div>
+                        <p class="fp-announcement">ont l’immense joie de vous faire part du mariage<br>de leurs petits-enfants et enfants</p>
+                        <h3 class="fp-names"><span>Eden<small lang="he" dir="rtl">עדן</small></span><span class="amp">&</span><span>Ilan<small lang="he" dir="rtl">אילן</small></span></h3>
+                        <div class="when"><strong>Jeudi 18 février 2027</strong><br><span class="fp-hebrew-date" lang="he" dir="rtl">י״א באדר א׳ תשפ״ז</span></div>
+                        <div class="fp-times"><p id="houppa-details"><strong>Houppa à 16h00 précises</strong></p><p id="soiree-details"><strong>Soirée à 19h00</strong></p></div>
                         <div class="where">Factory 58<br><span class="addr">12 rue Gutenberg, 93000 Bobigny</span></div>
                         <div class="actions">
                             <a class="btn" href="https://waze.com/ul?q=Factory%2058%2C%2012%20rue%20Gutenberg%2C%2093000%20Bobigny&navigate=yes" target="_blank" rel="noopener">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="9" r="2.4"/></svg>
                                 Itinéraire Waze
                             </a>
-                            <button class="btn" onclick="downloadIcs('Houppa & Soirée — Eden & Ilan','Factory 58, 12 rue Gutenberg, 93000 Bobigny','2027-02-18','16:00')">
+                            <button id="houppa-calendar" class="btn" onclick="downloadIcs('Houppa — Eden & Ilan','Factory 58, 12 rue Gutenberg, 93000 Bobigny','2027-02-18','16:00')">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="16" rx="1"/><path d="M3 9h18M8 3v4M16 3v4"/></svg>
                                 Ajouter au calendrier
                             </button>
                         </div>
+                        <div class="actions" id="soiree-calendar-wrap"><button class="btn" onclick="downloadIcs('Soirée — Eden & Ilan','Factory 58, 12 rue Gutenberg, 93000 Bobigny','2027-02-18','19:00')">Ajouter la soirée au calendrier</button></div>
                         <div class="fp-tsniout">
                             Afin d’honorer la sainteté de notre Houppa, nous vous remercions de privilégier une tenue pudique et raffinée. Que cette harmonie attire d’infinies bénédictions sur nos foyers réunis.
                         </div>
@@ -1350,7 +1362,7 @@
                     <div class="rsvp-events-grid">
                         <div class="rsvp-event-item" id="rsvp-mairie">
                             <div class="rsvp-event-header">
-                                <span class="rsvp-event-title">Mairie & after-mairie — 11 février à 14 h</span>
+                                <span class="rsvp-event-title">Mairie & after-mairie — 11 février à 13 h 30</span>
                                 <div class="presence-options" data-group="mairie">
                                     <input type="radio" name="mairie-presence" id="mairie-oui" value="oui" checked>
                                     <label for="mairie-oui">Présent(e)</label>
@@ -1367,7 +1379,7 @@
                         </div>
                         <div class="rsvp-event-item" id="rsvp-houppa">
                             <div class="rsvp-event-header">
-                                <span class="rsvp-event-title">Houppa & Soirée — 18 février</span>
+                                <span class="rsvp-event-title">Houppa — 18 février à 16 h</span>
                                 <div class="presence-options" data-group="houppa">
                                     <input type="radio" name="houppa-presence" id="houppa-oui" value="oui" checked>
                                     <label for="houppa-oui">Présent(e)</label>
@@ -1379,6 +1391,23 @@
                                 <div class="count-row">
                                     <label for="houppa-personnes">Nombre de personnes</label>
                                     <select id="houppa-personnes" name="houppa-personnes"><option value="1">1</option></select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="rsvp-event-item" id="rsvp-soiree">
+                            <div class="rsvp-event-header">
+                                <span class="rsvp-event-title">Soirée — 18 février à 19 h</span>
+                                <div class="presence-options" data-group="soiree">
+                                    <input type="radio" name="soiree-presence" id="soiree-oui" value="oui" checked>
+                                    <label for="soiree-oui">Présent(e)</label>
+                                    <input type="radio" name="soiree-presence" id="soiree-non" value="non">
+                                    <label for="soiree-non">Absent(e)</label>
+                                </div>
+                            </div>
+                            <div class="guests-counts-wrap" id="soiree-counts-wrap">
+                                <div class="count-row">
+                                    <label for="soiree-personnes">Nombre de personnes</label>
+                                    <select id="soiree-personnes" name="soiree-personnes"><option value="1">1</option></select>
                                 </div>
                             </div>
                         </div>
@@ -1431,8 +1460,8 @@
 <audio id="wedding-music" src="assets/audio/gan-eden.mp3" preload="none" loop playsinline></audio>
 <div class="music-control"><button id="music-toggle" type="button" aria-controls="wedding-music" aria-label="Écouter la musique" aria-pressed="false">♫ Musique</button><p id="music-status" role="status"></p></div>
 <script src="music.js?v=20261016-1"></script>
-<script src="sheet-api.js?v=20261015-4"></script>
-<script src="invitation.js?v=20261015-4"></script>
+<script src="sheet-api.js?v=20261125-1"></script>
+<script src="invitation.js?v=20261125-1"></script>
 <script>
     // 1. Enveloppe
     (function() {
@@ -1756,6 +1785,7 @@
         var mapping = [
             { group: 'mairie-presence', wrap: 'mairie-counts-wrap' },
             { group: 'houppa-presence', wrap: 'houppa-counts-wrap' },
+            { group: 'soiree-presence', wrap: 'soiree-counts-wrap' },
             { group: 'shabbat-presence', wrap: 'shabbat-counts-wrap' }
         ];
         mapping.forEach(function(item){
@@ -1772,6 +1802,6 @@
     })();
 
 </script>
-<script src="rsvp.js?v=20261015-4"></script>
+<script src="rsvp.js?v=20261125-1"></script>
 </body>
 </html>

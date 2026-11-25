@@ -29,7 +29,8 @@
     }
     function publicGuest(guest) {
         var result = {};
-        ['id', 'nom', 'mairie', 'houppa', 'shabbat', 'maxPersonnes'].forEach(function (key) { result[key] = guest[key]; });
+        ['id', 'nom', 'mairie', 'houppa', 'shabbat', 'soiree', 'maxPersonnes'].forEach(function (key) { result[key] = guest[key]; });
+        if (result.soiree === undefined) result.soiree = guest.houppa;
         if (result.maxPersonnes === undefined) result.maxPersonnes = guest.maxAdultes + guest.maxEnfants;
         return result;
     }
@@ -77,7 +78,7 @@
         }
         var guests = Object.values(saved).filter(function (guest) { return guest.family === payload.family; }).map(function (guest) { return Object.assign(publicGuest(guest), { answers: guest.answers || {} }); });
         var totals = {};
-        ['mairie', 'houppa', 'shabbat'].forEach(function (name) {
+        ['mairie', 'houppa', 'shabbat', 'soiree'].forEach(function (name) {
             totals[name] = { invited: 0, people: 0, pending: 0, declined: 0 };
             guests.forEach(function (guest) {
                 if (!guest[name]) return;

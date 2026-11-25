@@ -1,7 +1,7 @@
 # Mariage Eden & Ilan — invitations et gestion par famille
 
 Branche : `correction-ilan`. Site statique sur GitHub Pages, données dans Google Sheets.
-Mairie : **11 février 2027**, Levallois-Perret. Houppa : **18 février 2027 à 16 h,
+Mairie : **11 février 2027 à 13 h 30**, Levallois-Perret. Houppa : **18 février 2027 à 16 h,
 heure de Paris**, Factory 58, 12 rue Gutenberg, 93000 Bobigny. Chabbat : 19 février.
 
 ## Deux espaces distincts
@@ -64,7 +64,7 @@ Ne pas cliquer sur Exécuter pour tester `doPost` : cette fonction attend une re
 
 L'onglet **Invités** utilise ces en-têtes (ordre libre) :
 
-`ID | Nom | Mairie | Houppa | Shabbat | Max personnes | Famille`
+`ID | Nom | Mairie | Houppa | Shabbat | Max personnes | Famille | Soirée`
 
 `Famille` vaut `dahan` ou `chiche` et n'est renseignée que par le serveur pour les
 nouvelles invitations. Les colonnes manquantes sont ajoutées à la première création
@@ -108,8 +108,8 @@ Les lectures publiques sont limitées à l'invitation identifiée par un ID alé
 et au reçu d'un envoi. Les liens d'invitation restent partageables : leur possession
 permet d'accéder à la carte et de répondre, sans contrôle d'identité supplémentaire.
 
-**Réponses** conserve ses huit colonnes :
-`Date | Nom | Mairie | Houppa | Shabbat | Message | ID invité | ID envoi`.
+**Réponses** conserve ses huit premières colonnes :
+`Date | Nom | Mairie | Houppa | Shabbat | Message | ID invité | ID envoi | Soirée`.
 Les anciennes lignes sont préservées. G et H doivent être libres ou déjà porter
 ces noms. Les messages et noms sont enregistrés comme texte pour éviter les formules.
 Les réponses des événements non autorisés sont remplacées par `Masqué`.
@@ -187,3 +187,27 @@ chargement. Un bouton fixe permet de mettre en pause et reprendre. Le morceau
 boucle à volume modéré ; si le navigateur bloque la lecture, le bouton permet
 de réessayer. Le lecteur utilise `preload="none"` pour préserver le chargement
 initial de la carte.
+
+## Houppa et soirée séparées — novembre 2026
+
+La Houppa (16 h) et la soirée (19 h) ont chacune une autorisation, une réponse,
+un nombre de personnes et des totaux séparés. Les espaces famille et les messages
+WhatsApp distinguent les deux. La mairie est à 13 h 30, suivie de l’after-mairie
+à la synagogue Ancelle. Le maximum par foyer s’applique à chaque événement autorisé.
+
+Avant de publier cette version du site, remplacer le code Apps Script par le
+nouveau `apps-script/Code.gs`, enregistrer, puis mettre à jour le déploiement
+existant : Gérer les déploiements → crayon → Nouvelle version → Déployer.
+La même URL et les mêmes liens privés sont conservés. Aucun déploiement Google
+n’est effectué par les changements du dépôt.
+
+Dans `Invités`, la colonne `Soirée` est ajoutée automatiquement à la création
+ou lors de l’exécution de `afficherLiensPrives`. Pour les anciennes lignes où
+cette colonne manque ou reste vide, l’autorisation Houppa vaut pour les deux
+événements, comme auparavant. Renseigner explicitement `oui` ou `non` pour
+changer l’accès à la soirée. Les nouvelles lignes renseignent les deux choix.
+
+Dans `Réponses`, la colonne `Soirée` est ajoutée à la fin lors de la première
+réponse. Les huit anciennes colonnes ne sont pas décalées ; message et IDs
+restent aux mêmes positions. Les anciennes réponses groupées sont comptées pour
+les deux événements tant qu’aucune nouvelle réponse ne les remplace.

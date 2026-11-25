@@ -78,7 +78,7 @@ test('RSVP only confirms a saved receipt and excludes uninvited events', async (
     await page.locator('.submit-btn').click();
     await expect(page.locator('#confirm-msg')).toContainText('bien été enregistrée');
     expect(payload.invite).toBe('elie-chicha');
-    expect(payload.events).toEqual({ houppa: { presence: 'oui', personnes: 3 } });
+    expect(payload.events).toEqual({ houppa: { presence: 'oui', personnes: 3 }, soiree: { presence: 'oui', personnes: 1 } });
     await expect(page.locator('#houppa-personnes')).toHaveValue('3');
 });
 
@@ -122,7 +122,7 @@ test('envelope opens and countdown uses Paris time', async ({ page }) => {
     await page.clock.runFor(2200);
     await expect(page.locator('body')).toHaveClass(/revealed/);
     await expect(page.locator('body')).not.toHaveClass(/env-locked/);
-    await expect(page.locator('#houppa .when')).toContainText('16h00');
+    await expect(page.locator('#houppa-details')).toContainText('16h00');
     await expect(page.locator('#houppa .where')).toContainText('Factory 58');
     await expect(page.locator('#houppa a.btn')).toHaveAttribute('href', /12%20rue%20Gutenberg/);
 });
@@ -157,7 +157,7 @@ test('calendar contains 16h Paris and a valid all-day end date', async ({ page }
 test('mairie date is February 11 in programme, RSVP, calendar and admin', async ({page}) => {
     await page.goto('/?preview=1&invite=gabriel-arzoin');
     await expect(page.locator('body')).toHaveClass(/invitation-ready/);
-    await expect(page.locator('#mairie .when')).toHaveText('Jeudi 11 février 2027 à 14h00');
+    await expect(page.locator('#mairie .when')).toHaveText('Jeudi 11 février 2027 à 13h30');
     await expect(page.locator('#rsvp-mairie .rsvp-event-title')).toContainText('11 février');
     await expect(page.locator('#mairie button.btn')).toHaveAttribute('onclick', /2027-02-11/);
     await expect(page.locator('#houppa .when')).toContainText('18 février 2027');

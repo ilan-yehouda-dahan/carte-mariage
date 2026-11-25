@@ -22,7 +22,7 @@ test('canonical name, permissions, literal text and receipt, without duplicate w
     assert.equal(rows.length, 2);
     assert.equal(rows[1][1], "'=Nom");
     assert.equal(rows[1][2], 'Masqué');
-    assert.equal(rows[1][3], 'Houppa & Soirée : Oui (3 personne(s))');
+    assert.equal(rows[1][3], 'Houppa : Oui (3 personne(s))');
     assert.equal(rows[1][4], 'Masqué');
     assert.equal(rows[1][5], "'=FORMULE()");
     assert.equal(api.get({ action: 'status', id: 'elie-chicha', requestId }).saved, true);
@@ -63,7 +63,7 @@ test('absent answer records zero attendance without requiring counts', () => {
     const payload = answer();
     payload.events.houppa = { presence: 'non' };
     assert.equal(api.post(payload).ok, true);
-    assert.equal(api.tables['Réponses'][1][3], 'Houppa & Soirée : Non');
+    assert.equal(api.tables['Réponses'][1][3], 'Houppa : Non');
 });
 
 test('family capacity is enforced by server for adults and children', () => {
@@ -211,7 +211,7 @@ test('single number of people is stored and enforced without categories', () => 
     assert.equal(api.post({...reply,events:{houppa:{presence:'oui',personnes:3}}}).error,'invalid_counts');
     assert.equal(api.post({...reply,events:{houppa:{presence:'oui',personnes:0}}}).error,'invalid_counts');
     assert.equal(api.post(reply).ok,true);
-    assert.equal(api.tables['Réponses'][1][3],'Houppa & Soirée : Oui (2 personne(s))');
+    assert.equal(api.tables['Réponses'][1][3],'Houppa : Oui (2 personne(s))');
     assert.equal(api.post(auth('dahan')).totals.houppa.people,2);
 });
 test('historical adults and children are summed for both invitations and replies', () => {
@@ -221,4 +221,27 @@ test('historical adults and children are summed for both invitations and replies
        [new Date(),'Nom','Masqué','Houppa & Soirée : Oui (2 adulte(s), 1 enfant(s))','Masqué','','elie-chicha',requestId]];
     assert.equal(api.post(auth('dahan')).totals.houppa.invited,3);
     assert.equal(api.post(auth('dahan')).totals.houppa.people,3);
+});
+
+test('houppa and soiree keep independent permissions, replies and totals without shifting historical columns', () => {
+    const api=backend({existing:true});
+    const create={action:'create',family:'dahan',adminKey:'a'.repeat(40),id:requestId,nom:'Famille Test',mairie:false,houppa:true,soiree:true,shabbat:false,maxPersonnes:3};
+    assert.equal(api.post(create).ok,true);
+    const payload={invite:requestId,requestId:'00000000-0000-4000-8000-000000000081',events:{houppa:{presence:'oui',personnes:1},soiree:{presence:'oui',personnes:3}},message:'Message conservé'};
+    assert.equal(api.post(payload).ok,true);
+    const row=api.tables['Réponses'].at(-1), headers=api.tables['Réponses'][0];
+    assert.equal(row[3],'Houppa : Oui (1 personne(s))');
+    assert.equal(row[5],'Message conservé');assert.equal(row[6],requestId);
+    assert.equal(row[headers.indexOf('Soirée')],'Soirée : Oui (3 personne(s))');
+    const dashboard=api.post({action:'dashboard',family:'dahan',adminKey:'a'.repeat(40)});
+    assert.equal(dashboard.totals.houppa.people,1);assert.equal(dashboard.totals.soiree.people,3);
+    assert.equal(api.post({...payload,requestId:'00000000-0000-4000-8000-000000000082',events:{...payload.events,soiree:{presence:'oui',personnes:4}}}).error,'invalid_counts');
+});
+test('soiree-only invitation hides houppa and ignores forged houppa attendance',()=>{
+    const api=backend();
+    const create={action:'create',family:'chiche',adminKey:'b'.repeat(40),id:requestId,nom:'Soirée uniquement',mairie:false,houppa:false,soiree:true,shabbat:false,maxPersonnes:2};
+    assert.equal(api.post(create).ok,true);
+    const guest=api.get({id:requestId});assert.equal(guest.houppa,false);assert.equal(guest.soiree,true);
+    assert.equal(api.post({invite:requestId,requestId:'00000000-0000-4000-8000-000000000083',events:{houppa:{presence:'oui',personnes:99},soiree:{presence:'non'}},message:''}).ok,true);
+    assert.equal(api.tables['Réponses'].at(-1)[3],'Masqué');
 });

@@ -60,7 +60,7 @@ test('preview pages show only their own households', async ({page}) => {
 });
 test('admin without events cannot generate a link', async ({page}) => {
     await page.goto('/adminchiche/?preview=1');
-    await page.locator('#guest-name').fill('Famille test'); await page.locator('#houppa').uncheck();
+    await page.locator('#guest-name').fill('Famille test'); await page.locator('#houppa').uncheck(); await page.locator('#soiree').uncheck();
     await page.locator('#create-button').click();
     await expect(page.locator('#form-feedback')).toContainText('au moins un événement');
     await expect(page.locator('#result')).toBeHidden();
@@ -98,20 +98,20 @@ test('live separation, creation, WhatsApp, RSVP, latest counts and CSV end to en
     await page.locator('#houppa-personnes').selectOption('2'); await page.locator('.submit-btn').click();
     await expect(page.locator('#confirm-msg')).toContainText('bien été enregistrée');
     await login(page,'dahan');
-    const houppa = page.locator('#totals tr').filter({hasText:'Houppa & soirée'});
-    await expect(houppa.locator('td')).toHaveText(['Houppa & soirée','2','2','0','0']);
+    const houppa = page.locator('#totals tr').filter({hasText:'Houppa'});
+    await expect(houppa.locator('td')).toHaveText(['Houppa','2','2','0','0']);
     // Une réponse corrigée crée de l'historique, sans doubler les effectifs.
     expect(api.post({invite:id,requestId:'00000000-0000-4000-8000-000000000001',events:{mairie:{presence:'non'},houppa:{presence:'oui',personnes:1}},message:''}).ok).toBe(true);
     await page.locator('#refresh').click();
-    await expect(houppa.locator('td')).toHaveText(['Houppa & soirée','2','1','0','0']);
+    await expect(houppa.locator('td')).toHaveText(['Houppa','2','1','0','0']);
     const downloadPromise = page.waitForEvent('download'); await page.locator('#export').click();
     const download = await downloadPromise; expect(download.suggestedFilename()).toBe('effectifs-dahan.csv');
-    expect(await fs.readFile(await download.path(),'utf8')).toContain('"Houppa & soirée";"2";"1";"0";"0"');
+    expect(await fs.readFile(await download.path(),'utf8')).toContain('"Houppa";"2";"1";"0";"0"');
     expect(await page.evaluate(() => JSON.stringify(localStorage))).not.toContain('a'.repeat(40));
     await page.locator('#logout').click(); await expect(page.locator('#private-space')).toBeHidden(); await expect(page.locator('#guest-list')).toBeEmpty(); expect(new URL(page.url()).hash).toBe('');
     await login(page,'chiche');
     await expect(page.locator('#guest-list')).not.toContainText('Sarah et David Cohen');
-    await expect(page.locator('#totals tr').filter({hasText:'Houppa & soirée'}).locator('td')).toHaveText(['Houppa & soirée','0','0','0','0']);
+    await expect(page.locator('#totals tr').filter({hasText:'Houppa'}).locator('td')).toHaveText(['Houppa','0','0','0','0']);
 });
 
 test('a bare family address does not request or display private data', async ({page}) => {
@@ -163,3 +163,44 @@ test('search and reminders respect pending replies, family boundaries and full t
     await expect(page.locator('#guest-list tr')).toHaveCount(1);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
+
+for (const width of [390, 1280]) {
+    test(`separate houppa and soiree attendance, family layout and calendars at ${width}px`, async ({page,context}) => {
+        const api=backend(); api.tables['Invités']=[api.tables['Invités'][0]];
+        await wire(context,api); await page.setViewportSize({width,height:844});
+        await login(page,'dahan');
+        await page.locator('#guest-name').fill('Famille Soirée');await page.locator('#houppa').uncheck();
+        await page.locator('#create-button').click();await expect(page.locator('#form-feedback')).toContainText('enregistrée');
+        let url=new URL(await page.locator('#invite-url').inputValue());
+        await page.goto('/?'+url.searchParams.toString());await expect(page.locator('body')).toHaveClass(/invitation-ready/);
+        await page.locator('#btn_skip').click();
+        await expect(page.locator('#rsvp-houppa')).toBeHidden();await expect(page.locator('#houppa-details')).toBeHidden();
+        await expect(page.locator('#rsvp-soiree')).toBeVisible();await expect(page.locator('#soiree-details')).toContainText('19h00');
+        await page.locator('#soiree-personnes').selectOption('2');await page.locator('.submit-btn').click();
+        await expect(page.locator('#confirm-msg')).toContainText('bien été enregistrée');
+        await login(page,'dahan');
+        await expect(page.locator('#totals tr').filter({hasText:'Soirée'}).locator('td')).toHaveText(['Soirée','2','2','0','0']);
+        await expect(page.locator('#totals tr').filter({hasText:'Houppa'}).locator('td')).toHaveText(['Houppa','0','0','0','0']);
+        await page.locator('#guest-name').fill('Famille Cérémonie');await page.locator('#max-people').fill('3');
+        await page.locator('#create-button').click();await expect(page.locator('#form-feedback')).toContainText('enregistrée');
+        url=new URL(await page.locator('#invite-url').inputValue());
+        await page.goto('/?'+url.searchParams.toString());await expect(page.locator('body')).toHaveClass(/invitation-ready/);
+        await page.locator('#btn_skip').click();
+        await expect(page.locator('#houppa .fp-hebrew-date')).toHaveText('י״א באדר א׳ תשפ״ז');
+        await expect(page.locator('#houppa .fp-names small')).toHaveText(['עדן','אילן']);
+        const parent=await page.locator('.fp-chiche').boundingBox(), dahan=await page.locator('.fp-dahan').boundingBox(), grand=await page.locator('.fp-grandparents').boundingBox();
+        expect(Math.abs(parent.y-dahan.y)).toBeLessThan(1);expect(parent.x).toBeLessThan(dahan.x);expect(grand.y).toBeLessThan(dahan.y);expect(grand.x).toBe(dahan.x);
+        await expect(page.locator('#houppa-calendar')).toHaveAttribute('onclick',/16:00/);
+        await expect(page.locator('#soiree-calendar-wrap button')).toHaveAttribute('onclick',/19:00/);
+        if (width === 390) {
+            await page.locator('#houppa').scrollIntoViewIfNeeded();
+            await expect(page.locator('#houppa')).toHaveClass(/in-view/);
+            await page.locator('#houppa').screenshot({path:require('node:path').join(test.info().outputDir,'nouvelle-carte-mobile.png'),style:'.music-control,.bottom-nav-dock{visibility:hidden!important}'});
+        }
+        await page.locator('#houppa-personnes').selectOption('1');await page.locator('#soiree-personnes').selectOption('3');
+        await page.locator('.submit-btn').click();await expect(page.locator('#confirm-msg')).toContainText('bien été enregistrée');
+        await login(page,'dahan');
+        await expect(page.locator('#totals tr').filter({hasText:'Houppa'}).locator('td')).toHaveText(['Houppa','3','1','0','0']);
+        await expect(page.locator('#totals tr').filter({hasText:'Soirée'}).locator('td')).toHaveText(['Soirée','5','5','0','0']);
+    });
+}

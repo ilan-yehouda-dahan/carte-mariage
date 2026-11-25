@@ -1,7 +1,7 @@
 /* Les autorisations proviennent de l’onglet Invités et sont revérifiées au POST. */
 (function () {
     'use strict';
-    var eventNames = ['mairie', 'houppa', 'shabbat'];
+    var eventNames = ['mairie', 'houppa', 'shabbat', 'soiree'];
     var status = document.getElementById('invitation-status');
     var params = new URLSearchParams(window.location.search);
     var inviteId = (params.get('invite') || params.get('id') || '').trim().toLowerCase();
@@ -28,6 +28,7 @@
 
     window.sheetApi.guest(inviteId)
         .then(function (guest) {
+            if (guest && guest.soiree === undefined) guest.soiree = guest.houppa;
             var capacity = guest && (guest.maxPersonnes === undefined ? guest.maxAdultes + guest.maxEnfants : guest.maxPersonnes);
             if (!guest || typeof guest.nom !== 'string' || !guest.nom.trim() ||
                 !eventNames.every(function (name) { return typeof guest[name] === 'boolean'; }) ||
@@ -47,14 +48,24 @@
                 var select = document.getElementById(name + '-personnes');
                 select.replaceChildren();
                 for (var count = 1; count <= capacity; count++) select.add(new Option(String(count), String(count)));
-                document.getElementById(name).hidden = !allowed;
+                if (name !== 'soiree') document.getElementById(name).hidden = !allowed;
                 var responseSection = document.getElementById('rsvp-' + name);
                 responseSection.hidden = !allowed;
                 responseSection.querySelectorAll('input, select').forEach(function (input) {
                     input.disabled = !allowed;
                 });
-                document.querySelector('.nav-item[data-target="' + name + '"]').hidden = !allowed;
+                var nav = document.querySelector('.nav-item[data-target="' + name + '"]');
+                if (nav) nav.hidden = !allowed;
             });
+            document.getElementById('houppa').hidden = !(events.houppa || events.soiree);
+            document.querySelector('.nav-item[data-target="houppa"]').hidden = !(events.houppa || events.soiree);
+            document.querySelector('.nav-item[data-target="houppa"] span').textContent = events.houppa ? 'Houppa' : 'Soirée';
+            document.getElementById('houppa-details').hidden = !events.houppa;
+            document.querySelector('.fp-tsniout').hidden = !events.houppa;
+            document.getElementById('soiree-details').hidden = !events.soiree;
+            document.getElementById('houppa-calendar').hidden = !events.houppa;
+            document.getElementById('soiree-calendar-wrap').hidden = !events.soiree;
+            document.getElementById('wedding-kicker').textContent = events.houppa && events.soiree ? 'Cérémonie religieuse & soirée' : events.houppa ? 'Cérémonie religieuse' : 'Soirée';
             var hasEvents = eventNames.some(function (name) { return events[name]; });
             document.getElementById('programme').hidden = !hasEvents;
             document.getElementById('reponse').hidden = !hasEvents;
