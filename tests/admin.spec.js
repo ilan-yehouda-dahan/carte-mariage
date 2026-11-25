@@ -204,3 +204,63 @@ for (const width of [390, 1280]) {
         await expect(page.locator('#totals tr').filter({hasText:'Soirée'}).locator('td')).toHaveText(['Soirée','5','5','0','0']);
     });
 }
+
+for (const family of ['dahan','chiche']) {
+    test(`full Sheets and family workflow for ${family}: four events, revisions, CSV and isolation`, async ({page,context})=>{
+        const api=backend();api.tables['Invités']=[api.tables['Invités'][0]];
+        await wire(context,api);
+        await page.setViewportSize({width:390,height:844});
+        await login(page,family);
+        const guestName='Test complet '+family;
+        await page.locator('#guest-name').fill(guestName);
+        await page.locator('#max-people').fill('4');
+        await page.locator('#mairie').check();await page.locator('#shabbat').check();
+        await page.locator('#create-button').click();await expect(page.locator('#form-feedback')).toContainText('enregistrée');
+        const url=new URL(await page.locator('#invite-url').inputValue()),id=url.searchParams.get('invite');
+        const headers=api.tables['Invités'][0],row=api.tables['Invités'][1];
+        expect(row[headers.indexOf('Famille')]).toBe(family);
+        expect(row[headers.indexOf('Nom')]).toBe(guestName);
+        expect(row[headers.indexOf('Max personnes')]).toBe(4);
+        for(const col of ['Mairie','Houppa','Shabbat','Soirée']) expect(row[headers.indexOf(col)]).toBe('oui');
+        const whatsapp=new URL(await page.locator('#whatsapp-link').getAttribute('href')).searchParams.get('text');
+        expect(whatsapp).toContain('13 h 30');expect(whatsapp).toContain('16 h');expect(whatsapp).toContain('19 h');
+        await page.goto('/?'+url.searchParams.toString());await expect(page.locator('body')).toHaveClass(/invitation-ready/);
+        await page.locator('#btn_skip').click();
+        for(const event of ['mairie','houppa','soiree','shabbat']) await expect(page.locator('#'+event+'-personnes option')).toHaveCount(4);
+        await page.locator('#mairie-personnes').selectOption('2');
+        await page.locator('#houppa-personnes').selectOption('1');
+        await page.locator('#soiree-personnes').selectOption('4');
+        await page.locator('label[for="shabbat-non"]').click();
+        await expect(page.locator('#shabbat-counts-wrap')).toBeHidden();
+        await page.locator('#message').fill('Mazal tov — '+family);
+        await page.locator('.submit-btn').click();await expect(page.locator('#confirm-msg')).toContainText('bien été enregistrée');
+        const responses=api.tables['Réponses'];expect(responses).toHaveLength(2);
+        const r=responses[1],rh=responses[0];
+        expect(r[1]).toBe(guestName);expect(r[2]).toBe('Mairie : Oui (2 personne(s))');
+        expect(r[3]).toBe('Houppa : Oui (1 personne(s))');expect(r[4]).toBe('Chabbat : Non');
+        expect(r[5]).toBe('Mazal tov — '+family);expect(r[6]).toBe(id);
+        expect(r[rh.indexOf('Soirée')]).toBe('Soirée : Oui (4 personne(s))');
+        const requestCount=responses.length;
+        expect(api.post({invite:id,requestId:r[7],events:{mairie:{presence:'oui',personnes:2},houppa:{presence:'oui',personnes:1},soiree:{presence:'oui',personnes:4},shabbat:{presence:'non'}},message:'Mazal tov — '+family}).ok).toBe(true);
+        expect(responses).toHaveLength(requestCount);
+        await page.locator('#soiree-personnes').selectOption('3');
+        await page.locator('.submit-btn').click();await expect(page.locator('#confirm-msg')).toContainText('bien été enregistrée');
+        expect(responses).toHaveLength(3);
+        const forged={invite:id,requestId:'00000000-0000-4000-8000-000000000091',events:{mairie:{presence:'non'},houppa:{presence:'non'},shabbat:{presence:'non'},soiree:{presence:'oui',personnes:99}},message:''};
+        expect(api.post(forged).error).toBe('invalid_counts');expect(responses).toHaveLength(3);
+        await login(page,family);
+        for(const [event,count,absent] of [['Mairie','2','0'],['Houppa','1','0'],['Soirée','3','0'],['Chabbat','0','1']]) {
+            await expect(page.locator('#totals tr').filter({hasText:event}).locator('td')).toHaveText([event,'4',count,'0',absent]);
+        }
+        await expect(page.locator('#guest-list')).toContainText(guestName);
+        await expect(page.getByRole('button',{name:'Préparer une relance'})).toHaveCount(0);
+        const downloadPromise=page.waitForEvent('download');await page.locator('#export').click();
+        const download=await downloadPromise;
+        expect(download.suggestedFilename()).toBe('effectifs-'+family+'.csv');
+        const csv=await fs.readFile(await download.path(),'utf8');
+        expect(csv).toContain('"Soirée";"4";"3";"0";"0"');expect(csv).toContain('"Houppa";"4";"1";"0";"0"');
+        const other=family==='dahan'?'chiche':'dahan';await login(page,other);
+        await expect(page.locator('#guest-list')).not.toContainText(guestName);
+        for(const cells of await page.locator('#totals tr').all()) expect(await cells.locator('td').allTextContents()).toEqual([expect.any(String),'0','0','0','0']);
+    });
+}
